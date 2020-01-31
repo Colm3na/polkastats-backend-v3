@@ -20,7 +20,7 @@ services:
       - 'mysql-data:/var/lib/mysql'
       - './mariadb/polkastats.sql:/docker-entrypoint-initdb.d/dump.sql'
     ports:
-      - '33061:3306'
+      - '3306:3306'
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=polkastats
@@ -38,7 +38,7 @@ services:
     - "8082:8080"
     depends_on:
     - "postgres"
-    #restart: always
+    restart: always
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:@postgres:5432/postgres
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
@@ -50,16 +50,22 @@ services:
     image: polkastats-backend 
     build: ./backend
     command: /usr/app/polkastats-backend-v2/index.js
+    depends_on:
+    - "mariadb"
+    environment:
+      - NODE_ENV=production
 
   polkablocks:
     image: polkastats-backend
-    #build: ./backend
     command: /usr/app/polkastats-backend-v2/crawlers/blocks.js
+    depends_on:
+    - "mariadb"
 
   polkablocks:
     image: polkastats-backend
-    #build: ./backend
     command: /usr/app/polkastats-backend-v2/crawlers/events.js
+    depends_on:
+    - "mariadb"
 
 volumes:
   mysql-data: {}
