@@ -1,0 +1,24 @@
+{
+  "name": "polkastats-backend-v3",
+  "version": "3.0.0",
+  "description": "PolkaStats backend v3",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Colm3na/polkastats-backend-v3.git"
+  },
+  "keywords": [
+    "blockchain",
+    "polkadot",
+    "kusama"
+  ],
+  "author": "PolkaStats Team",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Colm3na/polkastats-backend-v3/issues"
+  },
+  "homepage": "https://github.com/Colm3na/polkastats-backend-v3#readme"
+}
