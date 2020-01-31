@@ -20,5 +20,9 @@
   "bugs": {
     "url": "https://github.com/Colm3na/polkastats-backend-v3/issues"
   },
-  "homepage": "https://github.com/Colm3na/polkastats-backend-v3#readme"
+  "homepage": "https://github.com/Colm3na/polkastats-backend-v3#readme",
+  "dependencies": {
+    "@polkadot/api": "^1.0.1",
+    "pg": "^7.18.1"
+  }
 }
