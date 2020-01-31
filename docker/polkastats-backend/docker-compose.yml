@@ -13,11 +13,12 @@ services:
       - '9944:9944'
     command: --rpc-external --ws-external --rpc-cors=all --pruning=archive --name '🤖 PolkaStats'
 
-  mysql:
-    image: mysql:latest
-    hostname: mysql
+  mariadb:
+    image: mariadb:latest
+    hostname: mariadb
     volumes:
       - 'mysql-data:/var/lib/mysql'
+      - './mariadb/polkastats.sql:/docker-entrypoint-initdb.d/dump.sql'
     ports:
       - '33061:3306'
     environment:
@@ -44,6 +45,21 @@ services:
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
       ## uncomment next line to set an admin secret
       # HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
+
+  backend:
+    image: polkastats-backend 
+    build: ./backend
+    command: /usr/app/polkastats-backend-v2/index.js
+
+  polkablocks:
+    image: polkastats-backend
+    #build: ./backend
+    command: /usr/app/polkastats-backend-v2/crawlers/blocks.js
+
+  polkablocks:
+    image: polkastats-backend
+    #build: ./backend
+    command: /usr/app/polkastats-backend-v2/crawlers/events.js
 
 volumes:
   mysql-data: {}
