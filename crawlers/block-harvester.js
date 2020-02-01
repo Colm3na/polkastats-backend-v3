@@ -94,6 +94,8 @@ async function harvestBlocks(startBlock, endBlock) {
 
   while (startBlock <= endBlock) {
 
+    console.log(`PolkaStats backend v3 - Block harvester - Harvesting blocks from #${startBlock} to #${endBlock}`);
+
     // Start execution
     const startTime = new Date().getTime();
 
