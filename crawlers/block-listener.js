@@ -72,7 +72,7 @@ async function main () {
     const res = await pool.query(sqlSelect);
     if (res.rows.length > 0) {
       // Chain reorganization detected! We need to update block_author, block_hash and state_root
-      console.log(`PolkaStats backend v3 - Block listener - \x1b[33mDetected chain reorganization at block #${formatNumber(blockNumber)}, updating author, author name, hash and state root\x1b[0m`);
+      console.log(`[PolkaStats backend v3] - Block listener - \x1b[33mDetected chain reorganization at block #${formatNumber(blockNumber)}, updating author, author name, hash and state root\x1b[0m`);
 
       // Get block author
       const blockAuthor = extendedHeader.author;
@@ -86,7 +86,7 @@ async function main () {
       const res = await pool.query(sqlUpdate);
 
     } else {
-      console.log(`PolkaStats backend v3 - Block listener - \x1b[32mAdding block #${formatNumber(blockNumber)} [${blockHash}]\x1b[0m`);
+      console.log(`[PolkaStats backend v3] - Block listener - \x1b[32mAdding block #${formatNumber(blockNumber)} [${blockHash}]\x1b[0m`);
       const timestamp = new Date().getTime();
       const sqlInsert =
         `INSERT INTO block (

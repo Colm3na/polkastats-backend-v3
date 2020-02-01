@@ -58,7 +58,7 @@ async function main () {
   const res = await pool.query(sqlSelect);
 
   for (let i = 0; i < res.rows.length; i++) {
-    console.log(`PolkaStats backend v3 - Block harvester - \x1b[32mDetected gap! Harvest blocks from #${res.rows[i].gap_start} to #${res.rows[i].gap_end}\x1b[0m`);
+    console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mDetected gap! Harvest blocks from #${res.rows[i].gap_start} to #${res.rows[i].gap_end}\x1b[0m`);
     await harvestBlocks(res.rows[i].gap_start, res.rows[i].gap_end);
   }
 
@@ -70,7 +70,7 @@ async function main () {
   // 
   // Log execution time
   //
-  console.log(`PolkaStats backend v3 - Block harvester - \x1b[32mTotal execution time: ${((endTime - startTime) / 1000).toFixed(0)}s\x1b[0m`);
+  console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mTotal execution time: ${((endTime - startTime) / 1000).toFixed(0)}s\x1b[0m`);
 }
 
 async function getBlockEvents(blockHash) {
