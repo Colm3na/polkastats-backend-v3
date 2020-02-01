@@ -192,7 +192,7 @@ async function harvestBlocks(startBlock, endBlock) {
     try {
       const res = await pool.query(sqlInsert);
       const endTime = new Date().getTime();
-      console.log(`PolkaStats backend v3 - Block harvester - Added block #${formatNumber(startBlock)} => ${blockHash} in ${((endTime - startTime) / 1000).toFixed(6)}s`);
+      console.log(`PolkaStats backend v3 - Block harvester - Added block #${formatNumber(startBlock)} => ${blockHash} in ${((endTime - startTime) / 1000).toFixed(3)}s`);
     } catch (err) {
       console.log(`PolkaStats backend v3 - Block harvester - Error adding block #${formatNumber(startBlock)}: ${err.stack}`);
     }
