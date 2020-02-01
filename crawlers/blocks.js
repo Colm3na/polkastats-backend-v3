@@ -59,14 +59,16 @@ async function main () {
     // Database connection
     const pool = new Pool(postgresConnParams);
 
-    // TODO: Handle chain reorganizations: check if block_number already exist in DB, if yes update the data for it
-    const sqlSelect = `SELECT block_number FROM block WHERE block_number = '${blockNumber}'`;
+    // Handle chain reorganizations
+    const sqlSelect = `SELECT block_number, block_author, block_hash, parent_hash, extrinsics_root, state_root FROM block WHERE block_number = '${blockNumber}'`;
     const res = await pool.query(sqlSelect);
     if (res.rows.length > 0) {
       console.log(`block_number #${blockNumber} already exist in DB!`);
-    }
-
-    if (blockNumber) {
+      console.log(`OLD VALUES:`);
+      console.log(`block_author: ${res.rows[0].block_author}`);
+      console.log(`NEW VALUES:`);
+      console.log(`block_author: ${extendedHeader.author}`);
+    } else {
       const timestamp = new Date().getTime();
       const sqlInsert =
         `INSERT INTO block (
