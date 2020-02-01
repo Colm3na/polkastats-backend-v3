@@ -73,7 +73,7 @@ async function main () {
       const res = await pool.query(sqlUpdate);
 
     } else {
-      console.log(`PolkaStats - Block listener - Best block: #${blockNumber} finalized: #${blockFinalized}`);
+      console.log(`PolkaStats - Block listener - Adding block: #${blockNumber}`);
       const timestamp = new Date().getTime();
       const sqlInsert =
         `INSERT INTO block (
