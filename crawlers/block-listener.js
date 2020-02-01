@@ -7,7 +7,6 @@
 //
 //
 
-
 // @ts-check
 // Required imports
 const { ApiPromise, WsProvider } = require('@polkadot/api');
@@ -21,9 +20,7 @@ const {
   postgresConnParams
 } = require('../backend.config');
 
-function formatNumber(number) {
-  return (number.toString()).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
-}
+import { formatNumber } from '../lib/utils.js';
 
 async function main () {
   
