@@ -46,7 +46,7 @@ async function main () {
 
   for (let i = 0; i < res.rows.length; i++) {
     console.log(`Detected gap! harvesting from #${res.rows[i].gap_start} to #${res.rows[i].gap_end}`);
-    harvestBlocks(res.rows[i].gap_start, res.rows[i].gap_end);
+    await harvestBlocks(res.rows[i].gap_start, res.rows[i].gap_end);
   }
 
   await pool.end();
