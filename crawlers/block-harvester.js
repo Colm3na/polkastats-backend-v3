@@ -187,7 +187,11 @@ async function harvestBlocks(startBlock, endBlock) {
         '0',
         '${timestamp}'
       )`;
-    const res = await pool.query(sqlInsert);
+    try {
+      const res = await pool.query(sqlInsert);
+    } catch (err) {
+      console.log(err.stack)
+    }
     startBlock++;
   }
   await pool.end();
