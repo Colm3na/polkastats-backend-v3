@@ -54,7 +54,7 @@ async function main () {
     // console.log(`\textrinsicsRoot: ${extrinsicsRoot}`);
     // console.log(`\tstateRoot: ${stateRoot}`);
     // console.log(`\ttotalIssuance: ${totalIssuance}`);
-    // console.log(`\tsession: ${JSON.stringify(session)}`);
+    console.log(`\tsession: ${JSON.stringify(session)}`);
 
     // TODO: Handle chain reorganizations: check if block_number already exist in DB, if yes update the data for it
 

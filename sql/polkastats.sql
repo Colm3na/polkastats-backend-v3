@@ -8,6 +8,6 @@ CREATE TABLE block (
    state_root VARCHAR(66) NOT NULL,
    total_issuance VARCHAR(50) NOT NULL,
    session_json TEXT NOT NULL,
-   timestamp INT NOT NULL,
+   timestamp BIGINT NOT NULL,
    PRIMARY KEY ( block_number )  
 );
