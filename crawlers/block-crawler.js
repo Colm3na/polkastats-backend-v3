@@ -66,7 +66,7 @@ async function main () {
         block_hash,
         parent_hash,
         extrinsics_root,
-        state_root
+        state_root,
         timestamp
       ) VALUES (
         '${currentBlock}',
