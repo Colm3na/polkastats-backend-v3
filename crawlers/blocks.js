@@ -61,9 +61,9 @@ async function main () {
     if (blockNumber) {
       // Database connection
       const pool = new Pool(postgresConnParams);
-
+      const timestamp = new Date().getTime();
       var sqlInsert =
-        'INSERT INTO block (block_number, block_finalized, block_author, block_hash, parent_hash, extrinsics_root, state_root, total_issuance, session_json, timestamp) VALUES (\'' + blockNumber + '\', \'' + blockFinalized + '\', \'' + extendedHeader.author + '\', \'' + blockHash + '\', \'' + parentHash + '\', \'' + extrinsicsRoot + '\', \'' + stateRoot + '\', \'' + totalIssuance + '\', \'' + JSON.stringify(session) + '\', extract(epoch from now());';
+        'INSERT INTO block (block_number, block_finalized, block_author, block_hash, parent_hash, extrinsics_root, state_root, total_issuance, session_json, timestamp) VALUES (\'' + blockNumber + '\', \'' + blockFinalized + '\', \'' + extendedHeader.author + '\', \'' + blockHash + '\', \'' + parentHash + '\', \'' + extrinsicsRoot + '\', \'' + stateRoot + '\', \'' + totalIssuance + '\', \'' + JSON.stringify(session) + '\',  \'' + timestamp + '\')';
       const res = await pool.query(sqlInsert)
       
       // We connect/disconnect to MySQL in each loop to avoid problems if MySQL server is restarted while the crawler is running
