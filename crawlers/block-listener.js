@@ -1,3 +1,13 @@
+//
+// PolkaStats backend v3
+//
+// This crawler listen to new blocks and add them to database
+//
+// Usage: node block-listener.js
+//
+//
+
+
 // @ts-check
 // Required imports
 const { ApiPromise, WsProvider } = require('@polkadot/api');
@@ -58,7 +68,7 @@ async function main () {
     const res = await pool.query(sqlSelect);
     if (res.rows.length > 0) {
       // Chain reorganization detected! We need to update block_author, block_hash and state_root
-      console.log(`PolkaStats - Block listener - Detected chain reorganization at block #${blockNumber}, updating author, author name, hash and state root`);
+      console.log(`PolkaStats backend v3 - Block listener - Detected chain reorganization at block #${blockNumber}, updating author, author name, hash and state root`);
       const timestamp = new Date().getTime();
 
       // Get block author
@@ -73,7 +83,7 @@ async function main () {
       const res = await pool.query(sqlUpdate);
 
     } else {
-      console.log(`PolkaStats - Block listener - Adding block: #${blockNumber}`);
+      console.log(`PolkaStats backend v3 - Block listener - Adding block: #${blockNumber}`);
       const timestamp = new Date().getTime();
       const sqlInsert =
         `INSERT INTO block (

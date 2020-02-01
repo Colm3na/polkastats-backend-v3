@@ -1,3 +1,12 @@
+//
+// PolkaStats backend v3
+//
+// This crawler fill gaps in block database
+//
+// Usage: node block-harvester.js
+//
+//
+
 // @ts-check
 // Required imports
 const { ApiPromise, WsProvider } = require('@polkadot/api');
@@ -10,6 +19,10 @@ const {
   wsProviderUrl,
   postgresConnParams
 } = require('../backend.config');
+
+function formatNumber(number) {
+  return (number.toString()).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+}
 
 async function main () {
 
@@ -45,7 +58,7 @@ async function main () {
   const res = await pool.query(sqlSelect);
 
   for (let i = 0; i < res.rows.length; i++) {
-    console.log(`Detected gap! harvesting from #${res.rows[i].gap_start} to #${res.rows[i].gap_end}`);
+    console.log(`PolkaStats backend v3 - Block harvester - Detected gap! Adding blocks from #${res.rows[i].gap_start} to #${res.rows[i].gap_end}`);
     await harvestBlocks(res.rows[i].gap_start, res.rows[i].gap_end);
   }
 
@@ -57,7 +70,7 @@ async function main () {
   // 
   // Log execution time
   //
-  console.log(`Execution time: ${((endTime - startTime) / 1000).toFixed(0)}s`);
+  console.log(`PolkaStats backend v3 - Block harvester - Total execution time: ${((endTime - startTime) / 1000).toFixed(0)}s`);
 }
 
 async function getBlockEvents(blockHash) {
@@ -80,6 +93,9 @@ async function harvestBlocks(startBlock, endBlock) {
   const pool = new Pool(postgresConnParams);
 
   while (startBlock <= endBlock) {
+
+    // Start execution
+    const startTime = new Date().getTime();
 
     // Get block hash
     const blockHash = await api.rpc.chain.getBlockHash(startBlock);
@@ -134,7 +150,6 @@ async function harvestBlocks(startBlock, endBlock) {
 
     // TODO: Get timestamp from block
 
-    console.log(`PolkaStats v3 - Harvesting block #${startBlock}`);
     const timestamp = new Date().getTime();
     const sqlInsert =
       `INSERT INTO block (
@@ -176,6 +191,8 @@ async function harvestBlocks(startBlock, endBlock) {
       )`;
     try {
       const res = await pool.query(sqlInsert);
+      const endTime = new Date().getTime();
+      console.log(`PolkaStats backend v3 - Block harvester - Added block #${formatNumber(startBlock)} in ${((endTime - startTime) / 1000).toFixed(6)}s`);
     } catch (err) {
       console.log(err.stack)
     }
