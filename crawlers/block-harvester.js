@@ -15,12 +15,6 @@ async function main () {
 
   // Start execution
   const startTime = new Date().getTime();
-  
-  // Initialise the provider to connect to the local polkadot node
-  const provider = new WsProvider(wsProviderUrl);
-
-  // Create the API and wait until ready
-  const api = await ApiPromise.create({ provider });
 
   // Database connection
   const pool = new Pool(postgresConnParams);
@@ -52,7 +46,7 @@ async function main () {
 
   for (let i = 0; i < res.rows.length; i++) {
     console.log(`Detected gap! harvesting from #${res.rows[i].gap_start} to #${res.rows[i].gap_end}`);
-    // harvestBlocks(api, res.rows[i].gap_start, res.rows[i].gap_end);
+    // harvestBlocks(res.rows[i].gap_start, res.rows[i].gap_end);
   }
 
   await pool.end();
@@ -66,7 +60,14 @@ async function main () {
   console.log(`Execution time: ${((endTime - startTime) / 1000).toFixed(0)}s`);
 }
 
-async function harvestBlocks(api, startBlock, endBlock) {
+async function harvestBlocks(startBlock, endBlock) {
+
+  // Initialise the provider to connect to the local polkadot node
+  const provider = new WsProvider(wsProviderUrl);
+
+  // Create the API and wait until ready
+  const api = await ApiPromise.create({ provider });
+
   // Database connection
   const pool = new Pool(postgresConnParams);
 
@@ -141,6 +142,7 @@ async function harvestBlocks(api, startBlock, endBlock) {
     startBlock++;
   }
   await pool.end();
+  provider.disconnect();
 }
 
 main().catch((error) => {
