@@ -58,7 +58,7 @@ async function main () {
       console.log(`PolkaStats - Block crawler - Detected chain reorganization at block #${blockNumber}, updating author, hash and state root`);
       const timestamp = new Date().getTime();
       const sqlUpdate =
-        `UPDATE block SET block_author = '${extendedHeader.author}', block_hash = '${blockHash}', state_root = ${stateRoot} WHERE block_number = '${blockNumber}'`;
+        `UPDATE block SET block_author = '${extendedHeader.author}', block_hash = '${blockHash}', state_root = '${stateRoot}' WHERE block_number = '${blockNumber}'`;
       const res = await pool.query(sqlUpdate);
 
     } else {
