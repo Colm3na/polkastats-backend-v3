@@ -130,7 +130,7 @@ async function harvestBlocks(startBlock, endBlock) {
 
     // Get block author identity display name
     const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
-    const blockAuthorName = blockAuthorIdentity.identity.display;
+    const blockAuthorName = blockAuthorIdentity.identity.display || ``;
 
     // TODO: Get timestamp from block
 

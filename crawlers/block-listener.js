@@ -45,7 +45,7 @@ async function main () {
 
     // Get block author identity display name
     const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
-    const blockAuthorName = blockAuthorIdentity.identity.display;
+    const blockAuthorName = blockAuthorIdentity.identity.display || ``;
 
     // Get session info
     const session = await api.derive.session.info();
@@ -66,7 +66,7 @@ async function main () {
 
       // Get block author identity display name
       const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
-      const blockAuthorName = blockAuthorIdentity.identity.display;
+      const blockAuthorName = blockAuthorIdentity.identity.display || ``;
 
       const sqlUpdate =
         `UPDATE block SET block_author = '${blockAuthor}', block_author_name = '${blockAuthorName}', block_hash = '${blockHash}', state_root = '${stateRoot}' WHERE block_number = '${blockNumber}'`;
