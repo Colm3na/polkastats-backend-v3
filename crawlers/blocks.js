@@ -47,40 +47,22 @@ async function main () {
       api.derive.session.info()
     ]);
 
-    console.log(`PolkaStats - Block crawler - Best block: #${blockNumber} finalized: #${blockFinalized}`);
-    // console.log(`\tauthor: ${extendedHeader.author}`);
-    // console.log(`\tblockHash: ${blockHash}`);
-    // console.log(`\tparentHash: ${parentHash}`);
-    // console.log(`\textrinsicsRoot: ${extrinsicsRoot}`);
-    // console.log(`\tstateRoot: ${stateRoot}`);
-    // console.log(`\ttotalIssuance: ${totalIssuance}`);
-    // console.log(`\tsession: ${JSON.stringify(session)}`);
-
     // Database connection
     const pool = new Pool(postgresConnParams);
 
     // Handle chain reorganizations
-    const sqlSelect = `SELECT block_number, block_author, block_hash, parent_hash, extrinsics_root, state_root FROM block WHERE block_number = '${blockNumber}'`;
+    const sqlSelect = `SELECT block_number FROM block WHERE block_number = '${blockNumber}'`;
     const res = await pool.query(sqlSelect);
     if (res.rows.length > 0) {
-      console.log(`block_number #${blockNumber} already exist in DB!`);
-      console.log(`OLD VALUES:`);
-      console.log(`block_author: ${res.rows[0].block_author}`);
-
-      console.log(`block_hash: ${res.rows[0].block_hash}`);
-      console.log(`parent_hash: ${res.rows[0].parent_hash}`);
-      console.log(`extrinsics_root: ${res.rows[0].extrinsics_root}`);
-      console.log(`state_root: ${res.rows[0].state_root}`);
-
-      console.log(`NEW VALUES:`);
-      console.log(`block_author: ${extendedHeader.author}`);
-
-      console.log(`block_hash: ${blockHash}`);
-      console.log(`parent_hash: ${parentHash}`);
-      console.log(`extrinsics_root: ${extrinsicsRoot}`);
-      console.log(`state_root: ${stateRoot}`);
+      // Chain reorganization detected! We need to update block_author, block_hash and state_root
+      console.log(`PolkaStats - Block crawler - Detected chain reorganization at block #${blockNumber}, updating author, hash and state root`);
+      const timestamp = new Date().getTime();
+      const sqlUpdate =
+        `UPDATE block SET block_author = '${extendedHeader.author}', block_hash = '${blockHash}', state_root = ${stateRoot} WHERE block_number = '${blockNumber}'`;
+      const res = await pool.query(sqlUpdate);
 
     } else {
+      console.log(`PolkaStats - Block crawler - Best block: #${blockNumber} finalized: #${blockFinalized}`);
       const timestamp = new Date().getTime();
       const sqlInsert =
         `INSERT INTO block (
@@ -123,9 +105,9 @@ async function main () {
           '${timestamp}'
         )`;
       const res = await pool.query(sqlInsert);
-      // We connect/disconnect to MySQL in each loop to avoid problems if database server is restarted while the crawler is running
-      await pool.end();
     }
+    // We connect/disconnect in each loop to avoid problems if database server is restarted while crawler is running
+    await pool.end();
   });
 }
 
