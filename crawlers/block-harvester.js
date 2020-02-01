@@ -60,6 +60,14 @@ async function main () {
   console.log(`Execution time: ${((endTime - startTime) / 1000).toFixed(0)}s`);
 }
 
+async function getBlockEvents(blockHash) {
+  const provider = new WsProvider(wsProviderUrl);
+  const api = await ApiPromise.create({ provider });
+  const events = await api.query.system.events.at(blockHash);
+  provider.disconnect();
+  return events;
+}
+
 async function harvestBlocks(startBlock, endBlock) {
 
   // Initialise the provider to connect to the local polkadot node
@@ -88,6 +96,47 @@ async function harvestBlocks(startBlock, endBlock) {
 
     // Get block state root
     const stateRoot = extendedHeader.stateRoot;
+
+    // Get block events
+    const blockEvents = getBlockEvents(blockHash);
+
+    // // Loop through the Vec<EventRecord>
+    // blockEvents.forEach( async (record, index) => {
+    //   // Extract the phase and event
+    //   const { event, phase } = record;
+    //   // Output event data
+    //   console.log(`index: ${index}, section: ${event.section}, method: ${event.method}, phase: ${phase.toString()}, documentation: ${event.meta.documentation.toString()}, data: ${JSON.stringify(event.data)}`);
+    // });
+
+    // Get session info for the block
+    const currentIndex = await api.query.session.currentIndex.at(blockHash);
+    const currentSlot = await api.query.babe.currentSlot.at(blockHash);
+    const epochIndex = await api.query.babe.epochIndex.at(blockHash);
+    const genesisSlot = await api.query.babe.genesisSlot.at(blockHash);
+    const currentEraStartSessionIndex = await api.query.staking.currentEraStartSessionIndex.at(blockHash);
+
+    const epochDuration = api.consts.babe.epochDuration;
+    const sessionsPerEra = api.consts.staking.sessionsPerEra;
+    const eraLength = epochDuration.mul(sessionsPerEra);
+
+    const epochStartSlot = epochIndex.mul(epochDuration).add(genesisSlot);
+    const sessionProgress = currentSlot.sub(epochStartSlot);
+    const eraProgress = currentIndex.sub(currentEraStartSessionIndex).mul(epochDuration).add(sessionProgress);
+    
+    const sessionInfo = {
+      currentIndex,
+      currentSlot,
+      epochIndex,
+      genesisSlot,
+      currentEraStartSessionIndex,
+      epochDuration,
+      sessionsPerEra,
+      eraLength: eraLength.toString(10),
+      epochStartSlot,
+      sessionProgress: sessionProgress.toString(10),
+      eraProgress: eraProgress.toString(10),
+    };
+    console.log(JSON.stringify(sessionInfo, null, 2));
 
     //
     //     TODO:
