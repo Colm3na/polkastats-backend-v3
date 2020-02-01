@@ -3,14 +3,14 @@
 ## Build
 
 git clone https://github.com/Colm3na/polkastats-backend-v3.git
-cd docker
+cd docker/polkastats-backend
 docker-compose build
 
 ## Run in background
 docker-compose up -d
 
 ## Check
-docker logs docker_substrate-node_1 -f
+docker logs [CONTAINER] -f
 
 ## Stop
 docker-compose stop
