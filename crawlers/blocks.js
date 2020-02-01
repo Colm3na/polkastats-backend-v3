@@ -54,16 +54,21 @@ async function main () {
     // console.log(`\textrinsicsRoot: ${extrinsicsRoot}`);
     // console.log(`\tstateRoot: ${stateRoot}`);
     // console.log(`\ttotalIssuance: ${totalIssuance}`);
-    console.log(`\tsession: ${JSON.stringify(session)}`);
-    // session: {"currentEra":367,"currentIndex":1552,"eraLength":3600,"eraProgress":3072,"isEpoch":true,"sessionLength":600,"sessionsPerEra":6,"sessionProgress":72,"validatorCount":160}
+    // console.log(`\tsession: ${JSON.stringify(session)}`);
+
+    // Database connection
+    const pool = new Pool(postgresConnParams);
 
     // TODO: Handle chain reorganizations: check if block_number already exist in DB, if yes update the data for it
+    const sqlSelect = `SELECT block_number FROM block WHERE block_number = '${blockNumber}'`;
+    const res = await pool.query(sqlSelect);
+    if (res.rows.length > 0) {
+      console.log(`block_number #${blockNumber} already exist in DB!`);
+    }
 
     if (blockNumber) {
-      // Database connection
-      const pool = new Pool(postgresConnParams);
       const timestamp = new Date().getTime();
-      var sqlInsert =
+      const sqlInsert =
         `INSERT INTO block (
           block_number,
           block_finalized,
