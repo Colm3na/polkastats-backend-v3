@@ -79,7 +79,7 @@ async function harvestBlocks(startBlock, endBlock) {
   // Database connection
   const pool = new Pool(postgresConnParams);
 
-  while (startBlock < endBlock) {
+  while (startBlock <= endBlock) {
 
     // Get block hash
     const blockHash = await api.rpc.chain.getBlockHash(startBlock);
