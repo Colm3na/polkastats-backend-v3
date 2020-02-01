@@ -25,16 +25,55 @@ async function main () {
   // Database connection
   const pool = new Pool(postgresConnParams);
 
-  // Chain health check
-  let currentBlock = 1;
-  let sqlSelect = `SELECT MIN(block_number) AS min_block_number FROM block`;
-  let res = await pool.query(sqlSelect);
-  let endBlock = res.rows[0].min_block_number;
+  // Get gaps from block table
+  let sqlSelect = `
+    SELECT
+      gap_start, gap_end FROM (
+        SELECT block_number + 1 AS gap_start,
+        next_nr - 1 AS gap_end
+        FROM (
+          SELECT block_number, lead(block_number) OVER (ORDER BY block_number) AS next_nr
+          FROM block
+        ) nr
+        WHERE nr.block_number + 1 <> nr.next_nr
+      ) AS g
+    UNION ALL (
+      SELECT
+        1 AS gap_start,
+        block_number AS gap_end
+      FROM
+        block
+      ORDER BY
+        block_number
+      ASC LIMIT 1
+    )
+    ORDER BY gap_start`;
+  const res = await pool.query(sqlSelect);
 
-  while (currentBlock < endBlock) {
+  for (let i = 0; i < res.rows.length; i++) {
+    console.log(`Detected gap! harvesting from #${res.rows[i].gap_start} to #${res.rows[i].gap_end}`);
+    // harvestBlocks(api, res.rows[i].gap_start, res.rows[i].gap_end);
+  }
+
+  await pool.end();
+
+  // Execution end time
+  const endTime = new Date().getTime();
+
+  // 
+  // Log execution time
+  //
+  console.log(`Execution time: ${((endTime - startTime) / 1000).toFixed(0)}s`);
+}
+
+async function harvestBlocks(api, startBlock, endBlock) {
+  // Database connection
+  const pool = new Pool(postgresConnParams);
+
+  while (startBlock <= endBlock) {
 
     // Get block hash
-    const blockHash = await api.rpc.chain.getBlockHash(currentBlock);
+    const blockHash = await api.rpc.chain.getBlockHash(startBlock);
 
     // Get extended block header
     const extendedHeader = await api.derive.chain.getHeader(blockHash);
@@ -56,7 +95,7 @@ async function main () {
     //   * Get session info at block
     //   * Get total issuance at block
     //
-    console.log(`PolkaStats - Block crawler - Block: #${currentBlock}`);
+    console.log(`PolkaStats v3 - Harvesting block #${startBlock}`);
     const timestamp = new Date().getTime();
     const sqlInsert =
       `INSERT INTO block (
@@ -99,18 +138,9 @@ async function main () {
         '${timestamp}'
       )`;
     const res = await pool.query(sqlInsert);
-    currentBlock++;
+    startBlock++;
   }
-
   await pool.end();
-
-  // Execution end time
-  const endTime = new Date().getTime();
-
-  // 
-  // Log execution time
-  //
-  console.log(`Execution time: ${((endTime - startTime) / 1000).toFixed(0)}s`);
 }
 
 main().catch((error) => {
