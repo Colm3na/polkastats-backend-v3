@@ -109,34 +109,34 @@ async function harvestBlocks(startBlock, endBlock) {
     // });
 
     // Get session info for the block
-    const currentIndex = await api.query.session.currentIndex.at(blockHash);
-    const currentSlot = await api.query.babe.currentSlot.at(blockHash);
-    const epochIndex = await api.query.babe.epochIndex.at(blockHash);
-    const genesisSlot = await api.query.babe.genesisSlot.at(blockHash);
-    const currentEraStartSessionIndex = await api.query.staking.currentEraStartSessionIndex.at(blockHash);
+    // const currentIndex = await api.query.session.currentIndex.at(blockHash);
+    // const currentSlot = await api.query.babe.currentSlot.at(blockHash);
+    // const epochIndex = await api.query.babe.epochIndex.at(blockHash);
+    // const genesisSlot = await api.query.babe.genesisSlot.at(blockHash);
+    // const currentEraStartSessionIndex = await api.query.staking.currentEraStartSessionIndex.at(blockHash);
 
-    const epochDuration = api.consts.babe.epochDuration;
-    const sessionsPerEra = api.consts.staking.sessionsPerEra;
-    const eraLength = epochDuration.mul(sessionsPerEra);
+    // const epochDuration = api.consts.babe.epochDuration;
+    // const sessionsPerEra = api.consts.staking.sessionsPerEra;
+    // const eraLength = epochDuration.mul(sessionsPerEra);
 
-    const epochStartSlot = epochIndex.mul(epochDuration).add(genesisSlot);
-    const sessionProgress = currentSlot.sub(epochStartSlot);
-    const eraProgress = currentIndex.sub(currentEraStartSessionIndex).mul(epochDuration).add(sessionProgress);
+    // const epochStartSlot = epochIndex.mul(epochDuration).add(genesisSlot);
+    // const sessionProgress = currentSlot.sub(epochStartSlot);
+    // const eraProgress = currentIndex.sub(currentEraStartSessionIndex).mul(epochDuration).add(sessionProgress);
     
-    const sessionInfo = {
-      currentIndex,
-      currentSlot,
-      epochIndex,
-      genesisSlot,
-      currentEraStartSessionIndex,
-      epochDuration,
-      sessionsPerEra,
-      eraLength: eraLength.toString(10),
-      epochStartSlot,
-      sessionProgress: sessionProgress.toString(10),
-      eraProgress: eraProgress.toString(10),
-    };
-    console.log(JSON.stringify(sessionInfo, null, 2));
+    // const sessionInfo = {
+    //   currentIndex,
+    //   currentSlot,
+    //   epochIndex,
+    //   genesisSlot,
+    //   currentEraStartSessionIndex,
+    //   epochDuration,
+    //   sessionsPerEra,
+    //   eraLength: eraLength.toString(10),
+    //   epochStartSlot,
+    //   sessionProgress: sessionProgress.toString(10),
+    //   eraProgress: eraProgress.toString(10),
+    // };
+    // console.log(JSON.stringify(sessionInfo, null, 2));
 
     //
     //     TODO:
