@@ -66,8 +66,20 @@ async function main () {
       console.log(`block_number #${blockNumber} already exist in DB!`);
       console.log(`OLD VALUES:`);
       console.log(`block_author: ${res.rows[0].block_author}`);
+
+      console.log(`block_hash: ${res.rows[0].block_hash}`);
+      console.log(`parent_hash: ${res.rows[0].parent_hash}`);
+      console.log(`extrinsics_root: ${res.rows[0].extrinsics_root}`);
+      console.log(`state_root: ${res.rows[0].state_root}`);
+
       console.log(`NEW VALUES:`);
       console.log(`block_author: ${extendedHeader.author}`);
+
+      console.log(`block_hash: ${blockHash}`);
+      console.log(`parent_hash: ${parentHash}`);
+      console.log(`extrinsics_root: ${extrinsicsRoot}`);
+      console.log(`state_root: ${stateRoot}`);
+
     } else {
       const timestamp = new Date().getTime();
       const sqlInsert =
