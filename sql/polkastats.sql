@@ -1,5 +1,4 @@
 CREATE USER polkastats WITH PASSWORD 'polkastats';
-CREATE DATABASE polkastats;
 GRANT ALL PRIVILEGES ON DATABASE polkastats TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
 CREATE TABLE block (  
