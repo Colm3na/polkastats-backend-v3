@@ -58,7 +58,7 @@ async function main () {
   const res = await pool.query(sqlSelect);
 
   for (let i = 0; i < res.rows.length; i++) {
-    console.log(`PolkaStats backend v3 - Block harvester - Detected gap! Adding blocks from #${res.rows[i].gap_start} to #${res.rows[i].gap_end}`);
+    console.log(`PolkaStats backend v3 - Block harvester - Detected gap! Harvest blocks from #${res.rows[i].gap_start} to #${res.rows[i].gap_end}`);
     await harvestBlocks(res.rows[i].gap_start, res.rows[i].gap_end);
   }
 
@@ -82,8 +82,6 @@ async function getBlockEvents(blockHash) {
 }
 
 async function harvestBlocks(startBlock, endBlock) {
-
-  console.log(`PolkaStats backend v3 - Block harvester - Harvesting blocks from #${startBlock} to #${endBlock}`);
 
   // Initialise the provider to connect to the local polkadot node
   const provider = new WsProvider(wsProviderUrl);
@@ -193,11 +191,11 @@ async function harvestBlocks(startBlock, endBlock) {
       )`;
     try {
       const res = await pool.query(sqlInsert);
+      const endTime = new Date().getTime();
+      console.log(`PolkaStats backend v3 - Block harvester - Added block #${formatNumber(startBlock)} => ${blockHash} in ${((endTime - startTime) / 1000).toFixed(6)}s`);
     } catch (err) {
-      console.log(err.stack)
+      console.log(`PolkaStats backend v3 - Block harvester - Error adding block #${formatNumber(startBlock)}: ${err.stack}`);
     }
-    const endTime = new Date().getTime();
-    console.log(`PolkaStats backend v3 - Block harvester - Added block #${formatNumber(startBlock)} in ${((endTime - startTime) / 1000).toFixed(6)}s`);
     startBlock++;
   }
   await pool.end();

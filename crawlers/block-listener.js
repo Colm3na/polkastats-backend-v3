@@ -21,6 +21,10 @@ const {
   postgresConnParams
 } = require('../backend.config');
 
+function formatNumber(number) {
+  return (number.toString()).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+}
+
 async function main () {
   
   // Initialise the provider to connect to the local polkadot node
@@ -68,7 +72,7 @@ async function main () {
     const res = await pool.query(sqlSelect);
     if (res.rows.length > 0) {
       // Chain reorganization detected! We need to update block_author, block_hash and state_root
-      console.log(`PolkaStats backend v3 - Block listener - Detected chain reorganization at block #${blockNumber}, updating author, author name, hash and state root`);
+      console.log(`PolkaStats backend v3 - Block listener - Detected chain reorganization at block #${formatNumber(blockNumber)}, updating author, author name, hash and state root`);
 
       // Get block author
       const blockAuthor = extendedHeader.author;
@@ -82,7 +86,7 @@ async function main () {
       const res = await pool.query(sqlUpdate);
 
     } else {
-      console.log(`PolkaStats backend v3 - Block listener - Adding block: #${blockNumber}`);
+      console.log(`PolkaStats backend v3 - Block listener - Adding block #${formatNumber(blockNumber)} => ${blockHash}`);
       const timestamp = new Date().getTime();
       const sqlInsert =
         `INSERT INTO block (
