@@ -3,7 +3,7 @@
 const { ApiPromise, WsProvider } = require('@polkadot/api');
 
 // Postgres lib
-const { Pool, Client } = require('pg');
+const { Pool } = require('pg');
 
 // Import config params
 const {
@@ -98,7 +98,7 @@ async function harvestBlocks(startBlock, endBlock) {
     const stateRoot = extendedHeader.stateRoot;
 
     // Get block events
-    const blockEvents = getBlockEvents(blockHash);
+    // const blockEvents = await getBlockEvents(blockHash);
 
     // // Loop through the Vec<EventRecord>
     // blockEvents.forEach( async (record, index) => {
@@ -109,54 +109,42 @@ async function harvestBlocks(startBlock, endBlock) {
     // });
 
     // Get session info for the block
-    // const currentIndex = await api.query.session.currentIndex.at(blockHash);
-    // const currentSlot = await api.query.babe.currentSlot.at(blockHash);
-    // const epochIndex = await api.query.babe.epochIndex.at(blockHash);
-    // const genesisSlot = await api.query.babe.genesisSlot.at(blockHash);
-    // const currentEraStartSessionIndex = await api.query.staking.currentEraStartSessionIndex.at(blockHash);
+    const currentIndex = await api.query.session.currentIndex.at(blockHash);
+    const currentSlot = await api.query.babe.currentSlot.at(blockHash);
+    const epochIndex = await api.query.babe.epochIndex.at(blockHash);
+    const genesisSlot = await api.query.babe.genesisSlot.at(blockHash);
+    const currentEraStartSessionIndex = await api.query.staking.currentEraStartSessionIndex.at(blockHash);
+    const currentEra = await api.query.staking.currentEra.at(blockHash);
+    const validatorCount = await api.query.staking.validatorCount.at(blockHash);
 
-    // const epochDuration = api.consts.babe.epochDuration;
-    // const sessionsPerEra = api.consts.staking.sessionsPerEra;
-    // const eraLength = epochDuration.mul(sessionsPerEra);
+    const epochDuration = api.consts.babe.epochDuration;
+    const sessionsPerEra = api.consts.staking.sessionsPerEra;
+    const eraLength = epochDuration.mul(sessionsPerEra);
 
-    // const epochStartSlot = epochIndex.mul(epochDuration).add(genesisSlot);
-    // const sessionProgress = currentSlot.sub(epochStartSlot);
-    // const eraProgress = currentIndex.sub(currentEraStartSessionIndex).mul(epochDuration).add(sessionProgress);
+    const epochStartSlot = epochIndex.mul(epochDuration).add(genesisSlot);
+    const sessionProgress = currentSlot.sub(epochStartSlot);
+    const eraProgress = currentIndex.sub(currentEraStartSessionIndex).mul(epochDuration).add(sessionProgress);
     
-    // const sessionInfo = {
-    //   currentIndex,
-    //   currentSlot,
-    //   epochIndex,
-    //   genesisSlot,
-    //   currentEraStartSessionIndex,
-    //   epochDuration,
-    //   sessionsPerEra,
-    //   eraLength: eraLength.toString(10),
-    //   epochStartSlot,
-    //   sessionProgress: sessionProgress.toString(10),
-    //   eraProgress: eraProgress.toString(10),
-    // };
-    // console.log(JSON.stringify(sessionInfo, null, 2));
+    // Get block author
+    const blockAuthor = extendedHeader.author;
 
-    //
-    //     TODO:
-    //
-    //   * Get timestamp from block
-    //   * Get session info at block
-    //   * Get total issuance at block
-    //
+    // Get block author identity display name
+    const blockAuthorIdentity = await api.derive.accounts.info(`GTzRQPzkcuynHgkEHhsPBFpKdh4sAacVRsnd8vYfPpTMeEY`);
+    const blockAuthorName = blockAuthorIdentity.identity.display;
+
+    // TODO: Get timestamp from block
+
     console.log(`PolkaStats v3 - Harvesting block #${startBlock}`);
     const timestamp = new Date().getTime();
     const sqlInsert =
       `INSERT INTO block (
         block_number,
-        block_finalized,
         block_author,
+        block_author_name,
         block_hash,
         parent_hash,
         extrinsics_root,
         state_root,
-        total_issuance,
         current_era,
         current_index,
         era_length,
@@ -169,22 +157,21 @@ async function harvestBlocks(startBlock, endBlock) {
         timestamp
       ) VALUES (
         '${startBlock}',
-        '${startBlock}',
-        '${extendedHeader.author}',
+        '${blockAuthor}',
+        '${blockAuthorName}',
         '${blockHash}',
         '${parentHash}',
         '${extrinsicsRoot}',
         '${stateRoot}',
-        '0',
-        '0',
-        '0',
-        '0',
-        '0',
+        '${currentEra}',
+        '${currentIndex}',
+        '${eraLength}',
+        '${eraProgress}',
         'true',
-        '0',
-        '0',
-        '0',
-        '0',
+        '${epochDuration}',
+        '${sessionsPerEra}',
+        '${sessionProgress}',
+        '${validatorCount}',
         '${timestamp}'
       )`;
     try {
