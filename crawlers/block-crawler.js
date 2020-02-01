@@ -67,6 +67,16 @@ async function main () {
         parent_hash,
         extrinsics_root,
         state_root,
+        total_issuance,
+        current_era,
+        current_index,
+        era_length,
+        era_progress,
+        is_epoch,
+        session_length,
+        session_per_era,
+        session_progress,
+        validator_count,
         timestamp
       ) VALUES (
         '${currentBlock}',
@@ -76,6 +86,16 @@ async function main () {
         '${parentHash}',
         '${extrinsicsRoot}',
         '${stateRoot}',
+        '0',
+        '0',
+        '0',
+        '0',
+        '0',
+        'true',
+        '0',
+        '0',
+        '0',
+        '0',
         '${timestamp}'
       )`;
     const res = await pool.query(sqlInsert);
