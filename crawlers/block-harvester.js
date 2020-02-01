@@ -83,6 +83,8 @@ async function getBlockEvents(blockHash) {
 
 async function harvestBlocks(startBlock, endBlock) {
 
+  console.log(`PolkaStats backend v3 - Block harvester - Harvesting blocks from #${startBlock} to #${endBlock}`);
+
   // Initialise the provider to connect to the local polkadot node
   const provider = new WsProvider(wsProviderUrl);
 
@@ -93,8 +95,6 @@ async function harvestBlocks(startBlock, endBlock) {
   const pool = new Pool(postgresConnParams);
 
   while (startBlock <= endBlock) {
-
-    console.log(`PolkaStats backend v3 - Block harvester - Harvesting blocks from #${startBlock} to #${endBlock}`);
 
     // Start execution
     const startTime = new Date().getTime();
