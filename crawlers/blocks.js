@@ -101,7 +101,7 @@ async function main () {
           '${session.sessionsPerEra}',
           '${session.sessionProgress}',
           '${session.validatorCount}',
-          '${timestamp}',
+          '${timestamp}'
         )`;
       const res = await pool.query(sqlInsert);
       // We connect/disconnect to MySQL in each loop to avoid problems if database server is restarted while the crawler is running
