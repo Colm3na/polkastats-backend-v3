@@ -11,6 +11,6 @@ module.exports = {
     host: 'localhost',
     database: 'polkastats',
     password: 'polkastats',
-    port: 3211,
+    port: 5432,
   },
 }

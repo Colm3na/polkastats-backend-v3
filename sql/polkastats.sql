@@ -7,7 +7,7 @@ CREATE TABLE block (
    extrinsics_root VARCHAR(66) NOT NULL,
    state_root VARCHAR(66) NOT NULL,
    total_issuance VARCHAR(50) NOT NULL,
-   session_json MEDIUMTEXT NOT NULL,
-   timestamp INT(8) NOT NULL,
+   session_json TEXT NOT NULL,
+   timestamp INT NOT NULL,
    PRIMARY KEY ( block_number )  
 );
