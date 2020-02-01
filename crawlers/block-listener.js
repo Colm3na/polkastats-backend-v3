@@ -65,7 +65,7 @@ async function main () {
       const blockAuthor = extendedHeader.author;
 
       // Get block author identity display name
-      const blockAuthorIdentity = await api.derive.accounts.info(`GTzRQPzkcuynHgkEHhsPBFpKdh4sAacVRsnd8vYfPpTMeEY`);
+      const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
       const blockAuthorName = blockAuthorIdentity.identity.display;
 
       const sqlUpdate =
