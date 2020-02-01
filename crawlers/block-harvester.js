@@ -119,8 +119,8 @@ async function harvestBlocks(startBlock, endBlock) {
         validator_count,
         timestamp
       ) VALUES (
-        '${currentBlock}',
-        '${currentBlock}',
+        '${startBlock}',
+        '${startBlock}',
         '${extendedHeader.author}',
         '${blockHash}',
         '${parentHash}',
