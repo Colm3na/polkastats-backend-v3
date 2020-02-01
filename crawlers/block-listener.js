@@ -69,7 +69,6 @@ async function main () {
     if (res.rows.length > 0) {
       // Chain reorganization detected! We need to update block_author, block_hash and state_root
       console.log(`PolkaStats backend v3 - Block listener - Detected chain reorganization at block #${blockNumber}, updating author, author name, hash and state root`);
-      const timestamp = new Date().getTime();
 
       // Get block author
       const blockAuthor = extendedHeader.author;
