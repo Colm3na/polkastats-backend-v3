@@ -55,6 +55,7 @@ async function main () {
     // console.log(`\tstateRoot: ${stateRoot}`);
     // console.log(`\ttotalIssuance: ${totalIssuance}`);
     console.log(`\tsession: ${JSON.stringify(session)}`);
+    // session: {"currentEra":367,"currentIndex":1552,"eraLength":3600,"eraProgress":3072,"isEpoch":true,"sessionLength":600,"sessionsPerEra":6,"sessionProgress":72,"validatorCount":160}
 
     // TODO: Handle chain reorganizations: check if block_number already exist in DB, if yes update the data for it
 
@@ -63,10 +64,47 @@ async function main () {
       const pool = new Pool(postgresConnParams);
       const timestamp = new Date().getTime();
       var sqlInsert =
-        'INSERT INTO block (block_number, block_finalized, block_author, block_hash, parent_hash, extrinsics_root, state_root, total_issuance, session_json, timestamp) VALUES (\'' + blockNumber + '\', \'' + blockFinalized + '\', \'' + extendedHeader.author + '\', \'' + blockHash + '\', \'' + parentHash + '\', \'' + extrinsicsRoot + '\', \'' + stateRoot + '\', \'' + totalIssuance + '\', \'' + JSON.stringify(session) + '\',  \'' + timestamp + '\')';
-      const res = await pool.query(sqlInsert)
-      
-      // We connect/disconnect to MySQL in each loop to avoid problems if MySQL server is restarted while the crawler is running
+        `INSERT INTO block (
+          block_number,
+          block_finalized,
+          block_author,
+          block_hash,
+          parent_hash,
+          extrinsics_root,
+          state_root,
+          total_issuance,
+          current_era,
+          current_index,
+          era_length,
+          era_progress,
+          is_epoch,
+          session_length,
+          session_per_era,
+          session_progress,
+          validator_count,
+          timestamp
+        ) VALUES (
+          '${blockNumber}',
+          '${blockFinalized}',
+          '${extendedHeader.author}',
+          '${blockHash}',
+          '${parentHash}',
+          '${extrinsicsRoot}',
+          '${stateRoot}',
+          '${totalIssuance}',
+          '${session.currentEra}',
+          '${session.currentIndex}',
+          '${session.eraLength}',
+          '${session.eraProgress}',
+          '${session.isEpoch}',
+          '${session.sessionLength}',
+          '${session.sessionsPerEra}',
+          '${session.sessionProgress}',
+          '${session.validatorCount}',
+          '${timestamp}',
+        )`;
+      const res = await pool.query(sqlInsert);
+      // We connect/disconnect to MySQL in each loop to avoid problems if database server is restarted while the crawler is running
       await pool.end();
     }
   });

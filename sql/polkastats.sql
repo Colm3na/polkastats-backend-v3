@@ -7,7 +7,15 @@ CREATE TABLE block (
    extrinsics_root VARCHAR(66) NOT NULL,
    state_root VARCHAR(66) NOT NULL,
    total_issuance VARCHAR(50) NOT NULL,
-   session_json TEXT NOT NULL,
+   current_era BIGINT NOT NULL,
+   current_index BIGINT NOT NULL,
+   era_length BIGINT NOT NULL,
+   era_progress BIGINT NOT NULL,
+   is_epoch BOOLEAN NOT NULL,
+   session_length BIGINT NOT NULL,
+   session_per_era INT NOT NULL,
+   session_progress BIGINT NOT NULL,
+   validator_count INT NOT NULL,
    timestamp BIGINT NOT NULL,
    PRIMARY KEY ( block_number )  
 );
