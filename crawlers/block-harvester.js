@@ -191,11 +191,11 @@ async function harvestBlocks(startBlock, endBlock) {
       )`;
     try {
       const res = await pool.query(sqlInsert);
-      const endTime = new Date().getTime();
-      console.log(`PolkaStats backend v3 - Block harvester - Added block #${formatNumber(startBlock)} in ${((endTime - startTime) / 1000).toFixed(6)}s`);
     } catch (err) {
       console.log(err.stack)
     }
+    const endTime = new Date().getTime();
+    console.log(`PolkaStats backend v3 - Block harvester - Added block #${formatNumber(startBlock)} in ${((endTime - startTime) / 1000).toFixed(6)}s`);
     startBlock++;
   }
   await pool.end();
