@@ -12,6 +12,9 @@ const {
 } = require('../backend.config');
 
 async function main () {
+
+  // Start execution
+  const startTime = new Date().getTime();
   
   // Initialise the provider to connect to the local polkadot node
   const provider = new WsProvider(wsProviderUrl);
@@ -35,119 +38,59 @@ async function main () {
 
     // Get extended block header
     const extendedHeader = await api.derive.chain.getHeader(blockHash);
-    console.log(JSON.stringify(extendedHeader, null, 2));
-
-    // // Get block parent hash
-    // const parentHash = header.parentHash;
-    
-    // // Get block extrinsics root
-    // const extrinsicsRoot = header.extrinsicsRoot;
-
-    // // Get block state root
-    // const stateRoot = header.stateRoot;
-
-
-    // let sqlSelect = `SELECT MIN(block_number) AS min_block_number FROM block`;
-    // let res = await pool.query(sqlSelect);
-    // let endBlock = res.rows[0].min_block_number;
-
-    currentBlock++;
-
-  }
-
-
-
-  
-  // Subscribe to new blocks
-  const unsubscribe = await api.rpc.chain.subscribeNewHeads( async (header) => {
-
-    // Get block number
-    const blockNumber = header.number.toNumber();
-
-    // Get block hash
-    const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
-
-    // Get extended block header
-    const extendedHeader = await api.derive.chain.getHeader(blockHash);
+    // console.log(JSON.stringify(extendedHeader, null, 2));
 
     // Get block parent hash
-    const parentHash = header.parentHash;
+    const parentHash = extendedHeader.parentHash;
     
     // Get block extrinsics root
-    const extrinsicsRoot = header.extrinsicsRoot;
+    const extrinsicsRoot = extendedHeader.extrinsicsRoot;
 
     // Get block state root
-    const stateRoot = header.stateRoot;
+    const stateRoot = extendedHeader.stateRoot;
 
-    // Get best finalized block, total issuance and session info
-    const [blockFinalized, totalIssuance, session] = await Promise.all([
-      api.derive.chain.bestNumberFinalized(), 
-      api.query.balances.totalIssuance(),
-      api.derive.session.info()
-    ]);
+    //
+    //     TODO:
+    //
+    //   * Get timestamp from block
+    //   * Get session info at block
+    //   * Get total issuance at block
+    //
+    console.log(`PolkaStats - Block crawler - Block: #${currentBlock}`);
+    const timestamp = new Date().getTime();
+    const sqlInsert =
+      `INSERT INTO block (
+        block_number,
+        block_finalized,
+        block_author,
+        block_hash,
+        parent_hash,
+        extrinsics_root,
+        state_root
+        timestamp
+      ) VALUES (
+        '${currentBlock}',
+        '${currentBlock}',
+        '${extendedHeader.author}',
+        '${blockHash}',
+        '${parentHash}',
+        '${extrinsicsRoot}',
+        '${stateRoot}',
+        '${timestamp}'
+      )`;
+    const res = await pool.query(sqlInsert);
+    currentBlock++;
+  }
 
-    // Database connection
-    const pool = new Pool(postgresConnParams);
+  await pool.end();
 
-    // Handle chain reorganizations
-    const sqlSelect = `SELECT block_number FROM block WHERE block_number = '${blockNumber}'`;
-    const res = await pool.query(sqlSelect);
-    if (res.rows.length > 0) {
-      // Chain reorganization detected! We need to update block_author, block_hash and state_root
-      console.log(`PolkaStats - Block crawler - Detected chain reorganization at block #${blockNumber}, updating author, hash and state root`);
-      const timestamp = new Date().getTime();
-      const sqlUpdate =
-        `UPDATE block SET block_author = '${extendedHeader.author}', block_hash = '${blockHash}', state_root = '${stateRoot}' WHERE block_number = '${blockNumber}'`;
-      const res = await pool.query(sqlUpdate);
+  // Execution end time
+  const endTime = new Date().getTime();
 
-    } else {
-      console.log(`PolkaStats - Block crawler - Best block: #${blockNumber} finalized: #${blockFinalized}`);
-      const timestamp = new Date().getTime();
-      const sqlInsert =
-        `INSERT INTO block (
-          block_number,
-          block_finalized,
-          block_author,
-          block_hash,
-          parent_hash,
-          extrinsics_root,
-          state_root,
-          total_issuance,
-          current_era,
-          current_index,
-          era_length,
-          era_progress,
-          is_epoch,
-          session_length,
-          session_per_era,
-          session_progress,
-          validator_count,
-          timestamp
-        ) VALUES (
-          '${blockNumber}',
-          '${blockFinalized}',
-          '${extendedHeader.author}',
-          '${blockHash}',
-          '${parentHash}',
-          '${extrinsicsRoot}',
-          '${stateRoot}',
-          '${totalIssuance}',
-          '${session.currentEra}',
-          '${session.currentIndex}',
-          '${session.eraLength}',
-          '${session.eraProgress}',
-          '${session.isEpoch}',
-          '${session.sessionLength}',
-          '${session.sessionsPerEra}',
-          '${session.sessionProgress}',
-          '${session.validatorCount}',
-          '${timestamp}'
-        )`;
-      const res = await pool.query(sqlInsert);
-    }
-    // We connect/disconnect in each loop to avoid problems if database server is restarted while crawler is running
-    await pool.end();
-  });
+  // 
+  // Log execution time
+  //
+  console.log(`Execution time: ${((endTime - startTime) / 1000).toFixed(0)}s`);
 }
 
 main().catch((error) => {
