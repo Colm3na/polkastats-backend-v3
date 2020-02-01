@@ -1,6 +1,6 @@
 # PolkaStats Backend v3
 
-New improved backend for [https://polkastats.io]!
+New improved backend for https://polkastats.io!
 
 ## Install
 
