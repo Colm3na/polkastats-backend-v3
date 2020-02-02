@@ -1,6 +1,5 @@
 CREATE USER polkastats WITH PASSWORD 'polkastats';
 GRANT ALL PRIVILEGES ON DATABASE polkastats TO polkastats;
-GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
 CREATE TABLE block (  
    block_number BIGINT NOT NULL,
    block_author VARCHAR(47) NOT NULL,
@@ -21,3 +20,4 @@ CREATE TABLE block (
    timestamp BIGINT NOT NULL,
    PRIMARY KEY ( block_number )  
 );
+GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
