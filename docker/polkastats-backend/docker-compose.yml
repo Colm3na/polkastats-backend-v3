@@ -1,6 +1,9 @@
 version: '3.6'
-services:
 
+services:
+  #
+  # Blockchain archive node
+  #
   substrate-node:
     image: substrate-client:kusama-latest
     hostname: substrate-node
@@ -11,29 +14,24 @@ services:
       - '30333:30333'
       - '9933:9933'
       - '9944:9944'
-    command: --rpc-external --ws-external --rpc-cors=all --pruning=archive --name '🤖 PolkaStats'
-
-  mariadb:
-    image: mariadb:latest
-    hostname: mariadb
-    volumes:
-      - 'mysql-data:/var/lib/mysql'
-      - './mariadb/polkastats.sql:/docker-entrypoint-initdb.d/dump.sql'
-    ports:
-      - '3306:3306'
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=polkastats
-
+    command: --rpc-external --ws-external --rpc-cors=all --pruning=archive --name 'Polkastats 🤖 v3'
+  #
+  # SQL data base
+  #
   postgres:
     image: postgres
-    #restart: always
+    restart: always
     volumes:
       - 'db-data:/var/lib/postgresql/data'
-
+      - './sql/polkastats.sql:/docker-entrypoint-initdb.d/polkastats.sql'
+    environment:
+      POSTGRES_USER: 'polkastats'
+      POSTGRES_PASSWORD: 'polkastats'
+  #
+  # Hasura
+  #
   graphql-engine:
     image: hasura/graphql-engine:v1.0.0
-    #container_name: polkastats_hasura
     ports:
     - "8082:8080"
     depends_on:
@@ -45,30 +43,35 @@ services:
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
       ## uncomment next line to set an admin secret
       # HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
-
+  #
+  # Backend image
+  #
   backend:
-    image: polkastats-backend 
+    image: polkastats-backend:latest
     build: ./backend
-    command: /usr/app/polkastats-backend-v2/index.js
+  #
+  # Block listener crawler
+  #
+  listener:
+    image: polkastats-backend:latest
+    command: /usr/app/polkastats-backend-v3/crawlers/block-listener.js
     depends_on:
-    - "mariadb"
+    - "postgres"
     environment:
       - NODE_ENV=production
-
-  polkablocks:
-    image: polkastats-backend
-    command: /usr/app/polkastats-backend-v2/crawlers/blocks.js
+  #
+  # Block harverster crawler
+  #
+  harverster:
+    image: polkastats-backend:latest
+    command: /usr/app/polkastats-backend-v3/crawlers/block-harvester.js
     depends_on:
-    - "mariadb"
-
-  polkablocks:
-    image: polkastats-backend
-    command: /usr/app/polkastats-backend-v2/crawlers/events.js
-    depends_on:
-    - "mariadb"
-
+    - "postgres"
+    environment:
+      - NODE_ENV=production
+#
+# Persisten volumes
+#
 volumes:
-  mysql-data: {}
   db-data: {}
   substrate-data: {}
-
