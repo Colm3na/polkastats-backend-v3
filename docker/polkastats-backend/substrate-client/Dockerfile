@@ -1,8 +1,8 @@
 FROM phusion/baseimage:0.11
-LABEL maintainer "polkastats.io"
+LABEL maintainer "@ColmenaLabs_svq"
 LABEL description="Small image with the Substrate binary."
 
-RUN apt update && apt install wget -y
+RUN apt-get update && apt-get install wget -y
 
 WORKDIR /usr/local/bin
 
