@@ -8,7 +8,7 @@ module.exports = {
   // Postgres database connection params
   postgresConnParams: {
     user: 'polkastats',
-    host: 'localhost',
+    host: 'postgres',
     database: 'polkastats',
     password: 'polkastats',
     port: 5432,
