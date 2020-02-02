@@ -1,4 +1,3 @@
-CREATE USER polkastats WITH PASSWORD 'polkastats';
 GRANT ALL PRIVILEGES ON DATABASE polkastats TO polkastats;
 CREATE TABLE block (  
    block_number BIGINT NOT NULL,
