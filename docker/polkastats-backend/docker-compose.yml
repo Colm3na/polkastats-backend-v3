@@ -1,4 +1,4 @@
-version: '3.6'
+version: '3.7'
 
 services:
   #
@@ -44,16 +44,11 @@ services:
       ## uncomment next line to set an admin secret
       # HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
   #
-  # Backend image
-  #
-  backend:
-    image: polkastats-backend:latest
-    build: ./backend
-  #
   # Block listener crawler
   #
   listener:
     image: polkastats-backend:latest
+    build: ./backend
     command: /usr/app/polkastats-backend-v3/crawlers/block-listener.js
     depends_on:
     - "postgres"
