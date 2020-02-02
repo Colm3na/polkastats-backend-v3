@@ -20,7 +20,7 @@ const {
   postgresConnParams
 } = require('../backend.config');
 
-import { formatNumber } from '../lib/utils.js';
+const { formatNumber } = require('../lib/utils.js');
 
 async function main () {
 
