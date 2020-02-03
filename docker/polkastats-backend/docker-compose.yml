@@ -27,6 +27,11 @@ services:
     environment:
       POSTGRES_USER: 'polkastats'
       POSTGRES_PASSWORD: 'polkastats'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U polkastats"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   #
   # Hasura
   #
@@ -35,7 +40,7 @@ services:
     ports:
     - "8082:8080"
     depends_on:
-    - "postgres"
+      - "postgres"
     restart: always
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://polkastats:polkastats@postgres:5432/polkastats
@@ -51,19 +56,19 @@ services:
     build: ./backend
     command: /usr/app/polkastats-backend-v3/crawlers/block-listener.js
     depends_on:
-    - "postgres"
+      - "postgres"
     environment:
       - NODE_ENV=production
   #
   # Block harverster crawler
   #
-  harverster:
-    image: polkastats-backend:latest
-    command: /usr/app/polkastats-backend-v3/crawlers/block-harvester.js
-    depends_on:
-    - "postgres"
-    environment:
-      - NODE_ENV=production
+  # harverster:
+  #   image: polkastats-backend:latest
+  #   command: /usr/app/polkastats-backend-v3/crawlers/block-harvester.js
+  #   depends_on:
+  #   - "postgres"
+  #   environment:
+  #     - NODE_ENV=production
 #
 # Persisten volumes
 #
