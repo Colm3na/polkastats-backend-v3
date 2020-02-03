@@ -2,6 +2,8 @@ FROM node:lts-alpine3.9
 
 RUN apk add git
 
+RUN mkdir -p /usr/app
+
 WORKDIR /usr/app
 
 RUN git clone https://github.com/Colm3na/polkastats-backend-v3.git
