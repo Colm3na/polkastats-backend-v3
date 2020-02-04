@@ -14,7 +14,7 @@ services:
       - '30333:30333'
       - '9933:9933'
       - '9944:9944'
-    command: --rpc-external --ws-external --rpc-cors=all --pruning=archive --name 'Polkastats 🤖 v3'
+    command: -d /data --rpc-external --ws-external --rpc-cors=all --pruning=archive --name 'Polkastats 🤖 v3'
   #
   # SQL data base
   #
@@ -62,13 +62,13 @@ services:
   #
   # Block harverster crawler
   #
-  # harverster:
-  #   image: polkastats-backend:latest
-  #   command: /usr/app/polkastats-backend-v3/crawlers/block-harvester.js
-  #   depends_on:
-  #   - "postgres"
-  #   environment:
-  #     - NODE_ENV=production
+  harverster:
+    image: polkastats-backend:latest
+    command: /usr/app/polkastats-backend-v3/crawlers/block-harvester.js
+    depends_on:
+    - "postgres"
+    environment:
+      - NODE_ENV=production
 #
 # Persisten volumes
 #
