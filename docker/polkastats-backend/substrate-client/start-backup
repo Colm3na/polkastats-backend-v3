@@ -1,0 +1,31 @@
+#!/bin/bash
+# 
+# Recommended:
+# 
+# mkdir -p ~/backup
+# cd ~/backup
+#
+
+# Stop all cointainers
+docker stop polkastats-backend_listener_1
+docker stop polkastats-backend_graphql-engine_1
+docker stop polkastats-backend_harverster_1
+docker stop polkastats-backend_postgres_1
+
+# This one is mandatory to be stopped
+docker stop polkastats-backend_substrate-node_1
+sleep 5
+
+if [ $(docker inspect -f '{{.State.Running}}' polkastats-backend_substrate-node_1) = "true" ]; then 
+    echo "Substrate node still running"
+    exit 1
+else 
+    echo "Substrate node stopped"
+    echo "Starting the backup"
+fi
+
+docker run --rm --volumes-from polkastats-backend_substrate-node_1 -v $(pwd):/backup ubuntu tar cvf /backup/substrate-data.tar /data
+
+echo ""
+echo "Backup finished"
+echo ""
