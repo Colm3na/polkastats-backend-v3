@@ -20,7 +20,7 @@ const {
   postgresConnParams
 } = require('../backend.config');
 
-const { formatNumber } = require('../lib/utils.js');
+const { formatNumber, shortHash } = require('../lib/utils.js');
 
 async function main () {
 
@@ -146,6 +146,9 @@ async function harvestBlocks(startBlock, endBlock) {
     const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
     const blockAuthorName = blockAuthorIdentity.identity.display || ``;
 
+    // Get runtime spec name and version
+    const runtimeVersion = await api.rpc.state.getRuntimeVersion();
+
     // TODO: Get timestamp from block
 
     const timestamp = new Date().getTime();
@@ -167,6 +170,8 @@ async function harvestBlocks(startBlock, endBlock) {
         session_per_era,
         session_progress,
         validator_count,
+        spec_name,
+        spec_version,
         timestamp
       ) VALUES (
         '${startBlock}',
@@ -185,12 +190,14 @@ async function harvestBlocks(startBlock, endBlock) {
         '${sessionsPerEra}',
         '${sessionProgress}',
         '${validatorCount}',
+        '${runtimeVersion.specName}',
+        '${runtimeVersion.specVersion}',
         '${timestamp}'
       )`;
     try {
       const res = await pool.query(sqlInsert);
       const endTime = new Date().getTime();
-      console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mAdded block #${formatNumber(startBlock)} [${blockHash}] in ${((endTime - startTime) / 1000).toFixed(3)}s\x1b[0m`);
+      console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mAdded block #${formatNumber(startBlock)} [${shortHash(blockHash)}] in ${((endTime - startTime) / 1000).toFixed(3)}s\x1b[0m`);
     } catch (err) {
       console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mError adding block #${formatNumber(startBlock)}: ${err.stack}\x1b[0m`);
     }

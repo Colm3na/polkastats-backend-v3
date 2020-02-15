@@ -58,6 +58,9 @@ async function main () {
     const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
     const blockAuthorName = blockAuthorIdentity.identity.display || ``;
 
+    // Get runtime spec name and version
+    const runtimeVersion = await api.rpc.state.getRuntimeVersion();
+
     // Get session info
     const session = await api.derive.session.info();
 
@@ -103,6 +106,8 @@ async function main () {
           session_per_era,
           session_progress,
           validator_count,
+          spec_name,
+          spec_version,
           timestamp
         ) VALUES (
           '${blockNumber}',
@@ -121,6 +126,8 @@ async function main () {
           '${session.sessionsPerEra}',
           '${session.sessionProgress}',
           '${session.validatorCount}',
+          '${runtimeVersion.specName}',
+          '${runtimeVersion.specVersion}',
           '${timestamp}'
         )`;
       const res = await pool.query(sqlInsert);

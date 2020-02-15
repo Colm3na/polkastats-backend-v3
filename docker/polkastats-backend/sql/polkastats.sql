@@ -16,6 +16,8 @@ CREATE TABLE block (
    session_per_era INT NOT NULL,
    session_progress BIGINT NOT NULL,
    validator_count INT NOT NULL,
+   spec_name VARCHAR(100) NOT NULL,
+   spec_version INT NOT NULL,
    timestamp BIGINT NOT NULL,
    PRIMARY KEY ( block_number )  
 );
