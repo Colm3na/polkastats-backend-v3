@@ -96,6 +96,7 @@ async function main () {
   
       } catch (err) {
         console.log(`SQL: ${sqlInsert}`);
+        console.log(`ERROR: ${err}`);
         console.log(`[PolkaStats backend v3] - Block listener - \x1b[31mError adding event #${blockNumber}-${index}\x1b[0m`);
       }
     });    
