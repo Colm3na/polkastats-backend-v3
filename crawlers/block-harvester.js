@@ -78,6 +78,8 @@ async function main () {
 
 async function harvestBlocks(startBlock, endBlock) {
 
+  console.log(`startBlock #${startBlock} endBlock #${endBlock}`)
+
   // Initialise the provider to connect to the local polkadot node
   const provider = new WsProvider(wsProviderUrl);
 
@@ -86,7 +88,7 @@ async function harvestBlocks(startBlock, endBlock) {
 
   // Database connection
   const pool = new Pool(postgresConnParams);
-  // await pool.connect();
+  await pool.connect();
 
   while (startBlock <= endBlock) {
 
