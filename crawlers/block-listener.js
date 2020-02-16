@@ -92,10 +92,10 @@ async function main () {
         );`;
       try {
         await pool.query(sqlInsert);
-        console.log(`[PolkaStats backend v3] - Block listener - \x1b[31mAdding event #${formatNumber(blockNumber)}-${index} ${event.section} => ${event.method}\x1b[0m`);
+        console.log(`[PolkaStats backend v3] - Block listener - \x1b[31mAdding event #${blockNumber}-${index} ${event.section} => ${event.method}\x1b[0m`);
   
       } catch (err) {
-        console.log(`[PolkaStats backend v3] - Block listener - \x1b[31mError adding event #${formatNumber(blockNumber)}-${index}\x1b[0m`);
+        console.log(`[PolkaStats backend v3] - Block listener - \x1b[31mError adding event #${blockNumber}-${index}\x1b[0m`);
       }
     });    
 

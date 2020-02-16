@@ -152,10 +152,10 @@ async function harvestBlocks(startBlock, endBlock) {
         );`;
       try {
         await pool.query(sqlInsert);
-        console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mAdding event #${formatNumber(startBlock)}-${index} ${event.section} => ${event.method}\x1b[0m`);
+        console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mAdding event #${startBlock}-${index} ${event.section} => ${event.method}\x1b[0m`);
 
       } catch (err) {
-        console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mError adding event #${formatNumber(startBlock)}-${index}\x1b[0m`);
+        console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mError adding event #${startBlock}-${index}\x1b[0m`);
       }
     });
 
