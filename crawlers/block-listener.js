@@ -1,7 +1,7 @@
 //
 // PolkaStats backend v3
 //
-// This crawler listen to new blocks and add them to database
+// This crawler listen to new blocks and system events and add them to database
 //
 // Usage: node block-listener.js
 //
@@ -177,10 +177,8 @@ async function main () {
           await pool.query(sqlInsert);
           console.log(`[PolkaStats backend v3] - Block listener - \x1b[33mAdding event #${blockNumber}-${index} ${event.section} => ${event.method}\x1b[0m`);
       
-        } catch (err) {
-          console.log(`SQL: ${sqlInsert}`);
-          console.log(`ERROR: ${err}`);
-          console.log(`[PolkaStats backend v3] - Block listener - \x1b[31mError adding event #${blockNumber}-${index}\x1b[0m`);
+        } catch (error) {
+          console.log(`[PolkaStats backend v3] - Block listener - \x1b[31mError adding event #${blockNumber}-${index}: ${error.error}\x1b[0m`);
         }
       });
 

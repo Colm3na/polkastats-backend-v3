@@ -1,7 +1,7 @@
 //
 // PolkaStats backend v3
 //
-// This crawler fill gaps in block database
+// This crawler fill gaps in block and events tables
 //
 // Usage: node block-harvester.js
 //
@@ -83,11 +83,7 @@ async function main () {
 
 async function harvestBlocks(api, startBlock, endBlock) {
 
-  console.log(`startBlock #${startBlock} endBlock #${endBlock}`);
-
   while (startBlock <= endBlock) {
-
-    console.log(`Block #${startBlock}`)
 
     // Start execution
     const startTime = new Date().getTime();
@@ -97,7 +93,6 @@ async function harvestBlocks(api, startBlock, endBlock) {
 
     // Get extended block header
     const extendedHeader = await api.derive.chain.getHeader(blockHash);
-    // console.log(JSON.stringify(extendedHeader, null, 2));
 
     // Get block parent hash
     const parentHash = extendedHeader.parentHash;
@@ -113,6 +108,7 @@ async function harvestBlocks(api, startBlock, endBlock) {
 
     // Loop through the Vec<EventRecord>
     blockEvents.forEach( async (record, index) => {
+      
       // Extract the phase and event
       const { event, phase } = record;
 
@@ -150,11 +146,8 @@ async function harvestBlocks(api, startBlock, endBlock) {
       try {
         await pool.query(sqlInsert);
         console.log(`[PolkaStats backend v3] - Block harvester - \x1b[33mAdding event #${startBlock}-${index} ${event.section} => ${event.method}\x1b[0m`);
-
-      } catch (err) {
-        console.log(`SQL: ${sqlInsert}`);
-        console.log(`ERROR: ${err}`);
-        console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mError adding event #${startBlock}-${index}\x1b[0m`);
+      } catch (error) {
+        console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mError adding event #${startBlock}-${index}: ${error.error}\x1b[0m`);
       }
     });
 
@@ -234,8 +227,8 @@ async function harvestBlocks(api, startBlock, endBlock) {
       await pool.query(sqlInsert);
       const endTime = new Date().getTime();
       console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mAdded block #${startBlock} (${shortHash(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(3)}s\x1b[0m`);
-    } catch (err) {
-      console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mError adding block #${startBlock}: ${err.stack}\x1b[0m`);
+    } catch (error) {
+      console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mError adding block #${startBlock}: ${error.error}\x1b[0m`);
     }
     startBlock++;
     addedBlocks++;
