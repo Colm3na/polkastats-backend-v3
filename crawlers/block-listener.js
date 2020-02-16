@@ -184,7 +184,7 @@ async function main () {
     }
   });
   // We connect/disconnect in each loop to avoid problems if database server is restarted while crawler is running
-  await pool.end();
+  // await pool.end();
 }
 
 async function getBlockEvents(blockHash) {
