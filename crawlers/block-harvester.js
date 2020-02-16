@@ -82,7 +82,7 @@ async function main () {
   // 
   // Log execution time
   //
-  console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32m Added ${addedBlocks} blocks in ${((endTime - startTime) / 1000).toFixed(0)}s\x1b[0m`);
+  console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mAdded ${addedBlocks} blocks in ${((endTime - startTime) / 1000).toFixed(0)}s\x1b[0m`);
 }
 
 async function harvestBlocks(api, client, startBlock, endBlock) {
