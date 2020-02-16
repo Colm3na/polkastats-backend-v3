@@ -186,7 +186,6 @@ async function main () {
 
     }
   });
-  await pool.end();
 }
 
 async function getBlockEvents(blockHash) {
