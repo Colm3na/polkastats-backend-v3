@@ -248,6 +248,7 @@ async function harvestBlocks(api, startBlock, endBlock) {
     addedBlocks++;
   }
   client.release();
+  return true;
 }
 
 main().catch((error) => {
