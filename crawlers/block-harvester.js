@@ -74,14 +74,6 @@ async function main () {
   console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32m Added ${addedBlocks} blocks in ${((endTime - startTime) / 1000).toFixed(0)}s\x1b[0m`);
 }
 
-async function getBlockEvents(blockHash) {
-  const provider = new WsProvider(wsProviderUrl);
-  const api = await ApiPromise.create({ provider });
-  const events = await api.query.system.events.at(blockHash);
-  provider.disconnect();
-  return events;
-}
-
 async function harvestBlocks(startBlock, endBlock) {
 
   // Initialise the provider to connect to the local polkadot node
@@ -116,7 +108,7 @@ async function harvestBlocks(startBlock, endBlock) {
     const stateRoot = extendedHeader.stateRoot;
 
     // Get block events
-    const blockEvents = await getBlockEvents(blockHash);
+    const blockEvents = await api.query.system.events.at(blockHash);
 
     // Loop through the Vec<EventRecord>
     blockEvents.forEach( async (record, index) => {

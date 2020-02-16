@@ -135,7 +135,7 @@ async function main () {
       await pool.query(sqlInsert);
 
       // Get block events
-      const blockEvents = await getBlockEvents(blockHash);
+      const blockEvents = await api.query.system.events.at(blockHash);
 
       // Loop through the Vec<EventRecord>
       blockEvents.forEach( async (record, index) => {
@@ -186,14 +186,6 @@ async function main () {
 
     }
   });
-}
-
-async function getBlockEvents(blockHash) {
-  const provider = new WsProvider(wsProviderUrl);
-  const api = await ApiPromise.create({ provider });
-  const events = await api.query.system.events.at(blockHash);
-  provider.disconnect();
-  return events;
 }
 
 main().catch((error) => {
