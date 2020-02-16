@@ -59,8 +59,11 @@ async function main () {
   const res = await pool.query(sqlSelect);
 
   for (let i = 0; i < res.rows.length; i++) {
-    console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mDetected gap! Harvest blocks from #${res.rows[i].gap_start} to #${res.rows[i].gap_end}\x1b[0m`);
-    await harvestBlocks(res.rows[i].gap_start, res.rows[i].gap_end);
+    // Quick fix for gap 0-0 error
+    if (res.rows[i].gap_start === 0 && res.rows[i].gap_end !== 0) {
+      console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mDetected gap! Harvest blocks from #${res.rows[i].gap_start} to #${res.rows[i].gap_end}\x1b[0m`);
+      await harvestBlocks(res.rows[i].gap_start, res.rows[i].gap_end);
+    }
   }
 
   await pool.end();
@@ -75,8 +78,6 @@ async function main () {
 }
 
 async function harvestBlocks(startBlock, endBlock) {
-
-  if (startBlock === 0 && endBlock === 0) { return false; }
 
   // Initialise the provider to connect to the local polkadot node
   const provider = new WsProvider(wsProviderUrl);
