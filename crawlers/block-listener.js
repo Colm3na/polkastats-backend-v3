@@ -32,6 +32,7 @@ async function main () {
 
   // Database connection
   const pool = new Pool(postgresConnParams);
+  await pool.connect();
   
   // Subscribe to new blocks
   const unsubscribe = await api.rpc.chain.subscribeNewHeads( async (header) => {
@@ -183,7 +184,7 @@ async function main () {
       const res = await pool.query(sqlInsert);
     }
   });
-  await pool.end();
+  // await pool.end();
 }
 
 async function getBlockEvents(blockHash) {
