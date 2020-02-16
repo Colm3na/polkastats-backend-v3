@@ -61,6 +61,7 @@ async function main () {
     )
     ORDER BY gap_start`;
   const res = await pool.query(sqlSelect);
+  await pool.end();
 
   for (let i = 0; i < res.rows.length; i++) {
     // Quick fix for gap 0-0 error
@@ -157,6 +158,7 @@ async function harvestBlocks(api, startBlock, endBlock) {
         console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mError adding event #${startBlock}-${index}\x1b[0m`);
       }
     });
+    await pool.end();
 
     // Get session info for the block
     const currentIndex = await api.query.session.currentIndex.at(blockHash);
@@ -237,6 +239,7 @@ async function harvestBlocks(api, startBlock, endBlock) {
     } catch (err) {
       console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mError adding block #${startBlock}: ${err.stack}\x1b[0m`);
     }
+    await pool.end();
     startBlock++;
     addedBlocks++;
   }
