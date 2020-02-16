@@ -22,6 +22,8 @@ const {
 
 const { formatNumber, shortHash } = require('../lib/utils.js');
 
+let addedBlocks = 0;
+
 async function main () {
 
   // Start execution
@@ -69,7 +71,7 @@ async function main () {
   // 
   // Log execution time
   //
-  console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mTotal execution time: ${((endTime - startTime) / 1000).toFixed(0)}s\x1b[0m`);
+  console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32m Added ${addedBlocks} blocks in ${((endTime - startTime) / 1000).toFixed(0)}s\x1b[0m`);
 }
 
 async function getBlockEvents(blockHash) {
@@ -238,11 +240,12 @@ async function harvestBlocks(startBlock, endBlock) {
     try {
       await pool.query(sqlInsert);
       const endTime = new Date().getTime();
-      console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mAdded block #${formatNumber(startBlock)} [${shortHash(blockHash)}] in ${((endTime - startTime) / 1000).toFixed(3)}s\x1b[0m`);
+      console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mAdded block #${formatNumber(startBlock)} (${shortHash(blockHash)}) in ${((endTime - startTime) / 1000).toFixed(3)}s\x1b[0m`);
     } catch (err) {
       console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mError adding block #${formatNumber(startBlock)}: ${err.stack}\x1b[0m`);
     }
     startBlock++;
+    addedBlocks++;
   }
   await pool.end();
   provider.disconnect();
