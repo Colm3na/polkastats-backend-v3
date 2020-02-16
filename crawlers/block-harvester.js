@@ -69,11 +69,12 @@ async function main () {
     // Quick fix for gap 0-0 error
     // if (!(res.rows[i].gap_start == 0 && res.rows[i].gap_end == 0)) {
       console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mDetected gap! Harvest blocks from #${res.rows[i].gap_start} to #${res.rows[i].gap_end}\x1b[0m`);
-      await harvestBlocks(api, res.rows[i].gap_start, res.rows[i].gap_end);
+      await harvestBlocks(api, client, res.rows[i].gap_start, res.rows[i].gap_end);
     // }
   }
 
   client.release();
+  provider.disconnect();
 
   // Execution end time
   const endTime = new Date().getTime();
@@ -84,12 +85,9 @@ async function main () {
   console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32m Added ${addedBlocks} blocks in ${((endTime - startTime) / 1000).toFixed(0)}s\x1b[0m`);
 }
 
-async function harvestBlocks(api, startBlock, endBlock) {
+async function harvestBlocks(api, client, startBlock, endBlock) {
 
-  console.log(`startBlock #${startBlock} endBlock #${endBlock}`)
-  
-  // Database connection
-  const client = await pool.connect();
+  console.log(`startBlock #${startBlock} endBlock #${endBlock}`);
 
   while (startBlock <= endBlock) {
 
@@ -246,7 +244,6 @@ async function harvestBlocks(api, startBlock, endBlock) {
     startBlock++;
     addedBlocks++;
   }
-  client.release();
 }
 
 main().catch((error) => {
