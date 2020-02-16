@@ -86,6 +86,8 @@ async function harvestBlocks(api, startBlock, endBlock) {
 
   console.log(`startBlock #${startBlock} endBlock #${endBlock}`);
 
+  if (startBlock <= endBlock) { console.log(`siiiiii`); }
+
   while (startBlock <= endBlock) {
 
     console.log(`Block #${startBlock}`)
