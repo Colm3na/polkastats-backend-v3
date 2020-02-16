@@ -237,6 +237,7 @@ async function harvestBlocks(startBlock, endBlock) {
       const endTime = new Date().getTime();
       console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mAdded block #${startBlock} (${shortHash(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(3)}s\x1b[0m`);
     } catch (err) {
+      throw err;
       console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mError adding block #${startBlock}: ${err.stack}\x1b[0m`);
     }
     startBlock++;
