@@ -112,6 +112,8 @@ async function harvestBlocks(api, startBlock, endBlock) {
       // Extract the phase and event
       const { event, phase } = record;
 
+      console.log(JSON.stringify(record, null, 2));
+
       //
       //  TODO: Update counters in block table:
       //
