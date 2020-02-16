@@ -29,6 +29,7 @@ async function main () {
 
   // Database connection
   const pool = new Pool(postgresConnParams);
+  await pool.connect();
 
   // Get gaps from block table
   let sqlSelect = `
@@ -89,6 +90,7 @@ async function harvestBlocks(startBlock, endBlock) {
 
   // Database connection
   const pool = new Pool(postgresConnParams);
+  await pool.connect();
 
   while (startBlock <= endBlock) {
 
@@ -152,7 +154,7 @@ async function harvestBlocks(startBlock, endBlock) {
         );`;
       try {
         await pool.query(sqlInsert);
-        console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mAdding event #${startBlock}-${index} ${event.section} => ${event.method}\x1b[0m`);
+        console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mAdding event #${startBlock}-${index} ${event.section} => ${event.method}\x1b[0m`);
 
       } catch (err) {
         console.log(`SQL: ${sqlInsert}`);

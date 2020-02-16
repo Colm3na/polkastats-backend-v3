@@ -20,7 +20,7 @@ const {
   postgresConnParams
 } = require('../backend.config');
 
-const { formatNumber } = require('../lib/utils.js');
+const { formatNumber, shortHash } = require('../lib/utils.js');
 
 async function main () {
   
@@ -55,56 +55,6 @@ async function main () {
     // Get block state root
     const stateRoot = header.stateRoot;
 
-    // Get block events
-    const blockEvents = await getBlockEvents(blockHash);
-
-    // Loop through the Vec<EventRecord>
-    blockEvents.forEach( async (record, index) => {
-      // Extract the phase and event
-      const { event, phase } = record;
-  
-      //
-      //  TODO: Update counters in block table:
-      //
-      //  total_extrinsics
-      //  total_signed_extrinsics
-      //  total_failed_extrinsics
-      //  total_events
-      //  total_system_events
-      //  total_module_events
-      //  new_accounts
-      //  reaped_accounts
-      //  new_contracts
-      //  new_sessions
-      //
-  
-      const sqlInsert = 
-        `INSERT INTO event (
-          block_number,
-          event_index,
-          section,
-          method,
-          phase,
-          data
-        ) VALUES (
-          '${blockNumber}',
-          '${index}',
-          '${event.section}',
-          '${event.method}',
-          '${phase.toString()}',
-          '${JSON.stringify(event.data)}'
-        );`;
-      try {
-        await pool.query(sqlInsert);
-        console.log(`[PolkaStats backend v3] - Block listener - \x1b[31mAdding event #${blockNumber}-${index} ${event.section} => ${event.method}\x1b[0m`);
-  
-      } catch (err) {
-        console.log(`SQL: ${sqlInsert}`);
-        console.log(`ERROR: ${err}`);
-        console.log(`[PolkaStats backend v3] - Block listener - \x1b[31mError adding event #${blockNumber}-${index}\x1b[0m`);
-      }
-    });    
-
     // Get block author
     const blockAuthor = extendedHeader.author;
 
@@ -137,7 +87,8 @@ async function main () {
       const res = await pool.query(sqlUpdate);
 
     } else {
-      console.log(`[PolkaStats backend v3] - Block listener - \x1b[32mAdding block #${formatNumber(blockNumber)} [${blockHash}]\x1b[0m`);
+      // Store new block
+      console.log(`[PolkaStats backend v3] - Block listener - \x1b[32mAdding block #${formatNumber(blockNumber)} (${shortHash(blockHash)})\x1b[0m`);
       const timestamp = new Date().getTime();
       const sqlInsert =
         `INSERT INTO block (
@@ -181,10 +132,61 @@ async function main () {
           '${runtimeVersion.specVersion}',
           '${timestamp}'
         )`;
-      const res = await pool.query(sqlInsert);
+      await pool.query(sqlInsert);
+
+      // Get block events
+      const blockEvents = await getBlockEvents(blockHash);
+
+      // Loop through the Vec<EventRecord>
+      blockEvents.forEach( async (record, index) => {
+        // Extract the phase and event
+        const { event, phase } = record;
+      
+        //
+        //  TODO: Update counters in block table:
+        //
+        //  total_extrinsics
+        //  total_signed_extrinsics
+        //  total_failed_extrinsics
+        //  total_events
+        //  total_system_events
+        //  total_module_events
+        //  new_accounts
+        //  reaped_accounts
+        //  new_contracts
+        //  new_sessions
+        //
+      
+        const sqlInsert = 
+          `INSERT INTO event (
+            block_number,
+            event_index,
+            section,
+            method,
+            phase,
+            data
+          ) VALUES (
+            '${blockNumber}',
+            '${index}',
+            '${event.section}',
+            '${event.method}',
+            '${phase.toString()}',
+            '${JSON.stringify(event.data)}'
+          );`;
+        try {
+          await pool.query(sqlInsert);
+          console.log(`[PolkaStats backend v3] - Block listener - \x1b[32mAdding event #${blockNumber}-${index} ${event.section} => ${event.method}\x1b[0m`);
+      
+        } catch (err) {
+          console.log(`SQL: ${sqlInsert}`);
+          console.log(`ERROR: ${err}`);
+          console.log(`[PolkaStats backend v3] - Block listener - \x1b[31mError adding event #${blockNumber}-${index}\x1b[0m`);
+        }
+      });
+
     }
   });
-  // await pool.end();
+  await pool.end();
 }
 
 async function getBlockEvents(blockHash) {
