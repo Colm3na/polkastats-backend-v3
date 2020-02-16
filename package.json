@@ -4,7 +4,9 @@
   "description": "PolkaStats backend v3",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docker": "cd docker/polkastats-backend && docker-compose up",
+    "docker:win": "cd docker/polkastats-backend && docker-compose.exe up"
   },
   "repository": {
     "type": "git",
@@ -23,6 +25,8 @@
   "homepage": "https://github.com/Colm3na/polkastats-backend-v3#readme",
   "dependencies": {
     "@polkadot/api": "^1.0.1",
+    "axios": "^0.19.2",
+    "bignumber.js": "^9.0.0",
     "pg": "^7.18.1"
   }
 }
