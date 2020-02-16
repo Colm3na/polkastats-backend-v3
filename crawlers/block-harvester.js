@@ -155,6 +155,7 @@ async function harvestBlocks(startBlock, endBlock) {
         console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mAdding event #${startBlock}-${index} ${event.section} => ${event.method}\x1b[0m`);
 
       } catch (err) {
+        console.log(`SQL: ${sqlInsert}`);
         console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mError adding event #${startBlock}-${index}\x1b[0m`);
       }
     });

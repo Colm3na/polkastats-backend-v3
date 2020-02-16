@@ -95,6 +95,7 @@ async function main () {
         console.log(`[PolkaStats backend v3] - Block listener - \x1b[31mAdding event #${blockNumber}-${index} ${event.section} => ${event.method}\x1b[0m`);
   
       } catch (err) {
+        console.log(`SQL: ${sqlInsert}`);
         console.log(`[PolkaStats backend v3] - Block listener - \x1b[31mError adding event #${blockNumber}-${index}\x1b[0m`);
       }
     });    
