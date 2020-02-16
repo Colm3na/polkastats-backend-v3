@@ -35,8 +35,7 @@ async function main () {
 
   // Get gaps from block table
   let sqlSelect = `
-    SELECT
-      gap_start, gap_end FROM (
+    SELECT gap_start, gap_end FROM (
         SELECT block_number + 1 AS gap_start,
         next_nr - 1 AS gap_end
         FROM (
@@ -90,6 +89,8 @@ async function harvestBlocks(startBlock, endBlock) {
   // await pool.connect();
 
   while (startBlock <= endBlock) {
+
+    console.log(`Block #${startBlock}`)
 
     // Start execution
     const startTime = new Date().getTime();
