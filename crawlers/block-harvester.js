@@ -87,7 +87,7 @@ async function harvestBlocks(startBlock, endBlock) {
 
   // Database connection
   const pool = new Pool(postgresConnParams);
-  await pool.connect();
+  // await pool.connect();
 
   while (startBlock <= endBlock) {
 
