@@ -38,7 +38,7 @@ CREATE TABLE event (
    method VARCHAR(100) NOT NULL,
    phase VARCHAR(100) NOT NULL,
    data TEXT NOT NULL,
-   PRIMARY KEY ( block_number ) 
+   PRIMARY KEY ( block_number, event_index ) 
 );
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
