@@ -155,7 +155,7 @@ async function harvestBlocks(api, startBlock, endBlock) {
           '${JSON.stringify(event.data)}'
         );`;
       try {
-        await pool.query(sqlInsert);
+        await client.query(sqlInsert);
         console.log(`[PolkaStats backend v3] - Block harvester - \x1b[33mAdding event #${startBlock}-${index} ${event.section} => ${event.method}\x1b[0m`);
 
       } catch (err) {
