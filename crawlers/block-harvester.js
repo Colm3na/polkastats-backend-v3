@@ -1,7 +1,7 @@
 //
 // PolkaStats backend v3
 //
-// This crawler fill gaps in block and events tables
+// This crawler fill gaps in block and event tables
 //
 // Usage: node block-harvester.js
 //
