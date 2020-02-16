@@ -112,15 +112,52 @@ async function harvestBlocks(startBlock, endBlock) {
     const stateRoot = extendedHeader.stateRoot;
 
     // Get block events
-    // const blockEvents = await getBlockEvents(blockHash);
+    const blockEvents = await getBlockEvents(blockHash);
 
-    // // Loop through the Vec<EventRecord>
-    // blockEvents.forEach( async (record, index) => {
-    //   // Extract the phase and event
-    //   const { event, phase } = record;
-    //   // Output event data
-    //   console.log(`index: ${index}, section: ${event.section}, method: ${event.method}, phase: ${phase.toString()}, documentation: ${event.meta.documentation.toString()}, data: ${JSON.stringify(event.data)}`);
-    // });
+    // Loop through the Vec<EventRecord>
+    blockEvents.forEach( async (record, index) => {
+      // Extract the phase and event
+      const { event, phase } = record;
+
+      //
+      //  TODO: Update counters in block table:
+      //
+      //  total_extrinsics
+      //  total_signed_extrinsics
+      //  total_failed_extrinsics
+      //  total_events
+      //  total_system_events
+      //  total_module_events
+      //  new_accounts
+      //  reaped_accounts
+      //  new_contracts
+      //  new_sessions
+      //
+
+      const sqlInsert = 
+        `INSERT INTO event (
+          block_number,
+          event_index,
+          section,
+          method,
+          phase,
+          data
+        ) VALUES (
+          '${startBlock}',
+          '${index}',
+          '${event.section}',
+          '${event.method}',
+          '${phase.toString()}',
+          '${JSON.stringify(event.data)}'
+        );`;
+      try {
+        await pool.query(sqlInsert);
+        console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mAdding event #${formatNumber(startBlock)}-${index} ${event.section} => ${event.method}`);
+
+      } catch (err) {
+        console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mError adding event #${formatNumber(startBlock)}-${index}\x1b[0m`);
+      }
+    });
 
     // Get session info for the block
     const currentIndex = await api.query.session.currentIndex.at(blockHash);
@@ -150,8 +187,8 @@ async function harvestBlocks(startBlock, endBlock) {
     const runtimeVersion = await api.rpc.state.getRuntimeVersion.at(blockHash);
 
     // TODO: Get timestamp from block
-
     const timestamp = new Date().getTime();
+
     const sqlInsert =
       `INSERT INTO block (
         block_number,
@@ -195,7 +232,7 @@ async function harvestBlocks(startBlock, endBlock) {
         '${timestamp}'
       )`;
     try {
-      const res = await pool.query(sqlInsert);
+      await pool.query(sqlInsert);
       const endTime = new Date().getTime();
       console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mAdded block #${formatNumber(startBlock)} [${shortHash(blockHash)}] in ${((endTime - startTime) / 1000).toFixed(3)}s\x1b[0m`);
     } catch (err) {

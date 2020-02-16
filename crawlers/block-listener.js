@@ -51,6 +51,54 @@ async function main () {
     // Get block state root
     const stateRoot = header.stateRoot;
 
+    // Get block events
+    const blockEvents = await getBlockEvents(blockHash);
+
+    // Loop through the Vec<EventRecord>
+    blockEvents.forEach( async (record, index) => {
+      // Extract the phase and event
+      const { event, phase } = record;
+  
+      //
+      //  TODO: Update counters in block table:
+      //
+      //  total_extrinsics
+      //  total_signed_extrinsics
+      //  total_failed_extrinsics
+      //  total_events
+      //  total_system_events
+      //  total_module_events
+      //  new_accounts
+      //  reaped_accounts
+      //  new_contracts
+      //  new_sessions
+      //
+  
+      const sqlInsert = 
+        `INSERT INTO event (
+          block_number,
+          event_index,
+          section,
+          method,
+          phase,
+          data
+        ) VALUES (
+          '${blockNumber}',
+          '${index}',
+          '${event.section}',
+          '${event.method}',
+          '${phase.toString()}',
+          '${JSON.stringify(event.data)}'
+        );`;
+      try {
+        await pool.query(sqlInsert);
+        console.log(`[PolkaStats backend v3] - Block listener - \x1b[31mAdding event #${formatNumber(blockNumber)}-${index} ${event.section} => ${event.method}`);
+  
+      } catch (err) {
+        console.log(`[PolkaStats backend v3] - Block listener - \x1b[31mError adding event #${formatNumber(blockNumber)}-${index}\x1b[0m`);
+      }
+    });    
+
     // Get block author
     const blockAuthor = extendedHeader.author;
 
@@ -135,6 +183,14 @@ async function main () {
     // We connect/disconnect in each loop to avoid problems if database server is restarted while crawler is running
     await pool.end();
   });
+}
+
+async function getBlockEvents(blockHash) {
+  const provider = new WsProvider(wsProviderUrl);
+  const api = await ApiPromise.create({ provider });
+  const events = await api.query.system.events.at(blockHash);
+  provider.disconnect();
+  return events;
 }
 
 main().catch((error) => {
