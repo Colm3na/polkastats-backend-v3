@@ -20,7 +20,7 @@ const {
   postgresConnParams
 } = require('../backend.config');
 
-const { formatNumber, shortHash } = require('../lib/utils.js');
+const { shortHash } = require('../lib/utils.js');
 
 async function main () {
   
@@ -73,7 +73,7 @@ async function main () {
     const res = await pool.query(sqlSelect);
     if (res.rows.length > 0) {
       // Chain reorganization detected! We need to update block_author, block_hash and state_root
-      console.log(`[PolkaStats backend v3] - Block listener - \x1b[33mDetected chain reorganization at block #${formatNumber(blockNumber)}, updating author, author name, hash and state root\x1b[0m`);
+      console.log(`[PolkaStats backend v3] - Block listener - \x1b[33mDetected chain reorganization at block #${blockNumber}, updating author, author name, hash and state root\x1b[0m`);
 
       // Get block author
       const blockAuthor = extendedHeader.author;
@@ -88,7 +88,7 @@ async function main () {
 
     } else {
       // Store new block
-      console.log(`[PolkaStats backend v3] - Block listener - \x1b[32mAdding block #${formatNumber(blockNumber)} (${shortHash(blockHash.toString())})\x1b[0m`);
+      console.log(`[PolkaStats backend v3] - Block listener - \x1b[32mAdding block #${blockNumber} (${shortHash(blockHash.toString())})\x1b[0m`);
       const timestamp = new Date().getTime();
       const sqlInsert =
         `INSERT INTO block (
@@ -175,7 +175,7 @@ async function main () {
           );`;
         try {
           await pool.query(sqlInsert);
-          console.log(`[PolkaStats backend v3] - Block listener - \x1b[32mAdding event #${blockNumber}-${index} ${event.section} => ${event.method}\x1b[0m`);
+          console.log(`[PolkaStats backend v3] - Block listener - \x1b[33mAdding event #${blockNumber}-${index} ${event.section} => ${event.method}\x1b[0m`);
       
         } catch (err) {
           console.log(`SQL: ${sqlInsert}`);
