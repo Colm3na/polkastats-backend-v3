@@ -190,7 +190,7 @@ async function harvestBlocks(startBlock, endBlock) {
     const blockAuthorName = blockAuthorIdentity.identity.display || ``;
 
     // Get runtime spec name and version
-    const runtimeVersion = await api.rpc.state.getRuntimeVersion.at(blockHash);
+    const runtimeVersion = await api.rpc.state.getRuntimeVersion(blockHash);
 
     // TODO: Get timestamp from block
     const timestamp = new Date().getTime();
