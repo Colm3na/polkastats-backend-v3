@@ -76,7 +76,7 @@ async function main () {
 
 async function harvestBlocks(startBlock, endBlock) {
 
-  if (startBlock === 0 && endBlock === 0) return
+  if (startBlock === 0 && endBlock === 0) { return false; }
 
   // Initialise the provider to connect to the local polkadot node
   const provider = new WsProvider(wsProviderUrl);
