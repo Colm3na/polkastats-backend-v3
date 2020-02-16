@@ -247,7 +247,6 @@ async function harvestBlocks(api, startBlock, endBlock) {
     addedBlocks++;
   }
   client.release();
-  provider.disconnect();
 }
 
 main().catch((error) => {
