@@ -88,7 +88,7 @@ async function main () {
 
     } else {
       // Store new block
-      console.log(`[PolkaStats backend v3] - Block listener - \x1b[32mAdding block #${formatNumber(blockNumber)} (${shortHash(blockHash)})\x1b[0m`);
+      console.log(`[PolkaStats backend v3] - Block listener - \x1b[32mAdding block #${formatNumber(blockNumber)} (${shortHash(blockHash.toString())})\x1b[0m`);
       const timestamp = new Date().getTime();
       const sqlInsert =
         `INSERT INTO block (
