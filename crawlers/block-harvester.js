@@ -24,14 +24,16 @@ const { shortHash } = require('../lib/utils.js');
 
 let addedBlocks = 0;
 
+// Database connection
+const pool = new Pool(postgresConnParams);
+
 async function main () {
 
   // Start execution
   const startTime = new Date().getTime();
 
   // Database connection
-  const pool = new Pool(postgresConnParams);
-  // await pool.connect();
+  const client = await pool.connect();
 
   // Get gaps from block table
   let sqlSelect = `
@@ -55,7 +57,7 @@ async function main () {
       ASC LIMIT 1
     )
     ORDER BY gap_start`;
-  const res = await pool.query(sqlSelect);
+  const res = await client.query(sqlSelect);
 
   for (let i = 0; i < res.rows.length; i++) {
     // Quick fix for gap 0-0 error
@@ -65,7 +67,7 @@ async function main () {
     // }
   }
 
-  await pool.end();
+  client.release();
 
   // Execution end time
   const endTime = new Date().getTime();
@@ -87,8 +89,7 @@ async function harvestBlocks(startBlock, endBlock) {
   const api = await ApiPromise.create({ provider });
 
   // Database connection
-  const pool = new Pool(postgresConnParams);
-  await pool.connect();
+  const client = await pool.connect();
 
   while (startBlock <= endBlock) {
 
@@ -236,7 +237,7 @@ async function harvestBlocks(startBlock, endBlock) {
         '${timestamp}'
       )`;
     try {
-      await pool.query(sqlInsert);
+      await client.query(sqlInsert);
       const endTime = new Date().getTime();
       console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mAdded block #${startBlock} (${shortHash(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(3)}s\x1b[0m`);
     } catch (err) {
@@ -245,7 +246,7 @@ async function harvestBlocks(startBlock, endBlock) {
     startBlock++;
     addedBlocks++;
   }
-  await pool.end();
+  client.release();
   provider.disconnect();
 }
 
