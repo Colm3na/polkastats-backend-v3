@@ -20,7 +20,10 @@ const {
   postgresConnParams
 } = require('../backend.config');
 
-const { formatNumber } = require('../lib/utils.js');
+// Database connection
+const pool = new Pool(postgresConnParams);
+
+const { formatNumber, shortHash } = require('../lib/utils.js');
 
 async function main () {
   
@@ -114,9 +117,6 @@ async function main () {
     // Get session info
     const session = await api.derive.session.info();
 
-    // Database connection
-    const pool = new Pool(postgresConnParams);
-
     // Handle chain reorganizations
     const sqlSelect = `SELECT block_number FROM block WHERE block_number = '${blockNumber}'`;
     const res = await pool.query(sqlSelect);
@@ -136,7 +136,7 @@ async function main () {
       const res = await pool.query(sqlUpdate);
 
     } else {
-      console.log(`[PolkaStats backend v3] - Block listener - \x1b[32mAdding block #${formatNumber(blockNumber)} [${blockHash}]\x1b[0m`);
+      console.log(`[PolkaStats backend v3] - Block listener - \x1b[32mAdding block #${formatNumber(blockNumber)} [${shortHash(blockHash)}]\x1b[0m`);
       const timestamp = new Date().getTime();
       const sqlInsert =
         `INSERT INTO block (
@@ -182,9 +182,9 @@ async function main () {
         )`;
       const res = await pool.query(sqlInsert);
     }
-    // We connect/disconnect in each loop to avoid problems if database server is restarted while crawler is running
-    await pool.end();
   });
+  // We connect/disconnect in each loop to avoid problems if database server is restarted while crawler is running
+  await pool.end();
 }
 
 async function getBlockEvents(blockHash) {
