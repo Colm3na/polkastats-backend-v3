@@ -32,9 +32,6 @@ async function main () {
   // Start execution
   const startTime = new Date().getTime();
 
-  // Database connection
-  const client = await pool.connect();
-
   // Initialise the provider to connect to the local polkadot node
   const provider = new WsProvider(wsProviderUrl);
 
@@ -63,7 +60,7 @@ async function main () {
       ASC LIMIT 1
     )
     ORDER BY gap_start`;
-  const res = await client.query(sqlSelect);
+  const res = await pool.query(sqlSelect);
 
   for (let i = 0; i < res.rows.length; i++) {
     // Quick fix for gap 0-0 error
@@ -73,7 +70,6 @@ async function main () {
     }
   }
 
-  client.release();
   provider.disconnect();
 
   // Execution end time
@@ -87,10 +83,7 @@ async function main () {
 
 async function harvestBlocks(api, startBlock, endBlock) {
 
-  console.log(`startBlock #${startBlock} endBlock #${endBlock}`)
-  
-  // Database connection
-  const client = await pool.connect();
+  console.log(`startBlock #${startBlock} endBlock #${endBlock}`);
 
   while (startBlock <= endBlock) {
 
@@ -155,7 +148,7 @@ async function harvestBlocks(api, startBlock, endBlock) {
           '${JSON.stringify(event.data)}'
         );`;
       try {
-        await client.query(sqlInsert);
+        await pool.query(sqlInsert);
         console.log(`[PolkaStats backend v3] - Block harvester - \x1b[33mAdding event #${startBlock}-${index} ${event.section} => ${event.method}\x1b[0m`);
 
       } catch (err) {
@@ -238,7 +231,7 @@ async function harvestBlocks(api, startBlock, endBlock) {
         '${timestamp}'
       )`;
     try {
-      await client.query(sqlInsert);
+      await pool.query(sqlInsert);
       const endTime = new Date().getTime();
       console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mAdded block #${startBlock} (${shortHash(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(3)}s\x1b[0m`);
     } catch (err) {
@@ -247,7 +240,6 @@ async function harvestBlocks(api, startBlock, endBlock) {
     startBlock++;
     addedBlocks++;
   }
-  client.release();
   return true;
 }
 
