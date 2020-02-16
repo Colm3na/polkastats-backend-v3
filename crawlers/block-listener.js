@@ -29,6 +29,9 @@ async function main () {
 
   // Create the API and wait until ready
   const api = await ApiPromise.create({ provider });
+
+  // Database connection
+  const pool = new Pool(postgresConnParams);
   
   // Subscribe to new blocks
   const unsubscribe = await api.rpc.chain.subscribeNewHeads( async (header) => {
@@ -114,9 +117,6 @@ async function main () {
     // Get session info
     const session = await api.derive.session.info();
 
-    // Database connection
-    const pool = new Pool(postgresConnParams);
-
     // Handle chain reorganizations
     const sqlSelect = `SELECT block_number FROM block WHERE block_number = '${blockNumber}'`;
     const res = await pool.query(sqlSelect);
@@ -182,9 +182,8 @@ async function main () {
         )`;
       const res = await pool.query(sqlInsert);
     }
-    // We connect/disconnect in each loop to avoid problems if database server is restarted while crawler is running
-    await pool.end();
   });
+  await pool.end();
 }
 
 async function getBlockEvents(blockHash) {
