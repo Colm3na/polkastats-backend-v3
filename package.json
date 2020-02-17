@@ -4,7 +4,14 @@
   "description": "PolkaStats backend v3",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "docker": "cd docker/polkastats-backend && docker-compose up",
+    "docker:win": "cd docker/polkastats-backend && docker-compose.exe up",
+    "docker:clean": "bash docker/polkastats-backend/clean-polkastats-dockers",
+    "docker:postgres": "cd docker/polkastats-backend && docker-compose.exe up postgres",
+    "docker:listener": "cd docker/polkastats-backend && docker-compose.exe up listener",
+    "docker:harvester": "cd docker/polkastats-backend && docker-compose.exe up harvester",
+    "docker:substrate-node": "cd docker/polkastats-backend && docker-compose.exe up substrate-node",
+    "docker:graphql-engine": "cd docker/polkastats-backend && docker-compose.exe up graphql-engine"  
   },
   "repository": {
     "type": "git",
