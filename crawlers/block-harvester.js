@@ -1,7 +1,7 @@
 //
 // PolkaStats backend v3
 //
-// This crawler fill gaps in block database
+// This crawler fill gaps in block and event tables
 //
 // Usage: node block-harvester.js
 //
@@ -20,20 +20,27 @@ const {
   postgresConnParams
 } = require('../backend.config');
 
-const { formatNumber, shortHash } = require('../lib/utils.js');
+const { shortHash } = require('../lib/utils.js');
+
+let addedBlocks = 0;
+
+// Database connection
+const pool = new Pool(postgresConnParams);
 
 async function main () {
 
   // Start execution
   const startTime = new Date().getTime();
 
-  // Database connection
-  const pool = new Pool(postgresConnParams);
+  // Initialise the provider to connect to the local polkadot node
+  const provider = new WsProvider(wsProviderUrl);
+
+  // Create the API and wait until ready
+  const api = await ApiPromise.create({ provider });
 
   // Get gaps from block table
   let sqlSelect = `
-    SELECT
-      gap_start, gap_end FROM (
+    SELECT gap_start, gap_end FROM (
         SELECT block_number + 1 AS gap_start,
         next_nr - 1 AS gap_end
         FROM (
@@ -56,11 +63,14 @@ async function main () {
   const res = await pool.query(sqlSelect);
 
   for (let i = 0; i < res.rows.length; i++) {
-    console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mDetected gap! Harvest blocks from #${res.rows[i].gap_start} to #${res.rows[i].gap_end}\x1b[0m`);
-    await harvestBlocks(res.rows[i].gap_start, res.rows[i].gap_end);
+    // Quick fix for gap 0-0 error
+    if (!(res.rows[i].gap_start == 0 && res.rows[i].gap_end == 0)) {
+      console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mDetected gap! Harvesting blocks from #${res.rows[i].gap_start} to #${res.rows[i].gap_end}\x1b[0m`);
+      await harvestBlocks(api, parseInt(res.rows[i].gap_start), parseInt(res.rows[i].gap_end));
+    }
   }
-
   await pool.end();
+  provider.disconnect();
 
   // Execution end time
   const endTime = new Date().getTime();
@@ -68,27 +78,10 @@ async function main () {
   // 
   // Log execution time
   //
-  console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mTotal execution time: ${((endTime - startTime) / 1000).toFixed(0)}s\x1b[0m`);
+  console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mAdded ${addedBlocks} blocks in ${((endTime - startTime) / 1000).toFixed(0)}s\x1b[0m`);
 }
 
-async function getBlockEvents(blockHash) {
-  const provider = new WsProvider(wsProviderUrl);
-  const api = await ApiPromise.create({ provider });
-  const events = await api.query.system.events.at(blockHash);
-  provider.disconnect();
-  return events;
-}
-
-async function harvestBlocks(startBlock, endBlock) {
-
-  // Initialise the provider to connect to the local polkadot node
-  const provider = new WsProvider(wsProviderUrl);
-
-  // Create the API and wait until ready
-  const api = await ApiPromise.create({ provider });
-
-  // Database connection
-  const pool = new Pool(postgresConnParams);
+async function harvestBlocks(api, startBlock, endBlock) {
 
   while (startBlock <= endBlock) {
 
@@ -100,7 +93,6 @@ async function harvestBlocks(startBlock, endBlock) {
 
     // Get extended block header
     const extendedHeader = await api.derive.chain.getHeader(blockHash);
-    // console.log(JSON.stringify(extendedHeader, null, 2));
 
     // Get block parent hash
     const parentHash = extendedHeader.parentHash;
@@ -112,15 +104,54 @@ async function harvestBlocks(startBlock, endBlock) {
     const stateRoot = extendedHeader.stateRoot;
 
     // Get block events
-    // const blockEvents = await getBlockEvents(blockHash);
+    const blockEvents = await api.query.system.events.at(blockHash);
 
-    // // Loop through the Vec<EventRecord>
-    // blockEvents.forEach( async (record, index) => {
-    //   // Extract the phase and event
-    //   const { event, phase } = record;
-    //   // Output event data
-    //   console.log(`index: ${index}, section: ${event.section}, method: ${event.method}, phase: ${phase.toString()}, documentation: ${event.meta.documentation.toString()}, data: ${JSON.stringify(event.data)}`);
-    // });
+    // Loop through the Vec<EventRecord>
+    blockEvents.forEach( async (record, index) => {
+      
+      // Extract the phase and event
+      const { event, phase } = record;
+
+      console.log(JSON.stringify(record, null, 2));
+
+      //
+      //  TODO: Update counters in block table:
+      //
+      //  total_extrinsics
+      //  total_signed_extrinsics
+      //  total_failed_extrinsics
+      //  total_events
+      //  total_system_events
+      //  total_module_events
+      //  new_accounts
+      //  reaped_accounts
+      //  new_contracts
+      //  new_sessions
+      //
+
+      const sqlInsert = 
+        `INSERT INTO event (
+          block_number,
+          event_index,
+          section,
+          method,
+          phase,
+          data
+        ) VALUES (
+          '${startBlock}',
+          '${index}',
+          '${event.section}',
+          '${event.method}',
+          '${phase.toString()}',
+          '${JSON.stringify(event.data)}'
+        );`;
+      try {
+        await pool.query(sqlInsert);
+        console.log(`[PolkaStats backend v3] - Block harvester - \x1b[33mAdding event #${startBlock}-${index} ${event.section} => ${event.method}\x1b[0m`);
+      } catch (error) {
+        console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mError adding event #${startBlock}-${index}: ${error.error}\x1b[0m`);
+      }
+    });
 
     // Get session info for the block
     const currentIndex = await api.query.session.currentIndex.at(blockHash);
@@ -147,11 +178,11 @@ async function harvestBlocks(startBlock, endBlock) {
     const blockAuthorName = blockAuthorIdentity.identity.display || ``;
 
     // Get runtime spec name and version
-    const runtimeVersion = await api.rpc.state.getRuntimeVersion.at(blockHash);
+    const runtimeVersion = await api.rpc.state.getRuntimeVersion(blockHash);
 
     // TODO: Get timestamp from block
-
     const timestamp = new Date().getTime();
+
     const sqlInsert =
       `INSERT INTO block (
         block_number,
@@ -195,16 +226,16 @@ async function harvestBlocks(startBlock, endBlock) {
         '${timestamp}'
       )`;
     try {
-      const res = await pool.query(sqlInsert);
+      await pool.query(sqlInsert);
       const endTime = new Date().getTime();
-      console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mAdded block #${formatNumber(startBlock)} [${shortHash(blockHash)}] in ${((endTime - startTime) / 1000).toFixed(3)}s\x1b[0m`);
-    } catch (err) {
-      console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mError adding block #${formatNumber(startBlock)}: ${err.stack}\x1b[0m`);
+      console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mAdded block #${startBlock} (${shortHash(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(3)}s\x1b[0m`);
+    } catch (error) {
+      console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mError adding block #${startBlock}: ${error.error}\x1b[0m`);
     }
     startBlock++;
+    addedBlocks++;
   }
-  await pool.end();
-  provider.disconnect();
+  return true;
 }
 
 main().catch((error) => {

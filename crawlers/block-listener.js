@@ -1,7 +1,7 @@
 //
 // PolkaStats backend v3
 //
-// This crawler listen to new blocks and add them to database
+// This crawler listen to new blocks and system events and add them to database
 //
 // Usage: node block-listener.js
 //
@@ -20,7 +20,7 @@ const {
   postgresConnParams
 } = require('../backend.config');
 
-const { formatNumber } = require('../lib/utils.js');
+const { shortHash } = require('../lib/utils.js');
 
 async function main () {
   
@@ -29,6 +29,10 @@ async function main () {
 
   // Create the API and wait until ready
   const api = await ApiPromise.create({ provider });
+
+  // Database connection
+  const pool = new Pool(postgresConnParams);
+  await pool.connect();
   
   // Subscribe to new blocks
   const unsubscribe = await api.rpc.chain.subscribeNewHeads( async (header) => {
@@ -64,15 +68,12 @@ async function main () {
     // Get session info
     const session = await api.derive.session.info();
 
-    // Database connection
-    const pool = new Pool(postgresConnParams);
-
     // Handle chain reorganizations
     const sqlSelect = `SELECT block_number FROM block WHERE block_number = '${blockNumber}'`;
     const res = await pool.query(sqlSelect);
     if (res.rows.length > 0) {
       // Chain reorganization detected! We need to update block_author, block_hash and state_root
-      console.log(`[PolkaStats backend v3] - Block listener - \x1b[33mDetected chain reorganization at block #${formatNumber(blockNumber)}, updating author, author name, hash and state root\x1b[0m`);
+      console.log(`[PolkaStats backend v3] - Block listener - \x1b[33mDetected chain reorganization at block #${blockNumber}, updating author, author name, hash and state root\x1b[0m`);
 
       // Get block author
       const blockAuthor = extendedHeader.author;
@@ -86,7 +87,8 @@ async function main () {
       const res = await pool.query(sqlUpdate);
 
     } else {
-      console.log(`[PolkaStats backend v3] - Block listener - \x1b[32mAdding block #${formatNumber(blockNumber)} [${blockHash}]\x1b[0m`);
+      // Store new block
+      console.log(`[PolkaStats backend v3] - Block listener - \x1b[32mAdding block #${blockNumber} (${shortHash(blockHash.toString())})\x1b[0m`);
       const timestamp = new Date().getTime();
       const sqlInsert =
         `INSERT INTO block (
@@ -130,10 +132,57 @@ async function main () {
           '${runtimeVersion.specVersion}',
           '${timestamp}'
         )`;
-      const res = await pool.query(sqlInsert);
+      await pool.query(sqlInsert);
+
+      // Get block events
+      const blockEvents = await api.query.system.events.at(blockHash);
+
+      // Loop through the Vec<EventRecord>
+      blockEvents.forEach( async (record, index) => {
+        // Extract the phase and event
+        const { event, phase } = record;
+      
+        //
+        //  TODO: Update counters in block table:
+        //
+        //  total_extrinsics
+        //  total_signed_extrinsics
+        //  total_failed_extrinsics
+        //  total_events
+        //  total_system_events
+        //  total_module_events
+        //  new_accounts
+        //  reaped_accounts
+        //  new_contracts
+        //  new_sessions
+        //
+      
+        const sqlInsert = 
+          `INSERT INTO event (
+            block_number,
+            event_index,
+            section,
+            method,
+            phase,
+            data
+          ) VALUES (
+            '${blockNumber}',
+            '${index}',
+            '${event.section}',
+            '${event.method}',
+            '${phase.toString()}',
+            '${JSON.stringify(event.data)}'
+          );`;
+        try {
+          await pool.query(sqlInsert);
+          console.log(`[PolkaStats backend v3] - Block listener - \x1b[33mAdding event #${blockNumber}-${index} ${event.section} => ${event.method}\x1b[0m`);
+      
+        } catch (error) {
+          console.log(`[PolkaStats backend v3] - Block listener - \x1b[31mError adding event #${blockNumber}-${index}: ${error.error}\x1b[0m`);
+        }
+      });
+
     }
-    // We connect/disconnect in each loop to avoid problems if database server is restarted while crawler is running
-    await pool.end();
   });
 }
 
