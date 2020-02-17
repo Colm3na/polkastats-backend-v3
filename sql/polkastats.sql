@@ -16,7 +16,29 @@ CREATE TABLE block (
    session_per_era INT NOT NULL,
    session_progress BIGINT NOT NULL,
    validator_count INT NOT NULL,
+   spec_name VARCHAR(100) NOT NULL,
+   spec_version INT NOT NULL,
+   -- total_extrinsics INT NOT NULL,
+   -- total_signed_extrinsics INT NOT NULL,
+   -- total_failed_extrinsics INT NOT NULL,
+   -- total_events INT NOT NULL,
+   -- total_system_events INT NOT NULL,
+   -- total_module_events INT NOT NULL,
+   -- new_accounts INT NOT NULL,
+   -- reaped_accounts INT NOT NULL,
+   -- new_contracts INT NOT NULL,
+   -- new_sessions INT NOT NULL,
    timestamp BIGINT NOT NULL,
    PRIMARY KEY ( block_number )  
 );
+CREATE TABLE event (  
+   block_number BIGINT NOT NULL,
+   event_index INT NOT NULL,
+   section VARCHAR(100) NOT NULL,
+   method VARCHAR(100) NOT NULL,
+   phase VARCHAR(100) NOT NULL,
+   data TEXT NOT NULL,
+   PRIMARY KEY ( block_number, event_index ) 
+);
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
