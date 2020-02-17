@@ -1,0 +1,18 @@
+#!/bin/bash
+docker stop polkastats-backend_harverster_1
+docker stop polkastats-backend_graphql-engine_1
+docker stop polkastats-backend_listener_1
+docker stop polkastats-backend_postgres_1
+docker stop polkastats-backend_substrate-node_1
+
+docker rm polkastats-backend_harverster_1
+docker rm polkastats-backend_graphql-engine_1
+docker rm polkastats-backend_listener_1
+docker rm polkastats-backend_postgres_1
+docker rm polkastats-backend_substrate-node_1
+
+docker rmi polkastats-backend:latest
+docker rmi substrate-client:kusama-latest
+docker rmi postgres:latest
+
+docker volume rm polkastats-backend_db-data
