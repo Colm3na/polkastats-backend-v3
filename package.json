@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "docker": "cd docker/polkastats-backend && docker-compose up",
-    "docker:win": "cd docker/polkastats-backend && docker-compose.exe up"
+    "docker:win": "cd docker/polkastats-backend && docker-compose.exe up",
+    "docker:clean": "bash docker/polkastats-backend/clean-polkastats-dockers"
   },
   "repository": {
     "type": "git",
