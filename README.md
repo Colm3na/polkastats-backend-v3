@@ -10,6 +10,16 @@ cd polkastats-backend-v3
 npm install
 ```
 
+## Updating docker containers
+
+```
+git pull
+cd docker/polkastats-backend
+./clean-polkastats-dockers
+docker-compose build
+docker-compose up -d
+```
+
 ## Import database
 
 ```
