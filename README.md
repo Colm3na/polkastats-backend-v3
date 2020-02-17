@@ -10,6 +10,27 @@ cd polkastats-backend-v3
 npm install
 ```
 
+## Run
+
+To launch all docker containers at once:
+```
+npm run docker
+```
+To run them separately:
+```
+npm run docker:<container-name>
+```
+
+## List of current Docker containers
+
+    - postgres
+    - graphql-engine
+    - substrate-node
+
+    Crawlers:
+    - listener
+    - harvester
+
 ## Updating docker containers
 
 ```
@@ -32,7 +53,7 @@ $ psql polkastats < sql/polkastats.sql
 
 ### Block listener
 
-This crawler listen to new blocks and add them to database:
+This crawler listens to new blocks and adds them to database:
 
 ```
 node crawlers/block-listener.js
@@ -51,7 +72,7 @@ Example output:
 
 ### Block harvester
 
-This crawler fill the gaps in block table.
+This crawler fills the gaps in the `block` table.
 
 This is intented to run periodically (i.e 1 time per day) to fill possible gaps caused by server restarts or other problems.
 
