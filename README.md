@@ -37,7 +37,7 @@ npm run docker:<container-name>
 git pull
 npm run docker:clean
 npm run docker:build
-npm run docker (or docker:win)
+npm run docker
 ```
 
 ## Import database
