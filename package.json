@@ -4,14 +4,15 @@
   "description": "PolkaStats backend v3",
   "main": "index.js",
   "scripts": {
-    "docker": "cd docker/polkastats-backend && docker-compose up",
-    "docker:win": "cd docker/polkastats-backend && docker-compose.exe up",
+    "docker": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d",
+    "docker:win": "docker-compose.exe -f docker/polkastats-backend/docker-compose.yml up -d",
+    "docker:build": "docker-compose -f docker/polkastats-backend/docker-compose.yml build",
     "docker:clean": "bash docker/polkastats-backend/clean-polkastats-dockers",
-    "docker:postgres": "cd docker/polkastats-backend && docker-compose.exe up postgres",
-    "docker:listener": "cd docker/polkastats-backend && docker-compose.exe up listener",
-    "docker:harvester": "cd docker/polkastats-backend && docker-compose.exe up harvester",
-    "docker:substrate-node": "cd docker/polkastats-backend && docker-compose.exe up substrate-node",
-    "docker:graphql-engine": "cd docker/polkastats-backend && docker-compose.exe up graphql-engine"  
+    "docker:postgres": "docker-compose.exe -f docker/polkastats-backend/docker-compose.yml up -d postgres",
+    "docker:node": "docker-compose.exe -f docker/polkastats-backend/docker-compose.yml up -d substrate-node",
+    "docker:graphql": "docker-compose.exe -f docker/polkastats-backend/docker-compose.yml up -d graphql-engine",
+    "docker:listener": "docker-compose.exe -f docker/polkastats-backend/docker-compose.yml up listener",
+    "docker:harvester": "docker-compose.exe -f docker/polkastats-backend/docker-compose.yml up harvester"
   },
   "repository": {
     "type": "git",
