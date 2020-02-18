@@ -60,9 +60,9 @@ services:
     environment:
       - NODE_ENV=production
   #
-  # Block harverster crawler
+  # Block harvester crawler
   #
-  harverster:
+  harvester:
     image: polkastats-backend:latest
     command: /usr/app/polkastats-backend-v3/crawlers/block-harvester.js
     depends_on:
