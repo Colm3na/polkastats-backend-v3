@@ -23,22 +23,21 @@ npm run docker:<container-name>
 
 ## List of current Docker containers
 
-    - postgres
-    - graphql-engine
-    - substrate-node
+- postgres
+- graphql-engine
+- substrate-node
 
     Crawlers:
-    - listener
-    - harvester
+- listener
+- harvester
 
 ## Updating docker containers
 
 ```
 git pull
-cd docker/polkastats-backend
-./clean-polkastats-dockers
-docker-compose build
-docker-compose up -d
+npm run docker:clean
+npm run docker:build
+npm run docker (or docker:win)
 ```
 
 ## Import database
