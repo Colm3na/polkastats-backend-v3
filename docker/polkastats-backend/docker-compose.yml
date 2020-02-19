@@ -64,7 +64,7 @@ services:
   #
   harvester:
     image: polkastats-backend:latest
-    command: /usr/app/polkastats-backend-v3/crawlers/block-listener.js    
+    command: /usr/app/polkastats-backend-v3/crawlers/block-harvester.js
     depends_on:
     - "postgres"
     environment:
