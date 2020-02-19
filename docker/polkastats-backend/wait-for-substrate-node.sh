@@ -1,7 +1,7 @@
 #!/bin/sh
 # wait-for-substrate-node.sh
 
-NODE_URL=http://127.0.0.1:9944
+NODE_URL=http://127.0.0.1:9933
 cmd="$@"
 
 until $(curl --output /dev/null --silent --head --fail ${NODE_URL}); do
