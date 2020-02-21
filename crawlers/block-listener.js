@@ -200,6 +200,7 @@ async function main () {
   console.log(`[PolkaStats backend v3] - Block listener - \x1b[31mNode is not synced! Waiting 10s...\x1b[0m`);
   setTimeout(function() {
     if (!isSynced) {
+      provider.disconnect();
       main();
     }
   }, 10000);

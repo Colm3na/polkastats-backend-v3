@@ -94,6 +94,7 @@ async function main () {
     console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mNext execution in 60m...\x1b[0m`);
     setTimeout(main, 60 * 60 * 1000);
   } else {
+    provider.disconnect();
     console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mNode is not synced! Waiting 10s...\x1b[0m`);
     setTimeout(main, 10000);
   }
