@@ -38,6 +38,9 @@ async function main () {
   // Create the API and wait until ready
   const api = await ApiPromise.create({ provider });
 
+  // Wait for API
+  await api.isReady;
+
   // Get gaps from block table
   let sqlSelect = `
     SELECT gap_start, gap_end FROM (
