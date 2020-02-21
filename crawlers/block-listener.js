@@ -22,6 +22,8 @@ const {
 
 const { shortHash } = require('../lib/utils.js');
 
+let isSynced = false;
+
 async function main () {
   
   // Initialise the provider to connect to the local polkadot node
@@ -34,18 +36,12 @@ async function main () {
   await api.isReady;
 
   // Wait for node is synced
-  let node
-  try {
-    node = await api.rpc.system.health();
-  } catch(error) {
-    provider.disconnect();
-    throw { error: "NODE_NOT_READY" };
-  }
+  let node = await api.rpc.system.health();
+  if (node.isSyncing.eq(false)) {
 
-  if (node.isSyncing) {
-    provider.disconnect();
-    throw { error: "NODE_IS_SYNCING" };
-  } else {
+    // Node is synced!
+    isSynced = true;
+    console.log(`[PolkaStats backend v3] - Block listener - \x1b[33mNode is synced! Starting crawler...\x1b[0m`);
 
     // Database connection
     const pool = new Pool(postgresConnParams);
@@ -201,7 +197,13 @@ async function main () {
       }
     });
   }
+  console.log(`[PolkaStats backend v3] - Block listener - \x1b[31mNode is not synced! Waiting 10s...\x1b[0m`);
+  setTimeout(function() {
+    if (!isSynced) {
+      main();
+    }
+  }, 10000);
 }
 
-setTimeout(main, 10000);
+
 
