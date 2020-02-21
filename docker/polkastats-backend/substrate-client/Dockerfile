@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install wget curl jq -y
 
 WORKDIR /usr/local/bin
 
-RUN wget https://github.com/w3f/polkadot/releases/download/$VERSION/polkadot \
+RUN wget https://github.com/w3f/polkadot/releases/download/v0.7.20/polkadot \
     && chmod +x polkadot
 
 # FINAL PREPARATIONS
