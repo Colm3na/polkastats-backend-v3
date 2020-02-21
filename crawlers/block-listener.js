@@ -34,10 +34,14 @@ async function main () {
   await api.isReady;
 
   // Wait for node is synced
-  const health = await api.rpc.system.health();
-  if (health.isSyncing) {
-    provider.disconnect();
-    throw { error: "NODE_IS_SYNCING" };
+  try {
+    const health = await api.rpc.system.health();
+    if (health.isSyncing) {
+      provider.disconnect();
+      throw { error: "NODE_IS_SYNCING" };
+    }
+  } catch(error) {
+    throw error;
   }
 
   // Database connection
@@ -197,13 +201,8 @@ async function main () {
 }
 
 main().catch((error) => {
-  console.error(`[PolkaStats backend v3] - Block listener - \x1b[31mERROR: ${error}\x1b[0m`);
-
-  if (error.error === `NODE_IS_SYNCING`) {
-    console.log(`[PolkaStats backend v3] - Block listener - \x1b[33mWaiting 60s ...\x1b[0m`);
-    setTimeout(main, 60000);
-  } else {
-    process.exit(-1);
-  }
+  console.error(`[PolkaStats backend v3] - Block listener - \x1b[31mERROR!\x1b[0m`);
+  console.log(`[PolkaStats backend v3] - Block listener - \x1b[33mWaiting 60s ...\x1b[0m`);
+  setTimeout(main, 60000);
 });
 
