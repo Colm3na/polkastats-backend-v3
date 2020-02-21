@@ -63,7 +63,7 @@ async function main () {
     const blockAuthorName = blockAuthorIdentity.identity.display || ``;
 
     // Get runtime spec name and version
-    const runtimeVersion = await api.rpc.state.getRuntimeVersion();
+    const runtimeVersion = await api.rpc.state.getRuntimeVersion(blockHash);
 
     // Get session info
     const session = await api.derive.session.info();
