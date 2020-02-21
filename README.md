@@ -89,3 +89,14 @@ Example output:
 [PolkaStats backend v3] - Block harvester - Added block #59,087 [0xfcfcb2bcc4a076b0816047e6b05b6aea379b1526d47deb6bb45086bec0b0751f] in 0.107s
 ...
 ```
+
+
+### Accounts
+
+This crawler get information about `accounts` table
+
+This is intented to run periodically (i.e every 10 minutes).
+
+```
+node crawlers/accounts.js
+```
