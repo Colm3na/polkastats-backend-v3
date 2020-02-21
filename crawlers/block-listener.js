@@ -201,8 +201,8 @@ async function main () {
 }
 
 main().catch((error) => {
-  console.error(`[PolkaStats backend v3] - Block listener - \x1b[31mERROR!\x1b[0m`);
-  console.log(`[PolkaStats backend v3] - Block listener - \x1b[33mWaiting 60s ...\x1b[0m`);
-  setTimeout(main, 60000);
+  console.error(`[PolkaStats backend v3] - Block listener - \x1b[31mERROR: ${JSON.stringify(error, null, 2)}\x1b[0m`);
+  console.log(`[PolkaStats backend v3] - Block listener - \x1b[33mWaiting 10s ...\x1b[0m`);
+  setTimeout(main, 10000);
 });
 
