@@ -30,6 +30,9 @@ async function main () {
   // Create the API and wait until ready
   const api = await ApiPromise.create({ provider });
 
+  // Wait for API
+  await api.isReady;
+
   // Database connection
   const pool = new Pool(postgresConnParams);
   await pool.connect();
