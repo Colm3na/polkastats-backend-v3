@@ -109,7 +109,7 @@ async function main () {
 }
 
 async function harvestBlocks(api, startBlock, endBlock) {
-  while ( endBlock <= startBlock) {
+  while ( startBlock >= endBlock) {
     // Start execution
     const startTime = new Date().getTime();
     // Get block hash
