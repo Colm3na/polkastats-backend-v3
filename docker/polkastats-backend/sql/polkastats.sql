@@ -48,3 +48,4 @@ CREATE TABLE phragmen (
 );
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE phragmen TO polkastats;
