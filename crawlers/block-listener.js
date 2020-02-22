@@ -22,58 +22,59 @@ const {
 
 const { shortHash } = require('../lib/utils.js');
 
+let isSynced = false;
+
 async function main () {
   
   // Initialise the provider to connect to the local polkadot node
   const provider = new WsProvider(wsProviderUrl);
 
-  // Create the API and wait until ready
+  // Create the API
   const api = await ApiPromise.create({ provider });
 
-  // Database connection
-  const pool = new Pool(postgresConnParams);
-  await pool.connect();
+  // Wait for API
+  await api.isReady;
+
+  // Wait for node is synced
+  let node;
+  try {
+    node = await api.rpc.system.health();
+  } catch {
+    provider.disconnect();
+    console.log(`[PolkaStats backend v3] - Block listener - \x1b[33mCan't connect to node! Waiting 10s...\x1b[0m`);
+    setTimeout(main, 10000);
+  }
   
-  // Subscribe to new blocks
-  const unsubscribe = await api.rpc.chain.subscribeNewHeads( async (header) => {
+  if (node.isSyncing.eq(false)) {
 
-    // Get block number
-    const blockNumber = header.number.toNumber();
+    // Node is synced!
+    isSynced = true;
+    console.log(`[PolkaStats backend v3] - Block listener - \x1b[33mNode is synced! Starting crawler...\x1b[0m`);
 
-    // Get block hash
-    const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
-
-    // Get extended block header
-    const extendedHeader = await api.derive.chain.getHeader(blockHash);
-
-    // Get block parent hash
-    const parentHash = header.parentHash;
+    // Database connection
+    const pool = new Pool(postgresConnParams);
+    await pool.connect();
     
-    // Get block extrinsics root
-    const extrinsicsRoot = header.extrinsicsRoot;
+    // Subscribe to new blocks
+    const unsubscribe = await api.rpc.chain.subscribeNewHeads( async (header) => {
 
-    // Get block state root
-    const stateRoot = header.stateRoot;
+      // Get block number
+      const blockNumber = header.number.toNumber();
 
-    // Get block author
-    const blockAuthor = extendedHeader.author;
+      // Get block hash
+      const blockHash = await api.rpc.chain.getBlockHash(blockNumber);
 
-    // Get block author identity display name
-    const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
-    const blockAuthorName = blockAuthorIdentity.identity.display || ``;
+      // Get extended block header
+      const extendedHeader = await api.derive.chain.getHeader(blockHash);
 
-    // Get runtime spec name and version
-    const runtimeVersion = await api.rpc.state.getRuntimeVersion(blockHash);
+      // Get block parent hash
+      const parentHash = header.parentHash;
+      
+      // Get block extrinsics root
+      const extrinsicsRoot = header.extrinsicsRoot;
 
-    // Get session info
-    const session = await api.derive.session.info();
-
-    // Handle chain reorganizations
-    const sqlSelect = `SELECT block_number FROM block WHERE block_number = '${blockNumber}'`;
-    const res = await pool.query(sqlSelect);
-    if (res.rows.length > 0) {
-      // Chain reorganization detected! We need to update block_author, block_hash and state_root
-      console.log(`[PolkaStats backend v3] - Block listener - \x1b[33mDetected chain reorganization at block #${blockNumber}, updating author, author name, hash and state root\x1b[0m`);
+      // Get block state root
+      const stateRoot = header.stateRoot;
 
       // Get block author
       const blockAuthor = extendedHeader.author;
@@ -82,112 +83,141 @@ async function main () {
       const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
       const blockAuthorName = blockAuthorIdentity.identity.display || ``;
 
-      const sqlUpdate =
-        `UPDATE block SET block_author = '${blockAuthor}', block_author_name = '${blockAuthorName}', block_hash = '${blockHash}', state_root = '${stateRoot}' WHERE block_number = '${blockNumber}'`;
-      const res = await pool.query(sqlUpdate);
+      // Get runtime spec name and version
+      const runtimeVersion = await api.rpc.state.getRuntimeVersion(blockHash);
 
-    } else {
-      // Store new block
-      console.log(`[PolkaStats backend v3] - Block listener - \x1b[32mAdding block #${blockNumber} (${shortHash(blockHash.toString())})\x1b[0m`);
-      const timestamp = new Date().getTime();
-      const sqlInsert =
-        `INSERT INTO block (
-          block_number,
-          block_author,
-          block_author_name,
-          block_hash,
-          parent_hash,
-          extrinsics_root,
-          state_root,
-          current_era,
-          current_index,
-          era_length,
-          era_progress,
-          is_epoch,
-          session_length,
-          session_per_era,
-          session_progress,
-          validator_count,
-          spec_name,
-          spec_version,
-          timestamp
-        ) VALUES (
-          '${blockNumber}',
-          '${blockAuthor}',
-          '${blockAuthorName}',
-          '${blockHash}',
-          '${parentHash}',
-          '${extrinsicsRoot}',
-          '${stateRoot}',
-          '${session.currentEra}',
-          '${session.currentIndex}',
-          '${session.eraLength}',
-          '${session.eraProgress}',
-          '${session.isEpoch}',
-          '${session.sessionLength}',
-          '${session.sessionsPerEra}',
-          '${session.sessionProgress}',
-          '${session.validatorCount}',
-          '${runtimeVersion.specName}',
-          '${runtimeVersion.specVersion}',
-          '${timestamp}'
-        )`;
-      await pool.query(sqlInsert);
+      // Get session info
+      const session = await api.derive.session.info();
 
-      // Get block events
-      const blockEvents = await api.query.system.events.at(blockHash);
+      // Handle chain reorganizations
+      const sqlSelect = `SELECT block_number FROM block WHERE block_number = '${blockNumber}'`;
+      const res = await pool.query(sqlSelect);
+      if (res.rows.length > 0) {
+        // Chain reorganization detected! We need to update block_author, block_hash and state_root
+        console.log(`[PolkaStats backend v3] - Block listener - \x1b[33mDetected chain reorganization at block #${blockNumber}, updating author, author name, hash and state root\x1b[0m`);
 
-      // Loop through the Vec<EventRecord>
-      blockEvents.forEach( async (record, index) => {
-        // Extract the phase and event
-        const { event, phase } = record;
-      
-        //
-        //  TODO: Update counters in block table:
-        //
-        //  total_extrinsics
-        //  total_signed_extrinsics
-        //  total_failed_extrinsics
-        //  total_events
-        //  total_system_events
-        //  total_module_events
-        //  new_accounts
-        //  reaped_accounts
-        //  new_contracts
-        //  new_sessions
-        //
-      
-        const sqlInsert = 
-          `INSERT INTO event (
+        // Get block author
+        const blockAuthor = extendedHeader.author;
+
+        // Get block author identity display name
+        const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
+        const blockAuthorName = blockAuthorIdentity.identity.display || ``;
+
+        const sqlUpdate =
+          `UPDATE block SET block_author = '${blockAuthor}', block_author_name = '${blockAuthorName}', block_hash = '${blockHash}', state_root = '${stateRoot}' WHERE block_number = '${blockNumber}'`;
+        const res = await pool.query(sqlUpdate);
+
+      } else {
+        // Store new block
+        console.log(`[PolkaStats backend v3] - Block listener - \x1b[32mAdding block #${blockNumber} (${shortHash(blockHash.toString())})\x1b[0m`);
+        const timestamp = new Date().getTime();
+        const sqlInsert =
+          `INSERT INTO block (
             block_number,
-            event_index,
-            section,
-            method,
-            phase,
-            data
+            block_author,
+            block_author_name,
+            block_hash,
+            parent_hash,
+            extrinsics_root,
+            state_root,
+            current_era,
+            current_index,
+            era_length,
+            era_progress,
+            is_epoch,
+            session_length,
+            session_per_era,
+            session_progress,
+            validator_count,
+            spec_name,
+            spec_version,
+            timestamp
           ) VALUES (
             '${blockNumber}',
-            '${index}',
-            '${event.section}',
-            '${event.method}',
-            '${phase.toString()}',
-            '${JSON.stringify(event.data)}'
-          );`;
-        try {
-          await pool.query(sqlInsert);
-          console.log(`[PolkaStats backend v3] - Block listener - \x1b[33mAdding event #${blockNumber}-${index} ${event.section} => ${event.method}\x1b[0m`);
-      
-        } catch (error) {
-          console.log(`[PolkaStats backend v3] - Block listener - \x1b[31mError adding event #${blockNumber}-${index}: ${error.error}\x1b[0m`);
-        }
-      });
+            '${blockAuthor}',
+            '${blockAuthorName}',
+            '${blockHash}',
+            '${parentHash}',
+            '${extrinsicsRoot}',
+            '${stateRoot}',
+            '${session.currentEra}',
+            '${session.currentIndex}',
+            '${session.eraLength}',
+            '${session.eraProgress}',
+            '${session.isEpoch}',
+            '${session.sessionLength}',
+            '${session.sessionsPerEra}',
+            '${session.sessionProgress}',
+            '${session.validatorCount}',
+            '${runtimeVersion.specName}',
+            '${runtimeVersion.specVersion}',
+            '${timestamp}'
+          )`;
+        await pool.query(sqlInsert);
 
+        // Get block events
+        const blockEvents = await api.query.system.events.at(blockHash);
+
+        // Loop through the Vec<EventRecord>
+        blockEvents.forEach( async (record, index) => {
+          // Extract the phase and event
+          const { event, phase } = record;
+        
+          //
+          //  TODO: Update counters in block table:
+          //
+          //  total_extrinsics
+          //  total_signed_extrinsics
+          //  total_failed_extrinsics
+          //  total_events
+          //  total_system_events
+          //  total_module_events
+          //  new_accounts
+          //  reaped_accounts
+          //  new_contracts
+          //  new_sessions
+          //
+        
+          const sqlInsert = 
+            `INSERT INTO event (
+              block_number,
+              event_index,
+              section,
+              method,
+              phase,
+              data
+            ) VALUES (
+              '${blockNumber}',
+              '${index}',
+              '${event.section}',
+              '${event.method}',
+              '${phase.toString()}',
+              '${JSON.stringify(event.data)}'
+            );`;
+          try {
+            await pool.query(sqlInsert);
+            console.log(`[PolkaStats backend v3] - Block listener - \x1b[33mAdding event #${blockNumber}-${index} ${event.section} => ${event.method}\x1b[0m`);
+        
+          } catch (error) {
+            console.log(`[PolkaStats backend v3] - Block listener - \x1b[31mError adding event #${blockNumber}-${index}: ${error.error}\x1b[0m`);
+          }
+        });
+      }
+    });
+  }
+  console.log(`[PolkaStats backend v3] - Block listener - \x1b[31mNode is not synced! Waiting 10s...\x1b[0m`);
+  setTimeout(function() {
+    if (!isSynced) {
+      provider.disconnect();
+      main();
     }
-  });
+  }, 10000);
 }
 
 main().catch((error) => {
   console.error(error);
   process.exit(-1);
 });
+
+
 

@@ -53,7 +53,9 @@ services:
   #
   listener:
     image: polkastats-backend:latest
-    build: ./backend
+    build:
+      context: ../../
+      dockerfile: ./docker/polkastats-backend/backend/Dockerfile
     command: /usr/app/polkastats-backend-v3/crawlers/block-listener.js    
     depends_on:
       - "postgres"
