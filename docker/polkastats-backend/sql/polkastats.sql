@@ -40,5 +40,11 @@ CREATE TABLE event (
    data TEXT NOT NULL,
    PRIMARY KEY ( block_number, event_index ) 
 );
+CREATE TABLE phragmen (  
+   block_height BIGINT NOT NULL,
+   phragmen_json TEXT NOT NULL,
+   timestamp INT NOT NULL,
+   PRIMARY KEY ( block_height )  
+);
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
