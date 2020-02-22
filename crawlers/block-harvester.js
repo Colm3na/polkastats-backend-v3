@@ -43,7 +43,15 @@ async function main () {
   await api.isReady;
 
   // Wait for node is synced
-  let node = await api.rpc.system.health();
+  let node;
+  try {
+    node = await api.rpc.system.health();
+  } catch {
+    provider.disconnect();
+    console.log(`[PolkaStats backend v3] - Block harvester - \x1b[33mCan't connect to node! Waiting 10s...\x1b[0m`);
+    setTimeout(main, 10000);
+  }
+
   if (node.isSyncing.eq(false)) {
 
     // Node is synced!
@@ -123,7 +131,7 @@ async function harvestBlocks(api, startBlock, endBlock) {
       // Extract the phase and event
       const { event, phase } = record;
       // console.log(JSON.stringify(record, null, 2));
-      
+
       //
       //  TODO: Update counters in block table:
       //
