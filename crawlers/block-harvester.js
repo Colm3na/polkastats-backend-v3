@@ -79,13 +79,13 @@ async function main () {
           block_number
         ASC LIMIT 1
       )
-      ORDER BY gap_start`;
+      ORDER BY gap_start DESC`;
     const res = await pool.query(sqlSelect);
 
     for (let i = 0; i < res.rows.length; i++) {
       // Quick fix for gap 0-0 error
       if (!(res.rows[i].gap_start == 0 && res.rows[i].gap_end == 0)) {
-        console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mDetected gap! Harvesting blocks from #${res.rows[i].gap_start} to #${res.rows[i].gap_end}\x1b[0m`);
+        console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mDetected gap! Harvesting blocks from #${res.rows[i].gap_end} to #${res.rows[i].gap_start}\x1b[0m`);
         await harvestBlocks(api, parseInt(res.rows[i].gap_start), parseInt(res.rows[i].gap_end));
       }
     }
@@ -113,7 +113,7 @@ async function harvestBlocks(api, startBlock, endBlock) {
     // Start execution
     const startTime = new Date().getTime();
     // Get block hash
-    const blockHash = await api.rpc.chain.getBlockHash(startBlock);
+    const blockHash = await api.rpc.chain.getBlockHash(endBlock);
     // Get extended block header
     const extendedHeader = await api.derive.chain.getHeader(blockHash);
     // Get block parent hash
@@ -155,7 +155,7 @@ async function harvestBlocks(api, startBlock, endBlock) {
           phase,
           data
         ) VALUES (
-          '${startBlock}',
+          '${endBlock}',
           '${index}',
           '${event.section}',
           '${event.method}',
@@ -164,9 +164,9 @@ async function harvestBlocks(api, startBlock, endBlock) {
         );`;
       try {
         await pool.query(sqlInsert);
-        console.log(`[PolkaStats backend v3] - Block harvester - \x1b[33mAdding event #${startBlock}-${index} ${event.section} => ${event.method}\x1b[0m`);
+        console.log(`[PolkaStats backend v3] - Block harvester - \x1b[33mAdding event #${endBlock}-${index} ${event.section} => ${event.method}\x1b[0m`);
       } catch (error) {
-        console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mError adding event #${startBlock}-${index}: ${error.error}\x1b[0m`);
+        console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mError adding event #${endBlock}-${index}: ${error.error}\x1b[0m`);
       }
     });
     // Get session info for the block
@@ -215,7 +215,7 @@ async function harvestBlocks(api, startBlock, endBlock) {
         spec_version,
         timestamp
       ) VALUES (
-        '${startBlock}',
+        '${endBlock}',
         '${blockAuthor}',
         '${blockAuthorName}',
         '${blockHash}',
@@ -238,11 +238,11 @@ async function harvestBlocks(api, startBlock, endBlock) {
     try {
       await pool.query(sqlInsert);
       const endTime = new Date().getTime();
-      console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mAdded block #${startBlock} (${shortHash(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(3)}s\x1b[0m`);
+      console.log(`[PolkaStats backend v3] - Block harvester - \x1b[32mAdded block #${endBlock} (${shortHash(blockHash.toString())}) in ${((endTime - startTime) / 1000).toFixed(3)}s\x1b[0m`);
     } catch (error) {
-      console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mError adding block #${startBlock}: ${error.error}\x1b[0m`);
+      console.log(`[PolkaStats backend v3] - Block harvester - \x1b[31mError adding block #${endBlock}: ${error.error}\x1b[0m`);
     }
-    startBlock++;
+    endBlock--;
     addedBlocks++;
   }
 }
