@@ -53,13 +53,14 @@ services:
   #
   listener:
     image: polkastats-backend:latest
-    build: ./backend
+    build:
+      context: ../../
+      dockerfile: ./docker/polkastats-backend/backend/Dockerfile
     command: /usr/app/polkastats-backend-v3/crawlers/block-listener.js    
     depends_on:
       - "postgres"
     environment:
       - NODE_ENV=production
-      - GIT_BRANCH=$GIT_BRANCH
   #
   # Block harvester crawler
   #
@@ -70,7 +71,6 @@ services:
     - "postgres"
     environment:
       - NODE_ENV=production
-      - GIT_BRANCH=$GIT_BRANCH
 #
 # Persisten volumes
 #
