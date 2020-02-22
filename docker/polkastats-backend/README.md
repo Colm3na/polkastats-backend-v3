@@ -11,8 +11,8 @@ docker-compose build
 
 ## Run in background
 ```
-# To create the containers
-docker-compose up -d
+# To create the containers from current branch
+GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD) && docker-compose up -d
 ```
 
 Crawlers will fail to connect to the substrate node at this point. We need to wait for the node to completely sync or you could restore a substrate data base.

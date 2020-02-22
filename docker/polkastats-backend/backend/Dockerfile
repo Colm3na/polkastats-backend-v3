@@ -6,7 +6,10 @@ RUN mkdir -p /usr/app
 
 WORKDIR /usr/app
 
-RUN git clone -b develop https://github.com/Colm3na/polkastats-backend-v3.git
+# Set GIT_BRANCH to develop if not exist
+ENV GIT_BRANCH=${GIT_BRANCH:-develop}
+
+RUN git clone -b $GIT_BRANCH https://github.com/Colm3na/polkastats-backend-v3.git
 
 WORKDIR /usr/app/polkastats-backend-v3
 
