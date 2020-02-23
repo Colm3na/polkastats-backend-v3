@@ -1,4 +1,5 @@
 GRANT ALL PRIVILEGES ON DATABASE polkastats TO polkastats;
+
 CREATE TABLE block (  
    block_number BIGINT NOT NULL,
    block_author VARCHAR(47) NOT NULL,
@@ -31,6 +32,7 @@ CREATE TABLE block (
    timestamp BIGINT NOT NULL,
    PRIMARY KEY ( block_number )  
 );
+
 CREATE TABLE event (  
    block_number BIGINT NOT NULL,
    event_index INT NOT NULL,
@@ -57,8 +59,63 @@ CREATE TABLE intention_staking (
    PRIMARY KEY ( block_number, session_index )  
 );
 
+CREATE TABLE validator_bonded (
+   block_number BIGINT NOT NULL,
+   session_index INT NOT NULL,
+   account_id VARCHAR(47) NOT NULL,     
+   amount BIGINT NOT NULL,
+   timestamp INT NOT NULL,
+   PRIMARY KEY ( block_number, session_index, account_id )  
+);
+
+CREATE TABLE validator_selfbonded (
+   block_number BIGINT NOT NULL,
+   session_index INT NOT NULL,
+   account_id VARCHAR(47) NOT NULL,     
+   amount BIGINT NOT NULL,
+   timestamp INT NOT NULL,
+   PRIMARY KEY ( block_number, session_index, account_id )  
+);
+
+CREATE TABLE validator_num_nominators (
+   block_number BIGINT NOT NULL,
+   session_index INT NOT NULL,
+   account_id VARCHAR(47) NOT NULL,     
+   nominators INT NOT NULL,
+   timestamp INT NOT NULL,
+   PRIMARY KEY ( block_number, session_index, account_id )  
+);
+
+CREATE TABLE validator_produced_blocks (
+   block_number BIGINT NOT NULL,
+   session_index INT NOT NULL,
+   account_id VARCHAR(47) NOT NULL,     
+   produced_blocks INT NOT NULL,
+   timestamp INT NOT NULL,
+   PRIMARY KEY ( block_number, session_index, account_id )  
+);
+
+CREATE TABLE validator_active (
+   block_number BIGINT NOT NULL,
+   session_index INT NOT NULL,
+   account_id VARCHAR(47) NOT NULL,     
+   active BOOLEAN NOT NULL,
+   timestamp INT NOT NULL,
+   PRIMARY KEY ( block_number, session_index, account_id )  
+);
+
+CREATE INDEX account_id_idx ON validator_bonded (account_id);
+CREATE INDEX account_id_idx ON validator_selfbonded (account_id);
+CREATE INDEX account_id_idx ON validator_num_nominators (account_id);
+CREATE INDEX account_id_idx ON validator_produced_blocks (account_id);
+CREATE INDEX account_id_idx ON validator_active (account_id);
+
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
-
 GRANT ALL PRIVILEGES ON TABLE validator_staking TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE intention_staking TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE validator_bonded TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE validator_selfbonded TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE validator_num_nominators TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE validator_produced_blocks TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE validator_active TO polkastats;
