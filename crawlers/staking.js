@@ -182,15 +182,15 @@ async function storeStakingInfo(blockNumber, currentIndex) {
   //
   // Map validator authorityId to staking info object
   //
-  const intentionsStaking = await Promise.all(
+  const intentionStaking = await Promise.all(
     intentions.map(authorityId => api.derive.staking.account(authorityId))
   );
 
   //
   // Add hex representation of sessionId[] and nextSessionId[]
   //
-  for(let i = 0; i < intentionsStaking.length; i++) {
-    let intention = intentionsStaking[i];
+  for(let i = 0; i < intentionStaking.length; i++) {
+    let intention = intentionStaking[i];
     if (intention.sessionIds.length > 0) {
       intention.sessionIdHex = intention.sessionIds.toHex();
     }
@@ -199,8 +199,8 @@ async function storeStakingInfo(blockNumber, currentIndex) {
     }
   }
 
-  if (intentionsStaking) {
-    let sqlInsert = `INSERT INTO intention_staking (block_number, session_index, json, timestamp) VALUES ('${blockNumber}', '${currentIndex}', '${JSON.stringify(intentionsStaking)}', extract(epoch from now()));`;
+  if (intentionStaking) {
+    let sqlInsert = `INSERT INTO intention_staking (block_number, session_index, json, timestamp) VALUES ('${blockNumber}', '${currentIndex}', '${JSON.stringify(intentionStaking)}', extract(epoch from now()));`;
     try {
       await pool.query(sqlInsert);
     } catch (error) {
