@@ -106,7 +106,7 @@ async function main () {
             );
 
             // Fetch commission for current elected validators
-            let validatorRewards = await Promise.all(
+            let allRewards = await Promise.all(
                 electedInfo.currentElected.map(async address => {
 
                 const stakeInfo = electedInfo.info
@@ -167,8 +167,7 @@ async function main () {
             console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mCurrent session index is #${currentDBIndex}\x1b[0m`);
 
             if (currentIndex > currentDBIndex) {
-                await storeRewardsInfo(validatorRewards, blockNumber, currentIndex);
-                await storeRewardsInfo(validatorRewards, blockNumber, currentIndex);
+                await storeRewardsInfo(allRewards, blockNumber, currentIndex);
 
                 if (currentDBIndex === 0) {
                     currentDBIndex = currentIndex;
@@ -184,7 +183,7 @@ async function main () {
     }
 }
 
-async function storeRewardsInfo(validatorRewards, blockNumber, currentIndex) {
+async function storeRewardsInfo(allRewards, blockNumber, currentIndex) {
 
     console.log(`[PolkaStats backend v3] - Rewards crawler - \x1b[33mStoring validators staking info for session #${currentIndex}\x1b[0m`);
   
@@ -192,16 +191,19 @@ async function storeRewardsInfo(validatorRewards, blockNumber, currentIndex) {
     const pool = new Pool(postgresConnParams);
     await pool.connect();
 
-    if (validatorRewards) {
-    // console.log(`validatorRewards:`, JSON.stringify(validatorRewards, null, 2));
-      let sqlInsert = `INSERT INTO rewards_info (validatorRewards.stash_id, validatorRewards.commission, validatorRewards.eraRewards, validatorRewards.stake_info) VALUES ('${blockNumber}', '${currentIndex}', '${JSON.stringify(validatorRewards)}', extract(epoch from now()));`;
-      try {
-        const res = await pool.query(sqlInsert);
-        console.log(`[PolkaStats backend v3] - Rewards crawler - \x1b[33mResponse from Database is ${res}]`)
-      } catch (error) {
-        console.log(`[PolkaStats backend v3] - Rewards crawler - \x1b[31mSQL: ${sqlInsert}\x1b[0m`);
-        console.log(`[PolkaStats backend v3] - Rewards crawler - \x1b[31mERROR: ${JSON.stringify(error)}\x1b[0m`);
-      }
+    if (allRewards) {
+    // console.log(`allRewards:`, JSON.stringify(allRewards, null, 2));
+        allRewards.forEach( async reward => {
+            let sqlInsert = `INSERT INTO rewards_info (block_number, session_index, stash_id, era_rewards, commission, stake_info, timestamp) 
+                VALUES ('${blockNumber}', '${currentIndex}', '${JSON.stringify(reward.stash_id)}', '${JSON.stringify(reward.eraRewards.join(''))}', '${reward.commission}', '${JSON.stringify(reward.stake_info)}', extract(epoch from now()));`;
+            try {
+                const res = await pool.query(sqlInsert);
+                console.log(`[PolkaStats backend v3] - Rewards crawler - \x1b[33mResponse from Database is ${res}]`)
+            } catch (error) {
+                console.log(`[PolkaStats backend v3] - Rewards crawler - \x1b[31mSQL: ${sqlInsert}\x1b[0m`);
+                console.log(`[PolkaStats backend v3] - Rewards crawler - \x1b[31mERROR: ${JSON.stringify(error)}\x1b[0m`);
+            }
+        })
     }
   
     await pool.end();
