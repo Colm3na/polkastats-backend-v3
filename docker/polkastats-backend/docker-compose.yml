@@ -71,9 +71,25 @@ services:
     - "postgres"
     environment:
       - NODE_ENV=production
+  #
+  # Accounts crawler
+  #
   accounts:
     image: polkastats-backend:latest
     command: /usr/app/polkastats-backend-v3/crawlers/accounts.js
+    depends_on:
+    - "postgres"
+    environment:
+      - NODE_ENV=production
+  #
+  # Offline phragmen crawler
+  #
+  accounts:
+    image: polkastats-phragmen:latest
+    build:
+      context: ../../
+      dockerfile: ./docker/polkastats-backend/phragmen/Dockerfile
+    command: /usr/app/polkastats-backend-v3/crawlers/phragmen.js
     depends_on:
     - "postgres"
     environment:
