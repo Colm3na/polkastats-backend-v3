@@ -69,7 +69,9 @@ async function main () {
         // console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mLast session index stored in DB is #${currentDBIndex}\x1b[0m`);
       } else {
         currentDBIndex = 0;
-        console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[31mFirst execution, no session index found in DB!\x1b[0m`);
+        if (!crawlerIsRunning) {
+          console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[31mFirst execution, no session index found in DB!\x1b[0m`);
+        }
       }
 
       // Get current session index
