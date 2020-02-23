@@ -161,7 +161,7 @@ async function storeValidatorsStakingInfo(currentIndex) {
 
   if (validatorStaking) {
     // console.log(`validators:`, JSON.stringify(validatorStaking, null, 2));
-    let sqlInsert = `INSERT INTO validator_staking (block_number, session_index, json, timestamp) VALUES ('${bestNumber}', '${currentIndex}', UNIX_TIMESTAMP(), '${JSON.stringify(validatorStaking)}');`;
+    let sqlInsert = `INSERT INTO validator_staking (block_number, session_index, json, timestamp) VALUES ('${bestNumber}', '${currentIndex}', '${JSON.stringify(validatorStaking)}', extract(epoch from now()));`;
     try {
       const res = await pool.query(sqlInsert);
     } catch (error) {
@@ -226,7 +226,7 @@ async function storeIntentionsStakingInfo(currentIndex) {
   }
 
   if (validatorStaking) {
-    let sqlInsert = `INSERT INTO validator_intention (block_number, session_index, json, timestamp) VALUES ('${bestNumber}', '${currentIndex}', UNIX_TIMESTAMP(), '${JSON.stringify(validatorStaking)}');`;
+    let sqlInsert = `INSERT INTO validator_intention (block_number, session_index, json, timestamp) VALUES ('${bestNumber}', '${currentIndex}', '${JSON.stringify(validatorStaking)}', extract(epoch from now()));`;
     try {
       const res = await pool.query(sqlInsert);
     } catch (error) {
