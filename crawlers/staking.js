@@ -48,16 +48,16 @@ async function main () {
 
     // Node is synced!
     console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mNode is synced! Starting crawler...\x1b[0m`);
-
-    // Database connection
-    const pool = new Pool(postgresConnParams);
-    await pool.connect();
     
     // Subscribe to new blocks
     const unsubscribe = await api.rpc.chain.subscribeNewHeads( async (header) => {
 
       // Get block number
       const blockNumber = header.number.toNumber();
+
+      // Database connection
+      const pool = new Pool(postgresConnParams);
+      await pool.connect();
 
       // Get last index stored in DB
       const sqlSelect = `SELECT session_index FROM validator_staking ORDER BY session_index DESC LIMIT 1`;
@@ -69,7 +69,9 @@ async function main () {
         console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mNo session index stored in DB!\x1b[0m`);
       }
 
-       // Get current session index
+      await pool.end();
+
+      // Get current session index
       const session = await api.derive.session.info();
       currentIndex = parseInt(session.currentIndex.toString());
       console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mCurrent session index is #${currentDBIndex}\x1b[0m`);
@@ -86,7 +88,6 @@ async function main () {
       }
 
     });
-    await pool.end();
     provider.disconnect();
 
 
