@@ -77,13 +77,10 @@ async function main () {
       console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mCurrent session index is #${currentIndex}\x1b[0m`);
       
       if (currentIndex > currentDBIndex) {
-        await storeValidatorsStakingInfo(blockNumber, currentIndex);
-        await storeIntentionsStakingInfo(blockNumber, currentIndex);
+        await storeStakingInfo(blockNumber, currentIndex);
       }
 
     });
-    // await pool.end();
-
 
   } else {
     provider.disconnect();
@@ -92,7 +89,7 @@ async function main () {
   }
 }
 
-async function storeValidatorsStakingInfo(blockNumber, currentIndex) {
+async function storeStakingInfo(blockNumber, currentIndex) {
   console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mStoring validators staking info for session #${currentIndex}\x1b[0m`);
 
   // Database connection
@@ -160,68 +157,44 @@ async function storeValidatorsStakingInfo(blockNumber, currentIndex) {
   }
 
   if (validatorStaking) {
-    // console.log(`validators:`, JSON.stringify(validatorStaking, null, 2));
     let sqlInsert = `INSERT INTO validator_staking (block_number, session_index, json, timestamp) VALUES ('${blockNumber}', '${currentIndex}', '${JSON.stringify(validatorStaking)}', extract(epoch from now()));`;
     try {
       await pool.query(sqlInsert);
     } catch (error) {
-      // await pool.end();
-      // provider.disconnect();
       // console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[31mSQL: ${sqlInsert}\x1b[0m`);
       console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[31mERROR: ${JSON.stringify(error)}\x1b[0m`);
     }
   }
   
-  // await pool.end();
-  provider.disconnect();
-}
-
-async function storeIntentionsStakingInfo(blockNumber, currentIndex) {
-  console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mStoring intentions staking info for session #${currentIndex}\x1b[0m`);
-
-  // Database connection
-  const pool = new Pool(postgresConnParams);
-  await pool.connect();
-  
-  //
-  // Initialise the provider to connect to the local polkadot node
-  //
-  const provider = new WsProvider(wsProviderUrl);
-
-  // Create API instance
-  const api = await ApiPromise.create({ provider });
-
-  // Wait until API is ready
-  await api.isReady;
-  
   //
   // Fetch intention validators
   //
-  const stakingValidators = await api.query.staking.validators();
-  const validators = stakingValidators[0];
+  console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mStoring intentions staking info for session #${currentIndex}\x1b[0m`);
+  const intentionValidators = await api.query.staking.validators();
+  const intentions = intentionValidators[0];
 
   //
   // Map validator authorityId to staking info object
   //
-  const validatorStaking = await Promise.all(
-    validators.map(authorityId => api.derive.staking.account(authorityId))
+  const intentionsStaking = await Promise.all(
+    intentions.map(authorityId => api.derive.staking.account(authorityId))
   );
 
   //
   // Add hex representation of sessionId[] and nextSessionId[]
   //
-  for(let i = 0; i < validatorStaking.length; i++) {
-    let validator = validatorStaking[i];
-    if (validator.sessionIds.length > 0) {
-      validator.sessionIdHex = validator.sessionIds.toHex();
+  for(let i = 0; i < intentionsStaking.length; i++) {
+    let intention = intentionsStaking[i];
+    if (intention.sessionIds.length > 0) {
+      intention.sessionIdHex = intention.sessionIds.toHex();
     }
-    if (validator.nextSessionIds.length > 0) {
-      validator.nextSessionIdHex = validator.nextSessionIds.toHex();
+    if (intention.nextSessionIds.length > 0) {
+      intention.nextSessionIdHex = intention.nextSessionIds.toHex();
     }
   }
 
-  if (validatorStaking) {
-    let sqlInsert = `INSERT INTO validator_intention (block_number, session_index, json, timestamp) VALUES ('${blockNumber}', '${currentIndex}', '${JSON.stringify(validatorStaking)}', extract(epoch from now()));`;
+  if (intentionsStaking) {
+    let sqlInsert = `INSERT INTO validator_intention (block_number, session_index, json, timestamp) VALUES ('${blockNumber}', '${currentIndex}', '${JSON.stringify(intentionsStaking)}', extract(epoch from now()));`;
     try {
       await pool.query(sqlInsert);
     } catch (error) {
