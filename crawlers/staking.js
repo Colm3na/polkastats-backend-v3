@@ -77,14 +77,8 @@ async function main () {
       console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mCurrent session index is #${currentDBIndex}\x1b[0m`);
       
       if (currentIndex > currentDBIndex) {
-        await storeValidatorsStakingInfo(blockNumber, currentIndex);
-        await storeIntentionsStakingInfo(blockNumber, currentIndex);
-
-        if (currentDBIndex === 0) {
-          currentDBIndex = currentIndex;
-        } else {
-          currentDBIndex++;
-        }
+        storeValidatorsStakingInfo(blockNumber, currentIndex);
+        storeIntentionsStakingInfo(blockNumber, currentIndex);
       }
 
     });
