@@ -20,9 +20,6 @@ const {
   postgresConnParams
 } = require('../backend.config');
 
-let currentIndex = 0;
-let currentDBIndex = 0;
-
 async function main () {
   
   // Initialise the provider to connect to the local polkadot node
@@ -56,6 +53,8 @@ async function main () {
     // Subscribe to new blocks
     const unsubscribe = await api.rpc.chain.subscribeNewHeads( async (header) => {
 
+      let currentDBIndex;
+
       // Get block number
       const blockNumber = header.number.toNumber();
 
@@ -68,12 +67,13 @@ async function main () {
         currentDBIndex = parseInt(res.rows[0]["session_index"]);
         console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mLast session index stored in DB is #${currentDBIndex}\x1b[0m`);
       } else {
+        currentDBIndex = 0;
         console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mNo session index stored in DB!\x1b[0m`);
       }
 
        // Get current session index
       const session = await api.derive.session.info();
-      currentIndex = parseInt(session.currentIndex.toString());
+      const currentIndex = session.currentIndex.toNumber();
       console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mCurrent session index is #${currentDBIndex}\x1b[0m`);
       
       if (currentIndex > currentDBIndex) {
