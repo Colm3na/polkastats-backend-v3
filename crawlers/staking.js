@@ -161,10 +161,11 @@ async function storeValidatorsStakingInfo(currentIndex) {
 
   if (validatorStaking) {
     // console.log(`validators:`, JSON.stringify(validatorStaking, null, 2));
-    var sqlInsert = `INSERT INTO validator_staking (block_number, session_index, json, timestamp) VALUES ('${bestNumber}', '${currentIndex}', UNIX_TIMESTAMP(), '${JSON.stringify(validatorStaking)});`;
+    let sqlInsert = `INSERT INTO validator_staking (block_number, session_index, json, timestamp) VALUES ('${bestNumber}', '${currentIndex}', UNIX_TIMESTAMP(), '${JSON.stringify(validatorStaking)});`;
     try {
       const res = await pool.query(sqlInsert);
     } catch (error) {
+      console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[31mSQL: ${sqlInsert}\x1b[0m`);
       console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[31mERROR: ${JSON.stringify(error)}\x1b[0m`);
     }
   }
@@ -225,11 +226,11 @@ async function storeIntentionsStakingInfo(currentIndex) {
   }
 
   if (validatorStaking) {
-    var sqlInsert = `INSERT INTO validator_intention (block_number, session_index, json, timestamp) VALUES ('${bestNumber}', '${currentIndex}', UNIX_TIMESTAMP(), '${JSON.stringify(validatorStaking)});`;
-    
+    let sqlInsert = `INSERT INTO validator_intention (block_number, session_index, json, timestamp) VALUES ('${bestNumber}', '${currentIndex}', UNIX_TIMESTAMP(), '${JSON.stringify(validatorStaking)});`;
     try {
       const res = await pool.query(sqlInsert);
     } catch (error) {
+      console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[31mSQL: ${sqlInsert}\x1b[0m`);
       console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[31mERROR: ${JSON.stringify(error)}\x1b[0m`);
     }
   }
