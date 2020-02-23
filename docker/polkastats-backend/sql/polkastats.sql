@@ -45,14 +45,14 @@ CREATE TABLE validator_staking (
    block_number BIGINT NOT NULL,
    json TEXT NOT NULL,
    timestamp INT NOT NULL,
-   PRIMARY KEY ( block_height )  
+   PRIMARY KEY ( block_number )  
 );
 
 CREATE TABLE intention_staking (  
    block_number BIGINT NOT NULL,
    json TEXT NOT NULL,
    timestamp INT NOT NULL,
-   PRIMARY KEY ( block_height )  
+   PRIMARY KEY ( block_number )  
 );
 
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
