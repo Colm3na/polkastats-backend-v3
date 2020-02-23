@@ -61,25 +61,25 @@ async function main () {
       console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mNew block #${blockNumber}\x1b[0m`);
 
       // Get last index stored in DB
-      const sqlSelect = `SELECT session_index FROM validator_staking ORDER BY session_index DESC LIMIT 1`;
-      const res = await pool.query(sqlSelect);
-      if (res.rows.length > 0) {
-        currentDBIndex = parseInt(res.rows[0]["session_index"]);
-        console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mLast session index stored in DB is #${currentDBIndex}\x1b[0m`);
-      } else {
-        currentDBIndex = 0;
-        console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mNo session index stored in DB!\x1b[0m`);
-      }
+      // const sqlSelect = `SELECT session_index FROM validator_staking ORDER BY session_index DESC LIMIT 1`;
+      // const res = await pool.query(sqlSelect);
+      // if (res.rows.length > 0) {
+      //   currentDBIndex = parseInt(res.rows[0]["session_index"]);
+      //   console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mLast session index stored in DB is #${currentDBIndex}\x1b[0m`);
+      // } else {
+      //   currentDBIndex = 0;
+      //   console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mNo session index stored in DB!\x1b[0m`);
+      // }
 
        // Get current session index
       const session = await api.derive.session.info();
       const currentIndex = session.currentIndex.toNumber();
       console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mCurrent session index is #${currentIndex}\x1b[0m`);
       
-      if (currentIndex > currentDBIndex) {
-        storeValidatorsStakingInfo(blockNumber, currentIndex);
-        storeIntentionsStakingInfo(blockNumber, currentIndex);
-      }
+      // if (currentIndex > currentDBIndex) {
+      //   await storeValidatorsStakingInfo(blockNumber, currentIndex);
+      //   await storeIntentionsStakingInfo(blockNumber, currentIndex);
+      // }
 
     });
     // await pool.end();
