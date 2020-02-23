@@ -20,6 +20,8 @@ const {
   postgresConnParams
 } = require('../backend.config');
 
+let crawlerIsRunning = false;
+
 async function main () {
   
   // Initialise the provider to connect to the local polkadot node
@@ -77,7 +79,9 @@ async function main () {
       console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mCurrent session index is #${currentIndex}\x1b[0m`);
       
       if (currentIndex > currentDBIndex) {
-        await storeStakingInfo(blockNumber, currentIndex);
+        if (!crawlerIsRunning) {
+          await storeStakingInfo(blockNumber, currentIndex);
+        }
       }
 
     });
@@ -90,6 +94,7 @@ async function main () {
 }
 
 async function storeStakingInfo(blockNumber, currentIndex) {
+  crawlerIsRunning = true;
   console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mStoring validators staking info for session #${currentIndex}\x1b[0m`);
 
   // Database connection
@@ -207,6 +212,7 @@ async function storeStakingInfo(blockNumber, currentIndex) {
 
   // await pool.end();
   provider.disconnect();
+  crawlerIsRunning = false;
 }
 
 main().catch((error) => {
