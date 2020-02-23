@@ -40,5 +40,23 @@ CREATE TABLE event (
    data TEXT NOT NULL,
    PRIMARY KEY ( block_number, event_index ) 
 );
+
+CREATE TABLE validator_staking (  
+   block_number BIGINT NOT NULL,
+   json TEXT NOT NULL,
+   timestamp INT NOT NULL,
+   PRIMARY KEY ( block_height )  
+);
+
+CREATE TABLE intention_staking (  
+   block_number BIGINT NOT NULL,
+   json TEXT NOT NULL,
+   timestamp INT NOT NULL,
+   PRIMARY KEY ( block_height )  
+);
+
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
+
+GRANT ALL PRIVILEGES ON TABLE validator_staking TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE intention_staking TO polkastats;
