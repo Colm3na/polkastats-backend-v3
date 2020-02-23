@@ -56,6 +56,9 @@ async function main () {
     // Subscribe to new blocks
     const unsubscribe = await api.rpc.chain.subscribeNewHeads( async (header) => {
 
+      // Get block number
+      const blockNumber = header.number.toNumber();
+
       // First execution
       if (currentDBIndex === 0) {
         // Get last index stored in DB
@@ -76,8 +79,8 @@ async function main () {
       console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mCurrent session index is #${currentDBIndex}\x1b[0m`);
       
       if (currentIndex > currentDBIndex) {
-        await storeValidatorsStakingInfo(currentIndex);
-        await storeIntentionsStakingInfo(currentIndex);
+        await storeValidatorsStakingInfo(blockNumber, currentIndex);
+        await storeIntentionsStakingInfo(blockNumber, currentIndex);
 
         if (currentDBIndex === 0) {
           currentDBIndex = currentIndex;
@@ -95,7 +98,7 @@ async function main () {
   }
 }
 
-async function storeValidatorsStakingInfo(currentIndex) {
+async function storeValidatorsStakingInfo(blockNumber, currentIndex) {
   console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mStoring validators staking info for session #${currentIndex}\x1b[0m`);
 
   // Database connection
@@ -162,7 +165,7 @@ async function storeValidatorsStakingInfo(currentIndex) {
 
   if (validatorStaking) {
     // console.log(`validators:`, JSON.stringify(validatorStaking, null, 2));
-    let sqlInsert = `INSERT INTO validator_staking (block_number, session_index, json, timestamp) VALUES ('${bestNumber}', '${currentIndex}', '${JSON.stringify(validatorStaking)}', extract(epoch from now()));`;
+    let sqlInsert = `INSERT INTO validator_staking (block_number, session_index, json, timestamp) VALUES ('${blockNumber}', '${currentIndex}', '${JSON.stringify(validatorStaking)}', extract(epoch from now()));`;
     try {
       const res = await pool.query(sqlInsert);
     } catch (error) {
@@ -175,7 +178,7 @@ async function storeValidatorsStakingInfo(currentIndex) {
   provider.disconnect();
 }
 
-async function storeIntentionsStakingInfo(currentIndex) {
+async function storeIntentionsStakingInfo(blockNumber, currentIndex) {
   console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mStoring intentions staking info for session #${currentIndex}\x1b[0m`);
 
   // Database connection
@@ -227,7 +230,7 @@ async function storeIntentionsStakingInfo(currentIndex) {
   }
 
   if (validatorStaking) {
-    let sqlInsert = `INSERT INTO validator_intention (block_number, session_index, json, timestamp) VALUES ('${bestNumber}', '${currentIndex}', '${JSON.stringify(validatorStaking)}', extract(epoch from now()));`;
+    let sqlInsert = `INSERT INTO validator_intention (block_number, session_index, json, timestamp) VALUES ('${blockNumber}', '${currentIndex}', '${JSON.stringify(validatorStaking)}', extract(epoch from now()));`;
     try {
       const res = await pool.query(sqlInsert);
     } catch (error) {
