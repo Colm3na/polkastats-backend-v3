@@ -69,7 +69,9 @@ async function main () {
         }
       }
 
-      currentIndex = parseInt(await api.query.session.currentIndex.toString());
+       // Get current session index
+      const session = await api.derive.session.info();
+      currentIndex = parseInt(session.currentIndex.toString());
       console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mCurrent session index is #${currentDBIndex}\x1b[0m`);
       
       if (currentIndex > currentDBIndex) {
