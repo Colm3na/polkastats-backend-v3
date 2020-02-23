@@ -62,6 +62,7 @@ async function main () {
         const sqlSelect = `SELECT session_index FROM validator_staking ORDER BY session_index DESC LIMIT 1`;
         const res = await pool.query(sqlSelect);
         if (res.rows.length > 0) {
+          console.log(res.rows);
           currentDBIndex = res.rows["session_index"];
           console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mLast session index stored in DB is #${currentDBIndex}\x1b[0m`);
         } else {
