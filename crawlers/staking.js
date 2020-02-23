@@ -90,6 +90,9 @@ async function main () {
       }
 
     });
+    await pool.end();
+    provider.disconnect();
+
 
   } else {
     provider.disconnect();
@@ -110,14 +113,16 @@ async function storeValidatorsStakingInfo(blockNumber, currentIndex) {
   //
   const provider = new WsProvider(wsProviderUrl);
 
-  // Create the API and wait until ready
+  // Create API instance
   const api = await ApiPromise.create({ provider });
 
+  // Wait until API is ready
+  await api.isReady;
+
   //
-  // Get best block number, active validators, imOnline data, current elected and current era points earned
+  // Get active validators, imOnline data, current elected and current era points earned
   //
-  const [bestNumber, validators, imOnline, currentElected, currentEraPointsEarned] = await Promise.all([
-    api.derive.chain.bestNumber(),
+  const [validators, imOnline, currentElected, currentEraPointsEarned] = await Promise.all([
     api.query.session.validators(),
     api.derive.imOnline.receivedHeartbeats(),
     api.query.staking.currentElected(),
@@ -167,8 +172,10 @@ async function storeValidatorsStakingInfo(blockNumber, currentIndex) {
     // console.log(`validators:`, JSON.stringify(validatorStaking, null, 2));
     let sqlInsert = `INSERT INTO validator_staking (block_number, session_index, json, timestamp) VALUES ('${blockNumber}', '${currentIndex}', '${JSON.stringify(validatorStaking)}', extract(epoch from now()));`;
     try {
-      const res = await pool.query(sqlInsert);
+      await pool.query(sqlInsert);
     } catch (error) {
+      await pool.end();
+      provider.disconnect();
       console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[31mSQL: ${sqlInsert}\x1b[0m`);
       console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[31mERROR: ${JSON.stringify(error)}\x1b[0m`);
     }
@@ -190,18 +197,11 @@ async function storeIntentionsStakingInfo(blockNumber, currentIndex) {
   //
   const provider = new WsProvider(wsProviderUrl);
 
-  // Create the API and wait until ready
+  // Create API instance
   const api = await ApiPromise.create({ provider });
 
-  //
-  // Get best block number
-  //
-  const bestNumber = await api.derive.chain.bestNumber();
-
-  //
-  // Outputs JSON
-  //
-  console.log(`block_height: ${bestNumber}`);
+  // Wait until API is ready
+  await api.isReady;
   
   //
   // Fetch intention validators
@@ -232,8 +232,10 @@ async function storeIntentionsStakingInfo(blockNumber, currentIndex) {
   if (validatorStaking) {
     let sqlInsert = `INSERT INTO validator_intention (block_number, session_index, json, timestamp) VALUES ('${blockNumber}', '${currentIndex}', '${JSON.stringify(validatorStaking)}', extract(epoch from now()));`;
     try {
-      const res = await pool.query(sqlInsert);
+      await pool.query(sqlInsert);
     } catch (error) {
+      await pool.end();
+      provider.disconnect();
       console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[31mSQL: ${sqlInsert}\x1b[0m`);
       console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[31mERROR: ${JSON.stringify(error)}\x1b[0m`);
     }
