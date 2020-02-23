@@ -82,7 +82,7 @@ async function main () {
       }
 
     });
-    await pool.end();
+    // await pool.end();
 
 
   } else {
