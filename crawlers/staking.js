@@ -2,7 +2,7 @@
 // PolkaStats backend v3
 //
 // This crawler fetch and store validators and intentions
-// staking info on every session change
+// staking info. Triggers store on every session change.
 //
 // Usage: node staking.js
 //
@@ -59,24 +59,23 @@ async function main () {
 
       // Get block number
       const blockNumber = header.number.toNumber();
-
-      console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mNew block #${blockNumber}\x1b[0m`);
+      // console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mNew block #${blockNumber}\x1b[0m`);
 
       // Get last index stored in DB
       const sqlSelect = `SELECT session_index FROM validator_staking ORDER BY session_index DESC LIMIT 1`;
       const res = await pool.query(sqlSelect);
       if (res.rows.length > 0) {
         currentDBIndex = parseInt(res.rows[0]["session_index"]);
-        console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mLast session index stored in DB is #${currentDBIndex}\x1b[0m`);
+        // console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mLast session index stored in DB is #${currentDBIndex}\x1b[0m`);
       } else {
         currentDBIndex = 0;
-        console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mNo session index stored in DB!\x1b[0m`);
+        console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[31mFirst execution, no session index found in DB!\x1b[0m`);
       }
 
       // Get current session index
       const session = await api.derive.session.info();
       const currentIndex = session.currentIndex.toNumber();
-      console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mCurrent session index is #${currentIndex}\x1b[0m`);
+      // console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mCurrent session index is #${currentIndex}\x1b[0m`);
       
       if (currentIndex > currentDBIndex) {
         if (!crawlerIsRunning) {
@@ -95,7 +94,7 @@ async function main () {
 
 async function storeStakingInfo(blockNumber, currentIndex) {
   crawlerIsRunning = true;
-  console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mStoring validators staking info for session #${currentIndex}\x1b[0m`);
+  console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mStoring validators staking info for at block #${blockNumber} (session #${currentIndex})\x1b[0m`);
 
   // Database connection
   const pool = new Pool(postgresConnParams);
@@ -174,7 +173,7 @@ async function storeStakingInfo(blockNumber, currentIndex) {
   //
   // Fetch intention validators
   //
-  console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mStoring intentions staking info for session #${currentIndex}\x1b[0m`);
+  console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mStoring intentions staking info at block #${blockNumber} (session #${currentIndex})\x1b[0m`);
   const intentionValidators = await api.query.staking.validators();
   const intentions = intentionValidators[0];
 
