@@ -84,7 +84,7 @@ services:
   #
   # Offline phragmen crawler
   #
-  accounts:
+  phragmen:
     image: polkastats-phragmen:latest
     build:
       context: ../../
