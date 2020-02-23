@@ -166,8 +166,8 @@ async function storeValidatorsStakingInfo(blockNumber, currentIndex) {
       await pool.query(sqlInsert);
     } catch (error) {
       // await pool.end();
-      provider.disconnect();
-      console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[31mSQL: ${sqlInsert}\x1b[0m`);
+      // provider.disconnect();
+      // console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[31mSQL: ${sqlInsert}\x1b[0m`);
       console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[31mERROR: ${JSON.stringify(error)}\x1b[0m`);
     }
   }
@@ -226,8 +226,8 @@ async function storeIntentionsStakingInfo(blockNumber, currentIndex) {
       await pool.query(sqlInsert);
     } catch (error) {
       // await pool.end();
-      provider.disconnect();
-      console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[31mSQL: ${sqlInsert}\x1b[0m`);
+      // provider.disconnect();
+      // console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[31mSQL: ${sqlInsert}\x1b[0m`);
       console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[31mERROR: ${JSON.stringify(error)}\x1b[0m`);
     }
   }
