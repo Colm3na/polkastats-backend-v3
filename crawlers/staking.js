@@ -199,7 +199,7 @@ async function storeStakingInfo(blockNumber, currentIndex) {
   }
 
   if (intentionsStaking) {
-    let sqlInsert = `INSERT INTO validator_intention (block_number, session_index, json, timestamp) VALUES ('${blockNumber}', '${currentIndex}', '${JSON.stringify(intentionsStaking)}', extract(epoch from now()));`;
+    let sqlInsert = `INSERT INTO intention_staking (block_number, session_index, json, timestamp) VALUES ('${blockNumber}', '${currentIndex}', '${JSON.stringify(intentionsStaking)}', extract(epoch from now()));`;
     try {
       await pool.query(sqlInsert);
     } catch (error) {
