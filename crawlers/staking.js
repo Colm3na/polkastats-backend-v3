@@ -59,7 +59,7 @@ async function main () {
       // First execution
       if (currentDBIndex === 0) {
         // Get last index stored in DB
-        const sqlSelect = `SELECT session_index FROM validator_staking WHERE 1 ORDER BY session_index DESC LIMIT 1`;
+        const sqlSelect = `SELECT session_index FROM validator_staking ORDER BY session_index DESC LIMIT 1`;
         const res = await pool.query(sqlSelect);
         if (res.rows.length > 0) {
           currentDBIndex = res.rows["session_index"];

@@ -43,6 +43,7 @@ CREATE TABLE event (
 
 CREATE TABLE validator_staking (  
    block_number BIGINT NOT NULL,
+   session_index INT NOT NULL,
    json TEXT NOT NULL,
    timestamp INT NOT NULL,
    PRIMARY KEY ( block_number )  
@@ -50,6 +51,7 @@ CREATE TABLE validator_staking (
 
 CREATE TABLE intention_staking (  
    block_number BIGINT NOT NULL,
+   session_index INT NOT NULL,
    json TEXT NOT NULL,
    timestamp INT NOT NULL,
    PRIMARY KEY ( block_number )  
