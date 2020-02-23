@@ -94,8 +94,8 @@ async function main () {
   }
 }
 
-async function storeValidatorsStakingInfo(currentDBIndex) {
-  console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mStoring validators staking info for session #${currentDBIndex}\x1b[0m`);
+async function storeValidatorsStakingInfo(currentIndex) {
+  console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mStoring validators staking info for session #${currentIndex}\x1b[0m`);
 
   // Database connection
   const pool = new Pool(postgresConnParams);
@@ -161,7 +161,7 @@ async function storeValidatorsStakingInfo(currentDBIndex) {
 
   if (validatorStaking) {
     // console.log(`validators:`, JSON.stringify(validatorStaking, null, 2));
-    var sqlInsert = `INSERT INTO validator_staking (block_number, json, timestamp) VALUES (${bestNumber}', UNIX_TIMESTAMP(), '${JSON.stringify(validatorStaking)});`;
+    var sqlInsert = `INSERT INTO validator_staking (block_number, session_index, json, timestamp) VALUES ('${bestNumber}', '${currentIndex}', UNIX_TIMESTAMP(), '${JSON.stringify(validatorStaking)});`;
     const res = await pool.query(sqlInsert);
   }
   
@@ -169,8 +169,8 @@ async function storeValidatorsStakingInfo(currentDBIndex) {
   provider.disconnect();
 }
 
-async function storeIntentionsStakingInfo(currentDBIndex) {
-  console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mStoring intentions staking info for session #${currentDBIndex}\x1b[0m`);
+async function storeIntentionsStakingInfo(currentIndex) {
+  console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mStoring intentions staking info for session #${currentIndex}\x1b[0m`);
 
   // Database connection
   const pool = new Pool(postgresConnParams);
@@ -221,7 +221,7 @@ async function storeIntentionsStakingInfo(currentDBIndex) {
   }
 
   if (validatorStaking) {
-    var sqlInsert = `INSERT INTO validator_intention (block_number, json, timestamp) VALUES (${bestNumber}', UNIX_TIMESTAMP(), '${JSON.stringify(validatorStaking)});`;
+    var sqlInsert = `INSERT INTO validator_intention (block_number, session_index, json, timestamp) VALUES ('${bestNumber}', '${currentIndex}', UNIX_TIMESTAMP(), '${JSON.stringify(validatorStaking)});`;
     const res = await pool.query(sqlInsert);
   }
 
