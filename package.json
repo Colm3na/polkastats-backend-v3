@@ -12,7 +12,8 @@
     "docker:node": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d substrate-node",
     "docker:graphql": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d graphql-engine",
     "docker:listener": "docker-compose -f docker/polkastats-backend/docker-compose.yml up listener",
-    "docker:harvester": "docker-compose -f docker/polkastats-backend/docker-compose.yml up harvester"
+    "docker:harvester": "docker-compose -f docker/polkastats-backend/docker-compose.yml up harvester",
+    "docker:rewards": "docker-compose -f docker/polkastats-backend/docker-compose.yml up rewards"
   },
   "repository": {
     "type": "git",
