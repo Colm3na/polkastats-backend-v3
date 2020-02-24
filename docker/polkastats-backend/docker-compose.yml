@@ -71,9 +71,22 @@ services:
     - "postgres"
     environment:
       - NODE_ENV=production
+  #
+  # Accounts crawler
+  #
   accounts:
     image: polkastats-backend:latest
     command: /usr/app/polkastats-backend-v3/crawlers/accounts.js
+    depends_on:
+    - "postgres"
+    environment:
+      - NODE_ENV=production
+  #
+  # Rewards crawler
+  #
+  rewards:
+    image: polkastats-backend:latest
+    command: /usr/app/polkastats-backend-v3/crawlers/rewards.js
     depends_on:
     - "postgres"
     environment:
