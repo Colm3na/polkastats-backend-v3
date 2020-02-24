@@ -71,7 +71,7 @@ async function main () {
         nickname,
         balances
       }
-      // console.log(`Processing account ${accountId}`);
+      console.log(`Processing account ${accountId}`);
       // console.log(JSON.stringify(accountsInfo[accountId], null, 2));
     }
 
@@ -87,21 +87,28 @@ async function main () {
         const blockHeight = await api.rpc.system.chain();
         if (res.rows.length > 0) {
           const timestamp = new Date().getTime();
-          sql = `UPDATE account SET account_index = '${accountsInfo[key].account_index}', nickname = '${accountsInfo[key].nickname}', identity = '${accountsInfo[key].identity}', balances = '${JSON.stringify(accountsInfo[key].balances)}', timestamp = '${timestamp}', block_height = '${blockHeight}' WHERE account_id = '${key}'`;
+          console.log('data update', accountsInfo[key], blockHeight)
+          sql = `UPDATE account SET account_index = '${accountsInfo[key].accountIndex}', nickname = '${accountsInfo[key].nickname}', identity = '${accountsInfo[key].identity}', balances = '${JSON.stringify(accountsInfo[key].balances)}', timestamp = '${timestamp}', block_height = '${blockHeight}' WHERE account_id = '${key}'`;
+
           try {
             await pool.query(sql);
-            console.log(`[PolkaStats backend v3] - Accounts - \x1b[31mUpdating account: account_id: ${key} account_index: ${accountsInfo[key].account_index} nickname: ${accountsInfo[key].nickname} identity: ${accountsInfo[key].identity} balances: ${JSON.stringify(accountsInfo[key].balances)}\x1b[0m`);
+            console.log(`[PolkaStats backend v3] - Accounts - \x1b[31mUpdating account: accountId: ${key} accountIndex: ${accountsInfo[key].accountIndex} nickname: ${accountsInfo[key].nickname} identity: ${accountsInfo[key].identity} balances: ${JSON.stringify(accountsInfo[key].balances)}\x1b[0m`);
+            console.log('sql update', sql)
           } catch (error) {
+            console.log('error update', error)
             console.log(`[PolkaStats backend v3] - Accounts - \x1b[31mError updating account ${key}\x1b[0m`);
           }
         } else {
           const timestamp = new Date().getTime();
-          sql = `INSERT INTO account (account_id, account_index, nickname, identity, balances, timestamp, block_height) VALUES ('${key}', '${accountsInfo[key].account_index}', '${accountsInfo[key].nickname}', '${accountsInfo[key].idenity}', '${JSON.stringify(accountsInfo[key].balances)}', '${timestamp}', '${blockHeight}');`;
+          console.log('data insert', accountsInfo[key], blockHeight)
+          sql = `INSERT INTO account (account_id, account_index, nickname, identity, balances, timestamp, block_height) VALUES ('${key}', '${accountsInfo[key].accountIndex}', '${accountsInfo[key].nickname}', '${accountsInfo[key].idenity}', '${JSON.stringify(accountsInfo[key].balances)}', '${timestamp}', '${blockHeight}');`;
+          console.log('sql insert', sql)
           try {
             await pool.query(sql);
-            console.log(`[PolkaStats backend v3] - Accounts - \x1b[31mNew account: account_id: ${key} account_index: ${accountsInfo[key].account_index} nickname: ${accountsInfo[key].nickname} identity: ${accountsInfo[key].identity} balances: ${JSON.stringify(accountsInfo[key].balances)}\x1b[0m`);
+            console.log(`[PolkaStats backend v3] - Accounts - \x1b[31mNew account: accountId: ${key} accountIndex: ${accountsInfo[key].accountIndex} nickname: ${accountsInfo[key].nickname} identity: ${accountsInfo[key].identity} balances: ${JSON.stringify(accountsInfo[key].balances)}\x1b[0m`);
           } catch (error) {
-            console.log(`[PolkaStats backend v3] - Accounts - \x1b[31mError updating account ${key}\x1b[0m`);
+            console.log('error insert', error)
+            console.log(`[PolkaStats backend v3] - Accounts - \x1b[31mError new account ${key}\x1b[0m`);
           }
         } 
       }

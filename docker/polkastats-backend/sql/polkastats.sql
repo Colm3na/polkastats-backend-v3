@@ -47,7 +47,7 @@ CREATE TABLE account (
    identity TEXT NOT NULL,
    balances TEXT NOT NULL,
    timestamp BIGINT NOT NULL,
-   block_height BIGINT NOT NULL,
+   block_height TEXT NOT NULL,
    PRIMARY KEY ( account_id )  
 );
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
