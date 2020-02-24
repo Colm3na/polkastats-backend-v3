@@ -61,7 +61,7 @@ async function main () {
             // First execution
             if (currentDBIndex === 0) {
                 // Get last index stored in DB
-                const sqlSelect = `SELECT session_index FROM rewards_info ORDER BY session_index DESC LIMIT 1`;
+                const sqlSelect = `SELECT session_index FROM rewards ORDER BY session_index DESC LIMIT 1`;
                 const res = await pool.query(sqlSelect);
                 if (res.rows.length > 0) {
                 currentDBIndex = res.rows[0]["session_index"];
@@ -192,13 +192,12 @@ async function storeRewardsInfo(allRewards, blockNumber, currentIndex) {
     await pool.connect();
 
     if (allRewards) {
-    // console.log(`allRewards:`, JSON.stringify(allRewards, null, 2));
         allRewards.forEach( async reward => {
-            let sqlInsert = `INSERT INTO rewards_info (block_number, session_index, stash_id, era_rewards, commission, stake_info, timestamp) 
+            let sqlInsert = `INSERT INTO rewards (block_number, session_index, stash_id, era_rewards, commission, stake_info, timestamp) 
                 VALUES ('${blockNumber}', '${currentIndex}', '${JSON.stringify(reward.stash_id)}', '${JSON.stringify(reward.eraRewards.join(''))}', '${reward.commission}', '${JSON.stringify(reward.stake_info)}', extract(epoch from now()));`;
             try {
                 const res = await pool.query(sqlInsert);
-                console.log(`[PolkaStats backend v3] - Rewards crawler - \x1b[33mResponse from Database is ${res}]`)
+                console.log(`[PolkaStats backend v3] - Rewards crawler - \x1b[33mResponse from Database is ${JSON.stringify(res)}]`)
             } catch (error) {
                 console.log(`[PolkaStats backend v3] - Rewards crawler - \x1b[31mSQL: ${sqlInsert}\x1b[0m`);
                 console.log(`[PolkaStats backend v3] - Rewards crawler - \x1b[31mERROR: ${JSON.stringify(error)}\x1b[0m`);

@@ -49,7 +49,7 @@ CREATE TABLE rewards (
    era_rewards TEXT,
    stake_info TEXT,
    timestamp INT NOT NULL,
-   PRIMARY KEY ( block_number, session_index )  
+   PRIMARY KEY ( block_number, session_index, stash_id )  
 );
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
