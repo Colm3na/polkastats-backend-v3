@@ -41,7 +41,7 @@ CREATE TABLE event (
    PRIMARY KEY ( block_number, event_index ) 
 );
 
-CREATE TABLE rewards_info (
+CREATE TABLE rewards (
    block_number BIGINT NOT NULL,
    session_index INT NOT NULL,
    stash_id VARCHAR(50),
@@ -53,3 +53,4 @@ CREATE TABLE rewards_info (
 );
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE rewards TO polkastats;
