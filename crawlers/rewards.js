@@ -61,14 +61,14 @@ async function main () {
             // First execution
             if (currentDBIndex === 0) {
                 // Get last index stored in DB
-                const sqlSelect = `SELECT session_index FROM rewards ORDER BY session_index DESC LIMIT 1`;
+                const sqlSelect = `SELECT epoch_index FROM rewards ORDER BY epoch_index DESC LIMIT 1`;
                 const res = await pool.query(sqlSelect);
                 if (res.rows.length > 0) {
-                currentDBIndex = res.rows[0]["session_index"];
+                currentDBIndex = res.rows[0]["epoch_index"];
                 console.log(`currentDBIndex:`, currentDBIndex);
-                console.log(`[PolkaStats backend v3] - Rewards crawler - \x1b[33mLast session index stored in DB is #${currentDBIndex}\x1b[0m`);
+                console.log(`[PolkaStats backend v3] - Rewards crawler - \x1b[33mLast epoch index stored in DB is #${currentDBIndex}\x1b[0m`);
                 } else {
-                console.log(`[PolkaStats backend v3] - Rewards crawler - \x1b[33mNo session index stored in DB!\x1b[0m`);
+                console.log(`[PolkaStats backend v3] - Rewards crawler - \x1b[33mNo epoch index stored in DB!\x1b[0m`);
                 }
             }
 
@@ -91,10 +91,11 @@ async function main () {
                     let hash = await api.rpc.chain.getBlockHash(end_era_block_id);
                     let eraPoints = await api.query.staking.currentEraPointsEarned.at(hash.toString());
                     let endEraValidatorList = await api.query.staking.currentElected.at(hash.toString());
-                    const session_index = await api.query.session.currentIndex.at(hash);
+                    // const epochDuration = api.consts.babe.epochDuration;
+                    const epoch_index = await api.query.babe.epochIndex.at(hash);
 
                     return {
-                        session_index,
+                        epoch_index,
                         reward_block_id,
                         reward: value,
                         end_era_block_id,
@@ -137,7 +138,7 @@ async function main () {
                     const estimated_payout = user_stake_fraction.multipliedBy(pool_reward_with_commission);
 
                     eraRewards.push({
-                    reward_session: reward.session_index,
+                    reward_session: reward.epoch_index,
                     reward_block_id: reward.reward_block_id,
                     reward_amount: reward.reward,
                     era_points,
@@ -161,10 +162,10 @@ async function main () {
                 })
             );
 
-            // Get current session index
+            // Get current epoch index
             const session = await api.derive.session.info();
             currentIndex = parseInt(session.currentIndex.toString());
-            console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mCurrent session index is #${currentDBIndex}\x1b[0m`);
+            console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mCurrent epoch index is #${currentDBIndex}\x1b[0m`);
 
             if (currentIndex > currentDBIndex) {
                 await storeRewardsInfo(allRewards, blockNumber, currentIndex);
@@ -193,7 +194,7 @@ async function storeRewardsInfo(allRewards, blockNumber, currentIndex) {
 
     if (allRewards) {
         allRewards.forEach( async reward => {
-            let sqlInsert = `INSERT INTO rewards (block_number, session_index, stash_id, era_rewards, commission, stake_info, timestamp) 
+            let sqlInsert = `INSERT INTO rewards (block_number, epoch_index, stash_id, era_rewards, commission, stake_info, timestamp) 
                 VALUES ('${blockNumber}', '${currentIndex}', '${JSON.stringify(reward.stash_id)}', '${JSON.stringify(reward.eraRewards.join(''))}', '${reward.commission}', '${JSON.stringify(reward.stake_info)}', extract(epoch from now()));`;
             try {
                 const res = await pool.query(sqlInsert);
