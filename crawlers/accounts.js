@@ -84,30 +84,25 @@ async function main () {
         // console.log(key + " -> " + accounts[key]);
         let sql = `SELECT account_id FROM account WHERE account_id = '${key}'`;
         let res = await pool.query(sql);
-        const blockHeight = await api.rpc.system.chain();
+        const sqlBlockHeight = `SELECT block_number FROM block ORDER BY timestamp desc LIMIT 1`;
+        const resBlockHeight = await pool.query(sqlBlockHeight);
         if (res.rows.length > 0) {
           const timestamp = new Date().getTime();
-          console.log('data update', accountsInfo[key], blockHeight)
-          sql = `UPDATE account SET account_index = '${accountsInfo[key].accountIndex}', nickname = '${accountsInfo[key].nickname}', identity = '${accountsInfo[key].identity}', balances = '${JSON.stringify(accountsInfo[key].balances)}', timestamp = '${timestamp}', block_height = '${blockHeight}' WHERE account_id = '${key}'`;
+          sql = `UPDATE account SET account_index = '${accountsInfo[key].accountIndex}', nickname = '${accountsInfo[key].nickname}', identity = '${accountsInfo[key].identity}', balances = '${JSON.stringify(accountsInfo[key].balances)}', timestamp = '${timestamp}', block_height = '${resBlockHeight.rows[0].block_number}' WHERE account_id = '${key}'`;
 
           try {
             await pool.query(sql);
             console.log(`[PolkaStats backend v3] - Accounts - \x1b[31mUpdating account: accountId: ${key} accountIndex: ${accountsInfo[key].accountIndex} nickname: ${accountsInfo[key].nickname} identity: ${accountsInfo[key].identity} balances: ${JSON.stringify(accountsInfo[key].balances)}\x1b[0m`);
-            console.log('sql update', sql)
           } catch (error) {
-            console.log('error update', error)
             console.log(`[PolkaStats backend v3] - Accounts - \x1b[31mError updating account ${key}\x1b[0m`);
           }
         } else {
           const timestamp = new Date().getTime();
-          console.log('data insert', accountsInfo[key], blockHeight)
-          sql = `INSERT INTO account (account_id, account_index, nickname, identity, balances, timestamp, block_height) VALUES ('${key}', '${accountsInfo[key].accountIndex}', '${accountsInfo[key].nickname}', '${accountsInfo[key].idenity}', '${JSON.stringify(accountsInfo[key].balances)}', '${timestamp}', '${blockHeight}');`;
-          console.log('sql insert', sql)
+          sql = `INSERT INTO account (account_id, account_index, nickname, identity, balances, timestamp, block_height) VALUES ('${key}', '${accountsInfo[key].accountIndex}', '${accountsInfo[key].nickname}', '${accountsInfo[key].idenity}', '${JSON.stringify(accountsInfo[key].balances)}', '${timestamp}', '${resBlockHeight.rows[0].block_number}');`;
           try {
             await pool.query(sql);
             console.log(`[PolkaStats backend v3] - Accounts - \x1b[31mNew account: accountId: ${key} accountIndex: ${accountsInfo[key].accountIndex} nickname: ${accountsInfo[key].nickname} identity: ${accountsInfo[key].identity} balances: ${JSON.stringify(accountsInfo[key].balances)}\x1b[0m`);
           } catch (error) {
-            console.log('error insert', error)
             console.log(`[PolkaStats backend v3] - Accounts - \x1b[31mError new account ${key}\x1b[0m`);
           }
         } 
