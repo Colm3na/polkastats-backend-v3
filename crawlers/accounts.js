@@ -89,10 +89,9 @@ async function main () {
         if (res.rows.length > 0) {
           const timestamp = new Date().getTime();
           sql = `UPDATE account SET account_index = '${accountsInfo[key].accountIndex}', nickname = '${accountsInfo[key].nickname}', identity = '${accountsInfo[key].identity}', balances = '${JSON.stringify(accountsInfo[key].balances)}', timestamp = '${timestamp}', block_height = '${resBlockHeight.rows[0].block_number}' WHERE account_id = '${key}'`;
-
           try {
             await pool.query(sql);
-            console.log(`[PolkaStats backend v3] - Accounts - \x1b[31mUpdating account: accountId: ${key} accountIndex: ${accountsInfo[key].accountIndex} nickname: ${accountsInfo[key].nickname} identity: ${accountsInfo[key].identity} balances: ${JSON.stringify(accountsInfo[key].balances)}\x1b[0m`);
+            console.log(`[PolkaStats backend v3] - Accounts - Updated account ${accountsInfo[key].accountIndex} [${key}]`)
           } catch (error) {
             console.log(`[PolkaStats backend v3] - Accounts - \x1b[31mError updating account ${key}\x1b[0m`);
           }
@@ -101,17 +100,20 @@ async function main () {
           sql = `INSERT INTO account (account_id, account_index, nickname, identity, balances, timestamp, block_height) VALUES ('${key}', '${accountsInfo[key].accountIndex}', '${accountsInfo[key].nickname}', '${accountsInfo[key].idenity}', '${JSON.stringify(accountsInfo[key].balances)}', '${timestamp}', '${resBlockHeight.rows[0].block_number}');`;
           try {
             await pool.query(sql);
-            console.log(`[PolkaStats backend v3] - Accounts - \x1b[31mNew account: accountId: ${key} accountIndex: ${accountsInfo[key].accountIndex} nickname: ${accountsInfo[key].nickname} identity: ${accountsInfo[key].identity} balances: ${JSON.stringify(accountsInfo[key].balances)}\x1b[0m`);
+            console.log(`[PolkaStats backend v3] - Accounts - Added account ${accountsInfo[key].accountIndex} [${key}]`)
           } catch (error) {
-            console.log(`[PolkaStats backend v3] - Accounts - \x1b[31mError new account ${key}\x1b[0m`);
+            console.log(`[PolkaStats backend v3] - Accounts - \x1b[31mError adding new account ${key}\x1b[0m`);
           }
         } 
       }
     }
 
     pool.end();
-    }
+    provider.disconnect();
 
+    console.log(`[PolkaStats backend v3] - Accounts - \x1b[32mNext execution in 60m...\x1b[0m`);
+    setTimeout(main, 60 * 60 * 1000);
+  } else { 
     console.log(`[PolkaStats backend v3] - Accounts - \x1b[31mNode is not synced! Waiting 10s...\x1b[0m`);
     setTimeout(function() {
       if (!isSynced) {
@@ -120,5 +122,9 @@ async function main () {
       }
     }, 10000);
   }
+}
 
-main().catch(console.error).finally(() => process.exit());
+main().catch((error) => {
+  console.error(error);
+  process.exit(-1);
+});
