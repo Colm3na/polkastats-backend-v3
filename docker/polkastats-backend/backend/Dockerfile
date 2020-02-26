@@ -6,7 +6,7 @@ RUN mkdir -p /usr/app
 
 WORKDIR /usr/app
 
-RUN git clone https://github.com/Colm3na/polkastats-backend-v3.git
+COPY . /usr/app/polkastats-backend-v3
 
 WORKDIR /usr/app/polkastats-backend-v3
 
