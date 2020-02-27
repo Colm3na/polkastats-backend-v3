@@ -91,6 +91,16 @@ services:
     - "postgres"
     environment:
       - NODE_ENV=production
+  #
+  # Staking crawler
+  #
+  staking:
+    image: polkastats-backend:latest
+    command: /usr/app/polkastats-backend-v3/crawlers/staking.js
+    depends_on:
+    - "postgres"
+    environment:
+      - NODE_ENV=production
 #
 # Persisten volumes
 #
