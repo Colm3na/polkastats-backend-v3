@@ -102,10 +102,13 @@ services:
     environment:
       - NODE_ENV=production
   #
-  # Phragmen crawler
+  # Offline Phragmen crawler
   #
   phragmen:
     image: polkastats-backend:latest
+    build:
+      context: ../../
+      dockerfile: ./docker/polkastats-backend/phragmen/Dockerfile
     command: /usr/app/polkastats-backend-v3/crawlers/phragmen.js
     depends_on:
     - "postgres"
