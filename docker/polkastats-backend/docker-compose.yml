@@ -101,6 +101,17 @@ services:
     - "postgres"
     environment:
       - NODE_ENV=production
+  #
+  # Phragmen crawler
+  #
+  phragmen:
+    image: polkastats-backend:latest
+    command: /usr/app/polkastats-backend-v3/crawlers/phragmen.js
+    depends_on:
+    - "postgres"
+    - "substrate-node"
+    environment:
+      - NODE_ENV=production
 #
 # Persisten volumes
 #
