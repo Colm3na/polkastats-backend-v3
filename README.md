@@ -37,13 +37,12 @@ npm run docker:<container-name>
 
 ## List of current containers
 
+- substrate-node
 - postgres
 - graphql-engine
-- substrate-node
-
-    Crawlers:
-- listener
-- harvester
+- Crawlers:
+  - listener
+  - harvester
 
 ## Updating containers
 
