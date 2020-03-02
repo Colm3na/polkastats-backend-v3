@@ -2,9 +2,6 @@
 
 New improved backend for https://polkastats.io!
 
-Table of contents
-=================
-
 <!--ts-->
 
 ### Table of Contents
