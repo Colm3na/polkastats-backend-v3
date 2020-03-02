@@ -115,14 +115,22 @@ CREATE TABLE validator_active (
    PRIMARY KEY ( block_number, session_index, account_id )  
 );
 
+CREATE TABLE account (  
+   account_id VARCHAR(100) NOT NULL,
+   account_index VARCHAR(100) NOT NULL,
+   nickname VARCHAR(100) NOT NULL,
+   identity TEXT NOT NULL,
+   balances TEXT NOT NULL,
+   timestamp BIGINT NOT NULL,
+   block_height BIGINT NOT NULL,
+   PRIMARY KEY ( account_id )  
+);
+
 CREATE INDEX account_id_idx ON validator_bonded (account_id);
 CREATE INDEX account_id_idx ON validator_selfbonded (account_id);
 CREATE INDEX account_id_idx ON validator_num_nominators (account_id);
 CREATE INDEX account_id_idx ON validator_produced_blocks (account_id);
 CREATE INDEX account_id_idx ON validator_active (account_id);
-
-GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
-GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE validator_staking TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE intention_staking TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE validator_bonded TO polkastats;
@@ -133,3 +141,4 @@ GRANT ALL PRIVILEGES ON TABLE validator_active TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE rewards TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE account TO polkastats;
