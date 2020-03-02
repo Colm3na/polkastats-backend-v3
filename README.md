@@ -2,7 +2,24 @@
 
 New improved backend for https://polkastats.io!
 
-## Install
+Table of contents
+=================
+
+<!--ts-->
+
+### Table of Contents
+
+   * [Installation Instructions](#installation-instructions)
+   * [Usage Instructions](#usage-instructions)
+   * [List of current containers](#list-of-current-containers)
+   * [Updating containers](#updating-containers)
+   * [Crawlers](#crawlers)
+      * [Block listener](#block-listener)
+      * [Block harvester](#block-harvester)
+
+<!--te-->
+
+## Installation Instructions
 
 ```
 git clone https://github.com/Colm3na/polkastats-backend-v3.git
@@ -10,7 +27,7 @@ cd polkastats-backend-v3
 npm install
 ```
 
-## Run
+## Usage Instructions
 
 To launch all docker containers at once:
 ```
@@ -21,7 +38,7 @@ To run them separately:
 npm run docker:<container-name>
 ```
 
-## List of current Docker containers
+## List of current containers
 
 - postgres
 - graphql-engine
@@ -31,21 +48,13 @@ npm run docker:<container-name>
 - listener
 - harvester
 
-## Updating docker containers
+## Updating containers
 
 ```
 git pull
 npm run docker:clean
 npm run docker:build
 npm run docker
-```
-
-## Import database
-
-```
-su - postgres
-$ createdb polkastats
-$ psql polkastats < sql/polkastats.sql
 ```
 
 ## Crawlers
