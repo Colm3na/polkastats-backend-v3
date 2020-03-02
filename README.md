@@ -89,3 +89,24 @@ Example output:
 [PolkaStats backend v3] - Block harvester - Added block #59,087 [0xfcfcb2bcc4a076b0816047e6b05b6aea379b1526d47deb6bb45086bec0b0751f] in 0.107s
 ...
 ```
+
+
+### Accounts
+
+This crawler get information about `accounts` table
+
+This is intented to run periodically (i.e every 10 minutes).
+
+```
+node crawlers/accounts.js
+```
+
+Example output:
+
+```
+[PolkaStats backend v3] - Accounts - Added account 54VvU [DQ7qKsma76A7Zqunc61JFf2MbeA2NkKxncRxS8CBnDA7mXR]
+[PolkaStats backend v3] - Accounts - Added account 54qPG [GCVkSmaUeGxycBScTkX84BLjoj62pajZuyePJXini6Dp7kz]
+[PolkaStats backend v3] - Accounts - Added account 55ArZ [JDKSMArNmgnm76fsx2jxjBtHJN9644dAgXgKHYoiJVCSq6R]
+[PolkaStats backend v3] - Accounts - Added account 55WLp [JLksMaLUpTxhg2aT7kFhjTouPJhTn29NBfjvz79ri4ynb3R]
+[PolkaStats backend v3] - Accounts - Added account 55qoF [EukSMA5PP1zVgyRfjWuFFnpT2btjZVRSfgdzwUBX8cJ45mB]
+...
