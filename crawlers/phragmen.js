@@ -13,7 +13,7 @@ const {
   postgresConnParams
 } = require('../backend.config');
 
-const offlinePhragmenPath = `/app/offline-phragmen/offline-phragmen`;
+const offlinePhragmenPath = `/usr/app/offline-phragmen/offline-phragmen`;
 
 // Database connection
 const pool = new Pool(postgresConnParams);
