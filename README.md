@@ -2,7 +2,21 @@
 
 New improved backend for https://polkastats.io!
 
-## Install
+<!--ts-->
+
+### Table of Contents
+
+   * [Installation Instructions](#installation-instructions)
+   * [Usage Instructions](#usage-instructions)
+   * [List of current containers](#list-of-current-containers)
+   * [Updating containers](#updating-containers)
+   * [Crawlers](#crawlers)
+      * [Block listener](#block-listener)
+      * [Block harvester](#block-harvester)
+
+<!--te-->
+
+## Installation Instructions
 
 ```
 git clone https://github.com/Colm3na/polkastats-backend-v3.git
@@ -10,7 +24,7 @@ cd polkastats-backend-v3
 npm install
 ```
 
-## Run
+## Usage Instructions
 
 To launch all docker containers at once:
 ```
@@ -21,31 +35,22 @@ To run them separately:
 npm run docker:<container-name>
 ```
 
-## List of current Docker containers
+## List of current containers
 
+- substrate-node
 - postgres
 - graphql-engine
-- substrate-node
+- Crawlers:
+  - listener
+  - harvester
 
-    Crawlers:
-- listener
-- harvester
-
-## Updating docker containers
+## Updating containers
 
 ```
 git pull
 npm run docker:clean
 npm run docker:build
 npm run docker
-```
-
-## Import database
-
-```
-su - postgres
-$ createdb polkastats
-$ psql polkastats < sql/polkastats.sql
 ```
 
 ## Crawlers
@@ -89,3 +94,24 @@ Example output:
 [PolkaStats backend v3] - Block harvester - Added block #59,087 [0xfcfcb2bcc4a076b0816047e6b05b6aea379b1526d47deb6bb45086bec0b0751f] in 0.107s
 ...
 ```
+
+
+### Accounts
+
+This crawler get information about `accounts` table
+
+This is intented to run periodically (i.e every 10 minutes).
+
+```
+node crawlers/accounts.js
+```
+
+Example output:
+
+```
+[PolkaStats backend v3] - Accounts - Added account 54VvU [DQ7qKsma76A7Zqunc61JFf2MbeA2NkKxncRxS8CBnDA7mXR]
+[PolkaStats backend v3] - Accounts - Added account 54qPG [GCVkSmaUeGxycBScTkX84BLjoj62pajZuyePJXini6Dp7kz]
+[PolkaStats backend v3] - Accounts - Added account 55ArZ [JDKSMArNmgnm76fsx2jxjBtHJN9644dAgXgKHYoiJVCSq6R]
+[PolkaStats backend v3] - Accounts - Added account 55WLp [JLksMaLUpTxhg2aT7kFhjTouPJhTn29NBfjvz79ri4ynb3R]
+[PolkaStats backend v3] - Accounts - Added account 55qoF [EukSMA5PP1zVgyRfjWuFFnpT2btjZVRSfgdzwUBX8cJ45mB]
+...

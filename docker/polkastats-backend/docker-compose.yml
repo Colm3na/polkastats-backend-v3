@@ -59,6 +59,7 @@ services:
     command: /usr/app/polkastats-backend-v3/crawlers/block-listener.js    
     depends_on:
       - "postgres"
+      - "substrate-node"
     environment:
       - NODE_ENV=production
   #
@@ -69,6 +70,40 @@ services:
     command: /usr/app/polkastats-backend-v3/crawlers/block-harvester.js
     depends_on:
     - "postgres"
+    - "substrate-node"
+    environment:
+      - NODE_ENV=production
+  #
+  # Accounts crawler
+  #
+  accounts:
+    image: polkastats-backend:latest
+    command: /usr/app/polkastats-backend-v3/crawlers/accounts.js
+    depends_on:
+    - "postgres"
+    - "substrate-node"
+    environment:
+      - NODE_ENV=production
+  #
+  # Rewards crawler
+  #
+  rewards:
+    image: polkastats-backend:latest
+    command: /usr/app/polkastats-backend-v3/crawlers/rewards.js
+    depends_on:
+    - "postgres"
+    - "substrate-node"
+    environment:
+      - NODE_ENV=production
+  #
+  # Staking crawler
+  #
+  staking:
+    image: polkastats-backend:latest
+    command: /usr/app/polkastats-backend-v3/crawlers/staking.js
+    depends_on:
+    - "postgres"
+    - "substrate-node"
     environment:
       - NODE_ENV=production
 #
