@@ -7,13 +7,16 @@
     "docker": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d",
     "docker:build": "docker-compose -f docker/polkastats-backend/docker-compose.yml build",
     "docker:clean": "bash docker/polkastats-backend/clean-polkastats-dockers",
-    "docker:stop": "docker stop polkastats-backend_harvester_1 && docker stop polkastats-backend_graphql-engine_1 && docker stop polkastats-backend_listener_1 && docker stop polkastats-backend_postgres_1 && docker stop polkastats-backend_substrate-node_1",
-    "docker:postgres": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d postgres",
+    "docker:stop": "docker stop polkastats-backend_harvester_1 polkastats-backend_staking_1 polkastats-backend_rewards_1 polkastats-backend_listener_1 polkastats-backend_phragmen_1 polkastats-backend_graphql-engine_1 polkastats-backend_postgres_1 polkastats-backend_substrate-node_1",
     "docker:node": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d substrate-node",
+    "docker:postgres": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d postgres",
     "docker:graphql": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d graphql-engine",
     "docker:listener": "docker-compose -f docker/polkastats-backend/docker-compose.yml up listener",
     "docker:harvester": "docker-compose -f docker/polkastats-backend/docker-compose.yml up harvester",
-    "docker:rewards": "docker-compose -f docker/polkastats-backend/docker-compose.yml up rewards"
+    "docker:accounts": "docker-compose -f docker/polkastats-backend/docker-compose.yml up accounts",
+    "docker:rewards": "docker-compose -f docker/polkastats-backend/docker-compose.yml up rewards",
+    "docker:phragmen": "docker-compose -f docker/polkastats-backend/docker-compose.yml up phragmen",
+    "docker:staking": "docker-compose -f docker/polkastats-backend/docker-compose.yml up staking"
   },
   "repository": {
     "type": "git",
