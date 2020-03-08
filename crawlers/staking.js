@@ -142,8 +142,8 @@ async function storeStakingInfo(blockNumber, currentIndex) {
   // Add imOnline property to validator object
   //
   validatorStaking.forEach(function (validator) {
-    if (imOnline[validator.accountId]) {
-      validator.imOnline = imOnline[validator.accountId];
+    if (imOnline[validator.accountId.toString()]) {
+      validator.imOnline = imOnline[validator.accountId.toString()];
     }
   }, imOnline);
 
