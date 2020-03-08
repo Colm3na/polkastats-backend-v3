@@ -91,8 +91,8 @@ async function main () {
                     let hash = await api.rpc.chain.getBlockHash(end_era_block_id);
                     let eraPoints = await api.query.staking.currentEraPointsEarned.at(hash.toString());
                     let endEraValidatorList = await api.query.staking.currentElected.at(hash.toString());
-                    // const epochDuration = api.consts.babe.epochDuration;
-                    const epoch_index = await api.query.babe.epochIndex.at(hash);
+                    // const epochDuration = api.consts.babe.epochDuration; // do we need this?
+                    const epoch_index = await api.query.babe.epochIndex.at(hash); // check if this is working once we get the polkascan link working
 
                     return {
                         epoch_index,
