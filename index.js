@@ -1,6 +1,6 @@
 
-const config = require('backend.config.js');
-const BackendV3 = require('lib/BackendV3.js');
+const config = require('./backend.config.js');
+const BackendV3 = require('./lib/BackendV3.js');
 
 async function main () {
   const backendV3 = new BackendV3(config); 
