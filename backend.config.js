@@ -1,6 +1,4 @@
 module.exports = {
-  // Enable CORS
-  enableCORS: true,
   // Local Polkadot Kusama node
   wsProviderUrl: 'ws://substrate-node:9944',
   // Postgres database connection params
