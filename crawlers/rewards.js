@@ -76,7 +76,7 @@ async function main () {
             const electedInfo = await api.derive.staking.electedInfo();
 
             // Fetch last reward events from PolkaScan
-            const response = await axios.default.get(`https://host-01.polkascan.io/pre/kusama/api/v1/event?&filter[module_id]=staking&filter[event_id]=Reward&page[size]=1`);
+            const response = await axios.default.get(`https://api-01.polkascan.io/kusama/api/v1/event?&filter[module_id]=staking&filter[event_id]=Reward`);
 
             const rewardEvents = response.data.data;
 
@@ -92,7 +92,7 @@ async function main () {
                     let eraPoints = await api.query.staking.currentEraPointsEarned.at(hash.toString());
                     let endEraValidatorList = await api.query.staking.currentElected.at(hash.toString());
                     // const epochDuration = api.consts.babe.epochDuration; // do we need this?
-                    const epoch_index = await api.query.babe.epochIndex.at(hash); // check if this is working once we get the polkascan link working
+                    const epoch_index = await api.query.babe.epochIndex(); // at the end it was the same index! xD Human misunderstandings...
 
                     return {
                         epoch_index,
