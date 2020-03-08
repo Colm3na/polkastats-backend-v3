@@ -76,7 +76,7 @@ async function main () {
             const electedInfo = await api.derive.staking.electedInfo();
 
             // Fetch last reward events from PolkaScan
-            const response = await axios.default.get(`https://host-01.polkascan.io/kusama/api/v1/event?&filter[module_id]=staking&filter[event_id]=Reward`);
+            const response = await axios.default.get(`https://host-01.polkascan.io/pre/kusama/api/v1/event?&filter[module_id]=staking&filter[event_id]=Reward&page[size]=1`);
 
             const rewardEvents = response.data.data;
 
@@ -138,7 +138,7 @@ async function main () {
                     const estimated_payout = user_stake_fraction.multipliedBy(pool_reward_with_commission);
 
                     eraRewards.push({
-                    reward_session: reward.epoch_index,
+                    reward_epoch: reward.epoch_index,
                     reward_block_id: reward.reward_block_id,
                     reward_amount: reward.reward,
                     era_points,
@@ -163,8 +163,8 @@ async function main () {
             );
 
             // Get current epoch index
-            const session = await api.derive.session.info();
-            currentIndex = parseInt(session.currentIndex.toString());
+            const epoch = await api.query.babe.epochIndex();
+            currentIndex = parseInt(epoch.toString());
             console.log(`[PolkaStats backend v3] - Staking crawler - \x1b[33mCurrent epoch index is #${currentDBIndex}\x1b[0m`);
 
             if (currentIndex > currentDBIndex) {

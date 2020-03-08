@@ -43,13 +43,13 @@ CREATE TABLE event (
 
 CREATE TABLE rewards (
    block_number BIGINT NOT NULL,
-   session_index INT NOT NULL,
+   epoch_index INT NOT NULL,
    stash_id VARCHAR(50),
    commission BIGINT,
    era_rewards TEXT,
    stake_info TEXT,
    timestamp INT NOT NULL,
-   PRIMARY KEY ( block_number, session_index, stash_id )  
+   PRIMARY KEY ( block_number, epoch_index, stash_id )  
 );
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
