@@ -11,6 +11,6 @@ module.exports = {
     password: 'polkastats',
     port: 5432,
   },
-  BLOCK_HARVESTER_POLLING_TIME: 10 * 60 * 1000, // Run every 10 min
-  ACTIVE_ACCOUNTS_POLLING_TIME: 60 * 60 * 1000 // Run every 60 min
+  BLOCK_HARVESTER_POLLING_TIME: 1 * 60 * 1000, // Run every 10 min
+  ACTIVE_ACCOUNTS_POLLING_TIME: 1 * 60 * 1000 // Run every 60 min
 }
