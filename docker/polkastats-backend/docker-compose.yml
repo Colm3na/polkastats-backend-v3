@@ -49,28 +49,17 @@ services:
       ## uncomment next line to set an admin secret
       # HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
   #
-  # Block listener crawler
+  # Block crawler
   #
-  listener:
+  crawler:
     image: polkastats-backend:latest
     build:
       context: ../../
       dockerfile: ./docker/polkastats-backend/backend/Dockerfile
-    command: /usr/app/polkastats-backend-v3/crawlers/block-listener.js    
+    command: /usr/app/polkastats-backend-v3/index.js    
     depends_on:
       - "postgres"
       - "substrate-node"
-    environment:
-      - NODE_ENV=production
-  #
-  # Crawler
-  #
-  crawler:
-    image: polkastats-backend:latest
-    command: /usr/app/polkastats-backend-v3/index.js
-    depends_on:
-    - "postgres"
-    - "substrate-node"
     environment:
       - NODE_ENV=production
 #
