@@ -1,17 +1,20 @@
-FROM node:lts-alpine3.9
+FROM rust AS builder
 
-RUN apk add git wget tar
+RUN mkdir -p /app; \
+    wget https://github.com/mariopino/offline-phragmen/archive/master.zip; \
+    unzip master.zip -d /app/
 
-RUN mkdir -p /usr/{app,offline-phragmen}
+WORKDIR /app/offline-phragmen-master
 
-WORKDIR /usr/app/offline-phragmen
+RUN cargo build --release
 
-RUN wget https://polkastats.io/downloads/mario-offline-phragmen.tar.gz && \
-    tar xzvf mario-offline-phragmen.tar.gz
+FROM node
 
-COPY . /usr/app/polkastats-backend-v3
+WORKDIR /app
 
-WORKDIR /usr/app/polkastats-backend-v3
+COPY --from=builder /app/offline-phragmen-master/target/release/offline-phragmen /app
+
+COPY . /app
 
 RUN npm install 
 
