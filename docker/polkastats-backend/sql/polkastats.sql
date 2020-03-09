@@ -46,7 +46,7 @@ CREATE TABLE event (
 CREATE TABLE phragmen (  
    block_height BIGINT NOT NULL,
    phragmen_json TEXT NOT NULL,
-   timestamp INT NOT NULL,
+   timestamp BIGINT NOT NULL,
    PRIMARY KEY ( block_height )  
 );
 
