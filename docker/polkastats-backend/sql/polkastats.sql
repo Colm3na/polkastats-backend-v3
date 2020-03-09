@@ -42,10 +42,7 @@ CREATE TABLE event (
    data TEXT NOT NULL,
    PRIMARY KEY ( block_number, event_index ) 
 );
-<<<<<<< HEAD
 
-=======
->>>>>>> ce4fe61252def938f39ee19303e1655c07aed9bd
 CREATE TABLE phragmen (  
    block_height BIGINT NOT NULL,
    phragmen_json TEXT NOT NULL,

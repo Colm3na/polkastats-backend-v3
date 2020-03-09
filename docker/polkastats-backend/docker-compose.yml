@@ -49,75 +49,17 @@ services:
       ## uncomment next line to set an admin secret
       # HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
   #
-  # Block listener crawler
+  # Block crawler
   #
-  listener:
+  crawler:
     image: polkastats-backend:latest
     build:
       context: ../../
       dockerfile: ./docker/polkastats-backend/backend/Dockerfile
-    command: /usr/app/polkastats-backend-v3/crawlers/block-listener.js    
+    command: /usr/app/polkastats-backend-v3/index.js    
     depends_on:
       - "postgres"
       - "substrate-node"
-    environment:
-      - NODE_ENV=production
-  #
-  # Block harvester crawler
-  #
-  harvester:
-    image: polkastats-backend:latest
-    command: /usr/app/polkastats-backend-v3/crawlers/block-harvester.js
-    depends_on:
-    - "postgres"
-    - "substrate-node"
-    environment:
-      - NODE_ENV=production
-  #
-  # Accounts crawler
-  #
-  accounts:
-    image: polkastats-backend:latest
-    command: /usr/app/polkastats-backend-v3/crawlers/accounts.js
-    depends_on:
-    - "postgres"
-    - "substrate-node"
-    environment:
-      - NODE_ENV=production
-  #
-  # Rewards crawler
-  #
-  rewards:
-    image: polkastats-backend:latest
-    command: /usr/app/polkastats-backend-v3/crawlers/rewards.js
-    depends_on:
-    - "postgres"
-    - "substrate-node"
-    environment:
-      - NODE_ENV=production
-  #
-  # Staking crawler
-  #
-  staking:
-    image: polkastats-backend:latest
-    command: /usr/app/polkastats-backend-v3/crawlers/staking.js
-    depends_on:
-    - "postgres"
-    - "substrate-node"
-    environment:
-      - NODE_ENV=production
-  #
-  # Offline Phragmen crawler
-  #
-  phragmen:
-    image: polkastats-backend:latest
-    build:
-      context: ../../
-      dockerfile: ./docker/polkastats-backend/phragmen/Dockerfile
-    command: /usr/app/polkastats-backend-v3/crawlers/phragmen.js
-    depends_on:
-    - "postgres"
-    - "substrate-node"
     environment:
       - NODE_ENV=production
 #
