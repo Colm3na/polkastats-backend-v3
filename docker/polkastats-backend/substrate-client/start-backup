@@ -2,15 +2,15 @@
 # 
 # Recommended:
 # 
-# mkdir -p ~/backup
-# cd ~/backup
+mkdir -p ~/backup
+cd ~/backup
 #
 
 # Stop all cointainers
-docker stop polkastats-backend_listener_1
-docker stop polkastats-backend_graphql-engine_1
-docker stop polkastats-backend_harvester_1
+docker stop polkastats-backend_crawler_1
+docker stop polkastats-backend_phragmen_1
 docker stop polkastats-backend_postgres_1
+docker stop polkastats-backend_graphql-engine_1
 
 # This one is mandatory to be stopped
 docker stop polkastats-backend_substrate-node_1
