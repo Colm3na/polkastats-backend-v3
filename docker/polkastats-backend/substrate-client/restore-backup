@@ -3,7 +3,7 @@
 # Recommended:
 # 
 # mkdir -p ~/backup
-# cd ~/backup
+cd ~/backup
 #
 
 # Check if backup file exist
@@ -21,9 +21,9 @@ if [ ! -f substrate-data.tar ]; then
 fi
 
 # Stop all cointainers
-docker stop polkastats-backend_listener_1
+docker stop polkastats-backend_crawler_1
+docker stop polkastats-backend_phragmen_1
 docker stop polkastats-backend_graphql-engine_1
-docker stop polkastats-backend_harvester_1
 docker stop polkastats-backend_postgres_1
 
 # This one is mandatory to be stopped
