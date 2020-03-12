@@ -56,21 +56,6 @@ services:
     build:
       context: ../../
       dockerfile: ./docker/polkastats-backend/backend/Dockerfile
-    command: /usr/app/polkastats-backend-v3/index.js    
-    depends_on:
-      - "postgres"
-      - "substrate-node"
-    environment:
-      - NODE_ENV=production
-  #
-  # Phragmen service
-  #
-  phragmen:
-    image: polkastats-phragmen:latest
-    build:
-      context: ../../
-      dockerfile: ./docker/polkastats-backend/phragmen/Dockerfile
-    command: /app/lib/crawlers/phragmen.js    
     depends_on:
       - "postgres"
       - "substrate-node"
