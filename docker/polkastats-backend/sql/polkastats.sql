@@ -104,11 +104,11 @@ CREATE TABLE validator_num_nominators (
    PRIMARY KEY ( block_number, session_index, account_id )  
 );
 
-CREATE TABLE validator_produced_blocks (
+CREATE TABLE validator_era_points (
    block_number BIGINT NOT NULL,
    session_index INT NOT NULL,
    account_id VARCHAR(47) NOT NULL,     
-   produced_blocks INT NOT NULL,
+   era_points INT NOT NULL,
    timestamp INT NOT NULL,
    PRIMARY KEY ( block_number, session_index, account_id )  
 );
