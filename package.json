@@ -4,6 +4,7 @@
   "description": "PolkaStats backend v3",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "docker": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d",
     "docker:build": "docker-compose -f docker/polkastats-backend/docker-compose.yml build",
     "docker:clean": "bash docker/polkastats-backend/clean-polkastats-dockers",
