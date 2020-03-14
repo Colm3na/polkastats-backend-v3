@@ -1,6 +1,6 @@
 GRANT ALL PRIVILEGES ON DATABASE polkastats TO polkastats;
 
-CREATE TABLE block (  
+CREATE TABLE IF NOT EXISTS block (  
    block_number BIGINT NOT NULL,
    block_author VARCHAR(47) NOT NULL,
    block_author_name VARCHAR(100) NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE block (
    PRIMARY KEY ( block_number )  
 );
 
-CREATE TABLE event (  
+CREATE TABLE IF NOT EXISTS event  (  
    block_number BIGINT NOT NULL,
    event_index INT NOT NULL,
    section VARCHAR(100) NOT NULL,
@@ -43,14 +43,14 @@ CREATE TABLE event (
    PRIMARY KEY ( block_number, event_index ) 
 );
 
-CREATE TABLE phragmen (  
+CREATE TABLE IF NOT EXISTS phragmen  (  
    block_height BIGINT NOT NULL,
    phragmen_json TEXT NOT NULL,
-   timestamp INT NOT NULL,
+   timestamp BIGINT NOT NULL,
    PRIMARY KEY ( block_height )  
 );
 
-CREATE TABLE rewards (
+CREATE TABLE IF NOT EXISTS rewards  (
    block_number BIGINT NOT NULL,
    session_index INT NOT NULL,
    stash_id VARCHAR(50),
@@ -61,7 +61,7 @@ CREATE TABLE rewards (
    PRIMARY KEY ( block_number, session_index, stash_id )  
 );
 
-CREATE TABLE validator_staking (  
+CREATE TABLE IF NOT EXISTS validator_staking  (  
    block_number BIGINT NOT NULL,
    session_index INT NOT NULL,
    json TEXT NOT NULL,
@@ -69,7 +69,7 @@ CREATE TABLE validator_staking (
    PRIMARY KEY ( block_number, session_index )  
 );
 
-CREATE TABLE intention_staking (  
+CREATE TABLE IF NOT EXISTS intention_staking  (  
    block_number BIGINT NOT NULL,
    session_index INT NOT NULL,
    json TEXT NOT NULL,
@@ -77,7 +77,7 @@ CREATE TABLE intention_staking (
    PRIMARY KEY ( block_number, session_index )  
 );
 
-CREATE TABLE validator_bonded (
+CREATE TABLE IF NOT EXISTS validator_bonded  (
    block_number BIGINT NOT NULL,
    session_index INT NOT NULL,
    account_id VARCHAR(47) NOT NULL,     
@@ -86,7 +86,7 @@ CREATE TABLE validator_bonded (
    PRIMARY KEY ( block_number, session_index, account_id )  
 );
 
-CREATE TABLE validator_selfbonded (
+CREATE TABLE IF NOT EXISTS validator_selfbonded  (
    block_number BIGINT NOT NULL,
    session_index INT NOT NULL,
    account_id VARCHAR(47) NOT NULL,     
@@ -95,7 +95,7 @@ CREATE TABLE validator_selfbonded (
    PRIMARY KEY ( block_number, session_index, account_id )  
 );
 
-CREATE TABLE validator_num_nominators (
+CREATE TABLE IF NOT EXISTS validator_num_nominators  (
    block_number BIGINT NOT NULL,
    session_index INT NOT NULL,
    account_id VARCHAR(47) NOT NULL,     
@@ -104,16 +104,16 @@ CREATE TABLE validator_num_nominators (
    PRIMARY KEY ( block_number, session_index, account_id )  
 );
 
-CREATE TABLE validator_produced_blocks (
+CREATE TABLE IF NOT EXISTS validator_era_points  (
    block_number BIGINT NOT NULL,
    session_index INT NOT NULL,
    account_id VARCHAR(47) NOT NULL,     
-   produced_blocks INT NOT NULL,
+   era_points INT NOT NULL,
    timestamp INT NOT NULL,
    PRIMARY KEY ( block_number, session_index, account_id )  
 );
 
-CREATE TABLE validator_active (
+CREATE TABLE IF NOT EXISTS validator_active  (
    block_number BIGINT NOT NULL,
    session_index INT NOT NULL,
    account_id VARCHAR(47) NOT NULL,     
@@ -122,7 +122,7 @@ CREATE TABLE validator_active (
    PRIMARY KEY ( block_number, session_index, account_id )  
 );
 
-CREATE TABLE account (  
+CREATE TABLE IF NOT EXISTS account  (  
    account_id VARCHAR(100) NOT NULL,
    account_index VARCHAR(100) NOT NULL,
    nickname VARCHAR(100) NOT NULL,
@@ -133,11 +133,12 @@ CREATE TABLE account (
    PRIMARY KEY ( account_id )  
 );
 
-CREATE INDEX account_id_idx ON validator_bonded (account_id);
-CREATE INDEX account_id_idx ON validator_selfbonded (account_id);
-CREATE INDEX account_id_idx ON validator_num_nominators (account_id);
-CREATE INDEX account_id_idx ON validator_produced_blocks (account_id);
-CREATE INDEX account_id_idx ON validator_active (account_id);
+CREATE INDEX IF NOT EXISTS account_id_idx ON validator_bonded (account_id);
+CREATE INDEX IF NOT EXISTS account_id_idx ON validator_selfbonded (account_id);
+CREATE INDEX IF NOT EXISTS account_id_idx ON validator_num_nominators (account_id);
+CREATE INDEX IF NOT EXISTS account_id_idx ON validator_produced_blocks (account_id);
+CREATE INDEX IF NOT EXISTS account_id_idx ON validator_active (account_id);
+
 GRANT ALL PRIVILEGES ON TABLE validator_staking TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE intention_staking TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE validator_bonded TO polkastats;
