@@ -1,15 +1,21 @@
-FROM node:lts-alpine3.9
+FROM rust AS builder
 
-RUN apk add git
+RUN mkdir -p /app; \
+    wget https://github.com/bigomby/offline-phragmen/archive/master.zip; \
+    unzip master.zip -d /app/
 
-RUN mkdir -p /usr/app
+WORKDIR /app/offline-phragmen-master
 
-WORKDIR /usr/app
+RUN cargo build --release
 
-COPY . /usr/app/polkastats-backend-v3
+FROM node
 
 WORKDIR /usr/app/polkastats-backend-v3
 
+COPY --from=builder /app/offline-phragmen-master/target/release/offline-phragmen /usr/app/polkastats-backend-v3
+
+COPY . /usr/app/polkastats-backend-v3
+
 RUN npm install 
 
-ENTRYPOINT ["node"]
+CMD ["npm", "start"]
