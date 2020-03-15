@@ -138,7 +138,7 @@ GRANT ALL PRIVILEGES ON TABLE intention_staking TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE validator_bonded TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE validator_selfbonded TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE validator_num_nominators TO polkastats;
-GRANT ALL PRIVILEGES ON TABLE validator_produced_blocks TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE validator_era_points TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE validator_active TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
