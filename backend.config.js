@@ -12,32 +12,47 @@ module.exports = {
     port: 5432,
   },
 
-  staking: {
-    enabled: true,
-  },
+  crawlers: [
+    {
+      enabled: true,
+      module: require('./lib/crawlers/blockListener.js'),
+    },
 
-  rewards: {
-    enabled: true,
-  },
+    {
+      enabled: true,
+      module: require('./lib/crawlers/blockHarvester.js'),
+      config: {
+        pollingTime: 1 * 60 * 1000,
+      },
+    },
 
-  blockListener: {
-    enabled: true,
-  },
+    {
+      enabled: true,
+      module: require('./lib/crawlers/staking.js'),
+    },
 
-  blockHarvester: {
-    enabled: true,
-    pollingTime: 1 * 60 * 1000,
-  },
+    {
+      enabled: true,
+      module: require('./lib/crawlers/activeAccounts.js'),
+      config: {
+        pollingTime: 1 * 60 * 1000,
+      },
+    },
 
-  accounts: {
-    enabled: true,
-    pollingTime: 1 * 60 * 1000,
-  },
+    {
+      enabled: false,
+      module: require('./lib/crawlers/rewards.js'),
+    },
 
-  phragmen: {
-    enabled: true,
-    pollingTime: 5 * 60 * 1000,
-    phragmenOutputDir: '/tmp/phragmen',
-    offlinePhragmenPath: '/usr/app/polkastats-backend-v3/offline-phragmen',
-  },
+    {
+      enabled: true,
+      module: require('./lib/crawlers/phragmen.js'),
+      config: {
+        wsProviderUrl: process.env.WS_PROVIDER_URL || DEFAULT_WS_PROVIDER_URL,
+        pollingTime: 5 * 60 * 1000,
+        phragmenOutputDir: '/tmp/phragmen',
+        offlinePhragmenPath: '/usr/app/polkastats-backend-v3/offline-phragmen',
+      },
+    },
+  ],
 };
