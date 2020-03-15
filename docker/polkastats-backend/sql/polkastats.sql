@@ -127,11 +127,11 @@ CREATE TABLE IF NOT EXISTS account  (
    PRIMARY KEY ( account_id )  
 );
 
-CREATE INDEX IF NOT EXISTS account_id_idx ON validator_bonded (account_id);
-CREATE INDEX IF NOT EXISTS account_id_idx ON validator_selfbonded (account_id);
-CREATE INDEX IF NOT EXISTS account_id_idx ON validator_num_nominators (account_id);
-CREATE INDEX IF NOT EXISTS account_id_idx ON validator_produced_blocks (account_id);
-CREATE INDEX IF NOT EXISTS account_id_idx ON validator_active (account_id);
+CREATE INDEX IF NOT EXISTS validator_bonded_account_id_idx ON validator_bonded (account_id);
+CREATE INDEX IF NOT EXISTS validator_selfbonded_account_id_idx ON validator_selfbonded (account_id);
+CREATE INDEX IF NOT EXISTS validator_num_nominators_account_id_idx ON validator_num_nominators (account_id);
+CREATE INDEX IF NOT EXISTS validator_era_points_account_id_idx ON validator_era_points (account_id);
+CREATE INDEX IF NOT EXISTS validator_active_account_id_idx ON validator_active (account_id);
 
 GRANT ALL PRIVILEGES ON TABLE validator_staking TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE intention_staking TO polkastats;
