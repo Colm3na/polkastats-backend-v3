@@ -52,13 +52,14 @@ CREATE TABLE IF NOT EXISTS phragmen  (
 
 CREATE TABLE IF NOT EXISTS rewards  (
    block_number BIGINT NOT NULL,
-   session_index INT NOT NULL,
+   era_index INT NOT NULL,
    stash_id VARCHAR(50),
+   controller_id VARCHAR(50),
    commission BIGINT,
    era_rewards TEXT,
    stake_info TEXT,
    timestamp INT NOT NULL,
-   PRIMARY KEY ( block_number, session_index, stash_id )  
+   PRIMARY KEY ( block_number, era_index, controller_id )  
 );
 
 CREATE TABLE IF NOT EXISTS validator_staking  (  
