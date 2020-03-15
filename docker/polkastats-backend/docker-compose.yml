@@ -15,6 +15,7 @@ services:
       - '9933:9933'
       - '9944:9944'
     command: -d /data --rpc-external --ws-external --rpc-cors=all --pruning=archive --name 'Polkastats 🤖 v3'
+    restart: on-failure
   #
   # SQL data base
   #
@@ -59,6 +60,7 @@ services:
     depends_on:
       - 'postgres'
       - 'substrate-node'
+    restart: on-failure
     environment:
       - NODE_ENV=production
 #
