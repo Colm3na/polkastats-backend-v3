@@ -60,7 +60,7 @@ services:
     depends_on:
       - 'postgres'
       - 'substrate-node'
-    restart: always
+    restart: on-failure
     environment:
       - NODE_ENV=production
 #
