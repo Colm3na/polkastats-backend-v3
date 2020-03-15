@@ -1,7 +1,9 @@
+// Also wss://kusama-rpc.polkadot.io
+const DEFAULT_WS_PROVIDER_URL = 'ws://substrate-node:9944';
+
 module.exports = {
-  // Local Polkadot Kusama node
-  wsProviderUrl: 'ws://substrate-node:9944',
-  // Postgres database connection params
+  wsProviderUrl: process.env.WS_PROVIDER_URL || DEFAULT_WS_PROVIDER_URL,
+
   postgresConnParams: {
     user: 'polkastats',
     host: 'postgres',
@@ -9,13 +11,48 @@ module.exports = {
     password: 'polkastats',
     port: 5432,
   },
-  BLOCK_HARVESTER_POLLING_TIME: 1 * 60 * 1000, // Run every 10 min
-  ACTIVE_ACCOUNTS_POLLING_TIME: 1 * 60 * 1000, // Run every 60 min
-  PHRAGMEN_POLLING_TIME: 5 * 60 * 1000, // Run every 5 min
 
-  phragmen: {
-    wsProviderUrl: 'ws://substrate-node:9944',
-    phragmenOutputDir: '/tmp/phragmen',
-    offlinePhragmenPath: '/usr/app/polkastats-backend-v3/offline-phragmen',
-  },
+  crawlers: [
+    {
+      enabled: true,
+      module: require('./lib/crawlers/blockListener.js'),
+    },
+
+    {
+      enabled: true,
+      module: require('./lib/crawlers/blockHarvester.js'),
+      config: {
+        pollingTime: 1 * 60 * 1000,
+      },
+    },
+
+    {
+      enabled: true,
+      module: require('./lib/crawlers/staking.js'),
+    },
+
+    {
+      enabled: true,
+      module: require('./lib/crawlers/activeAccounts.js'),
+      config: {
+        pollingTime: 1 * 60 * 1000,
+      },
+    },
+
+    {
+      enabled: false,
+      module: require('./lib/crawlers/rewards.js'),
+    },
+
+    {
+      enabled: true,
+      module: require('./lib/crawlers/phragmen.js'),
+      config: {
+        wsProviderUrl: process.env.WS_PROVIDER_URL || DEFAULT_WS_PROVIDER_URL,
+        pollingTime: 5 * 60 * 1000,
+        phragmenOutputDir: '/tmp/phragmen',
+        offlinePhragmenPath: '/usr/app/polkastats-backend-v3/offline-phragmen',
+      },
+    },
+  ],
 };

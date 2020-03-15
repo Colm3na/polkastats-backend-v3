@@ -15,6 +15,7 @@ services:
       - '9933:9933'
       - '9944:9944'
     command: -d /data --rpc-external --ws-external --rpc-cors=all --pruning=archive --name 'Polkastats 🤖 v3'
+    restart: on-failure
   #
   # SQL data base
   #
@@ -28,7 +29,7 @@ services:
       POSTGRES_USER: 'polkastats'
       POSTGRES_PASSWORD: 'polkastats'
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U polkastats"]
+      test: ['CMD-SHELL', 'pg_isready -U polkastats']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -36,15 +37,15 @@ services:
   # Hasura
   #
   graphql-engine:
-    image: hasura/graphql-engine:v1.0.0
+    image: hasura/graphql-engine:v1.1.0
     ports:
-    - "8082:8080"
+      - '8082:8080'
     depends_on:
-      - "postgres"
+      - 'postgres'
     restart: always
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://polkastats:polkastats@postgres:5432/polkastats
-      HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
+      HASURA_GRAPHQL_ENABLE_CONSOLE: 'true' # set to "false" to disable console
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
       ## uncomment next line to set an admin secret
       # HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
@@ -57,8 +58,9 @@ services:
       context: ../../
       dockerfile: ./docker/polkastats-backend/backend/Dockerfile
     depends_on:
-      - "postgres"
-      - "substrate-node"
+      - 'postgres'
+      - 'substrate-node'
+    restart: on-failure
     environment:
       - NODE_ENV=production
 #
