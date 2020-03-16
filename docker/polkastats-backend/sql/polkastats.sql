@@ -47,12 +47,12 @@ CREATE TABLE IF NOT EXISTS rewards  (
    block_number BIGINT NOT NULL,
    era_index INT NOT NULL,
    stash_id VARCHAR(50),
-   controller_id VARCHAR(50),
    commission BIGINT,
    era_rewards TEXT,
+   era_points
    stake_info TEXT,
    timestamp INT NOT NULL,
-   PRIMARY KEY ( block_number, era_index, controller_id )  
+   PRIMARY KEY ( block_number, era_index, stash_id )  
 );
 
 CREATE TABLE IF NOT EXISTS validator_staking  (  
