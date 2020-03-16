@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS rewards  (
    era_rewards TEXT,
    era_points INT NOT NULL,
    stake_info TEXT,
+   estimated_payout BIGINT NOT NULL,
    timestamp INT NOT NULL,
    PRIMARY KEY ( block_number, era_index, stash_id )  
 );
