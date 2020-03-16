@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS rewards  (
    stash_id VARCHAR(50),
    commission BIGINT,
    era_rewards TEXT,
-   era_points
+   era_points INT NOT NULL,
    stake_info TEXT,
    timestamp INT NOT NULL,
    PRIMARY KEY ( block_number, era_index, stash_id )  
