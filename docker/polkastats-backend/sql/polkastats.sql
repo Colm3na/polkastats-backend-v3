@@ -45,13 +45,15 @@ CREATE TABLE IF NOT EXISTS phragmen  (
 
 CREATE TABLE IF NOT EXISTS rewards  (
    block_number BIGINT NOT NULL,
-   session_index INT NOT NULL,
+   era_index INT NOT NULL,
    stash_id VARCHAR(50),
    commission BIGINT,
    era_rewards TEXT,
+   era_points INT NOT NULL,
    stake_info TEXT,
+   estimated_payout BIGINT NOT NULL,
    timestamp INT NOT NULL,
-   PRIMARY KEY ( block_number, session_index, stash_id )  
+   PRIMARY KEY ( block_number, era_index, stash_id )  
 );
 
 CREATE TABLE IF NOT EXISTS validator_staking  (  
@@ -126,18 +128,18 @@ CREATE TABLE IF NOT EXISTS account  (
    PRIMARY KEY ( account_id )  
 );
 
-CREATE INDEX IF NOT EXISTS account_id_idx ON validator_bonded (account_id);
-CREATE INDEX IF NOT EXISTS account_id_idx ON validator_selfbonded (account_id);
-CREATE INDEX IF NOT EXISTS account_id_idx ON validator_num_nominators (account_id);
-CREATE INDEX IF NOT EXISTS account_id_idx ON validator_produced_blocks (account_id);
-CREATE INDEX IF NOT EXISTS account_id_idx ON validator_active (account_id);
+CREATE INDEX IF NOT EXISTS validator_bonded_account_id_idx ON validator_bonded (account_id);
+CREATE INDEX IF NOT EXISTS validator_selfbonded_account_id_idx ON validator_selfbonded (account_id);
+CREATE INDEX IF NOT EXISTS validator_num_nominators_account_id_idx ON validator_num_nominators (account_id);
+CREATE INDEX IF NOT EXISTS validator_era_points_account_id_idx ON validator_era_points (account_id);
+CREATE INDEX IF NOT EXISTS validator_active_account_id_idx ON validator_active (account_id);
 
 GRANT ALL PRIVILEGES ON TABLE validator_staking TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE intention_staking TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE validator_bonded TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE validator_selfbonded TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE validator_num_nominators TO polkastats;
-GRANT ALL PRIVILEGES ON TABLE validator_produced_blocks TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE validator_era_points TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE validator_active TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
