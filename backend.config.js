@@ -45,7 +45,7 @@ module.exports = {
     },
 
     {
-      enabled: true,
+      enabled: false,
       module: require('./lib/crawlers/phragmen.js'),
       config: {
         wsProviderUrl: process.env.WS_PROVIDER_URL || DEFAULT_WS_PROVIDER_URL,
