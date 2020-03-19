@@ -40,7 +40,7 @@ module.exports = {
     },
 
     {
-      enabled: false,
+      enabled: true,
       module: require('./lib/crawlers/rewards.js'),
     },
 
