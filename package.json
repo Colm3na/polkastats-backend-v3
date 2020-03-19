@@ -13,7 +13,8 @@
     "docker:postgres": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d postgres",
     "docker:graphql": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d graphql-engine",
     "docker:crawler": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d crawler",
-    "docker:phragmen": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d phragmen"
+    "docker:phragmen": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d phragmen",
+    "lint": "eslint '**/*.js'"
   },
   "repository": {
     "type": "git",
@@ -35,5 +36,10 @@
     "axios": "^0.19.2",
     "bignumber.js": "^9.0.0",
     "pg": "^7.18.1"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "prettier": "^1.19.1"
   }
 }
