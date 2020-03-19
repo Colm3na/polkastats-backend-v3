@@ -35,7 +35,7 @@ module.exports = {
       enabled: true,
       module: require('./lib/crawlers/activeAccounts.js'),
       config: {
-        pollingTime: 1 * 60 * 1000,
+        pollingTime: 10 * 60 * 1000,
       },
     },
 
