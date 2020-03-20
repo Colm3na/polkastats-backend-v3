@@ -41,7 +41,7 @@ npm run docker:<container-name>
 - postgres
 - graphql-engine
 - crawler
-- phragmen
+- phragmen  (temporarily disabled)
 
 ## Updating containers
 
@@ -63,7 +63,17 @@ This container includes an offline-phragmen binary. It is a forked modification 
 
 ## Hasura demo
 
-Browse to http://localhost:8082
+You will need to wait for your substrate-node container to get synced or you could change the following lines in your
+backend.config.js file
+
+```
+//const DEFAULT_WS_PROVIDER_URL = 'wss://kusama-rpc.polkadot.io';
+const DEFAULT_WS_PROVIDER_URL = 'ws://substrate-node:9944'; 
+```
+
+Just uncomment out the first one and comment the second and rebuild the dockers.
+
+Then browse to http://localhost:8082
 
 Click on "Data" at the top menu
 
