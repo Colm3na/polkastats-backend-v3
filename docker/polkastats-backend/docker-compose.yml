@@ -33,6 +33,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    ports:
+      - '5434:5432'
   #
   # Hasura
   #
