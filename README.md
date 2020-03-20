@@ -63,7 +63,7 @@ This container includes an offline-phragmen binary. It is a forked modification 
 
 ## Hasura demo
 
-You will need to wait for your substrate-node container to get synced or you could change the following lines in your
+The crawler needs to wait for your substrate-node container to get synced before starting to collect data. You can use an already synced external RPC for instant testing by changing the following lines in your
 backend.config.js file
 
 ```
