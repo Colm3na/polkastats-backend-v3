@@ -73,6 +73,11 @@ const DEFAULT_WS_PROVIDER_URL = 'ws://substrate-node:9944';
 
 Just uncomment out the first one and comment the second and rebuild the dockers.
 
+```
+npm run docker:clean
+npm run docker
+```
+
 Then browse to http://localhost:8082
 
 Click on "Data" at the top menu
