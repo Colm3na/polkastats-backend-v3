@@ -92,12 +92,93 @@ From now on, hasura will be collecting and tracking all the changes in the data 
 
 In order to check it and see its power you could start a new subscription or just perform an example query such us this one:
 
+### Query example. Static
 
+- Block query example:
 ```
-// Query example. Static
+query {
+  block  {
+    block_hash
+    block_author
+    block_number
+    block_author_name
+    current_era
+    current_index
+    new_accounts
+    session_length
+    session_per_era
+    session_progress
+  }
+}
 ```
 
+- Rewards query example:
 ```
-// Subscription example. Dynamic
+query {
+  rewards {
+    era_index
+    era_rewards
+    stash_id
+    timestamp
+  }
+}
 ```
 
+- Validator by number of nominators example:
+```
+query {
+  validator_num_nominators {
+    block_number
+    nominators
+    timestamp
+  }
+}
+```
+
+- Account query example:
+```
+query {
+  account {
+    account_id
+    balances
+    identity
+  }
+}
+```
+
+### Subscription example. Dynamic
+
+- Block subscription example:
+```
+subscription {
+  block {
+    block_number
+    block_hash
+    current_era
+    current_index
+  }
+}
+```
+
+- Validator active subscription example:
+```
+subscription MySubscription {
+	validator_active {
+    account_id
+    active
+    block_number
+    session_index
+    timestamp
+  }
+}
+```
+
+- Account subscription example:
+```
+subscription MySubscription {
+  account {
+    account_id
+    balances
+  }
+}
+```
