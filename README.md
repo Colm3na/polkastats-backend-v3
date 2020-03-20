@@ -63,12 +63,21 @@ This container includes an offline-phragmen binary. It is a forked modification 
 
 ## Hasura demo
 
-The crawler needs to wait for your substrate-node container to get synced before starting to collect data. You can use an already synced external RPC for instant testing by changing the following lines in your
-backend.config.js file
+The crawler needs to wait for your substrate-node container to get synced before starting to collect data. You can use an already synced external RPC for instant testing by changing the environment variable WS_PROVIDER_URL in `docker-compose.yml` file:
 
-```
-//const DEFAULT_WS_PROVIDER_URL = 'wss://kusama-rpc.polkadot.io';
-const DEFAULT_WS_PROVIDER_URL = 'ws://substrate-node:9944'; 
+```yaml
+crawler:
+  image: polkastats-backend:latest
+  build:
+    context: ../../
+    dockerfile: ./docker/polkastats-backend/backend/Dockerfile
+  depends_on:
+    - "postgres"
+    - "substrate-node"
+  restart: on-failure
+  environment:
+    - NODE_ENV=production
+    - WS_PROVIDER_URL=wss://kusama-rpc.polkadot.io # Change this line
 ```
 
 Just uncomment out the first one and comment the second and rebuild the dockers.
