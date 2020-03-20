@@ -1,4 +1,6 @@
-// Also wss://kusama-rpc.polkadot.io
+
+// In order to check this backend without a synced local substrate-node container use:
+//const DEFAULT_WS_PROVIDER_URL = 'wss://kusama-rpc.polkadot.io';
 const DEFAULT_WS_PROVIDER_URL = 'ws://substrate-node:9944';
 
 module.exports = {

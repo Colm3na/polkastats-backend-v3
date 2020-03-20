@@ -41,7 +41,7 @@ npm run docker:<container-name>
 - postgres
 - graphql-engine
 - crawler
-- phragmen
+- phragmen  (temporarily disabled)
 
 ## Updating containers
 
@@ -60,3 +60,125 @@ The crawler is able to detect and fill the gaps in postgres database by harvesti
 ## Phragmen
 
 This container includes an offline-phragmen binary. It is a forked modification of [Kianenigma](https://github.com/kianenigma/offline-phragmen) repository.
+
+## Hasura demo
+
+The crawler needs to wait for your substrate-node container to get synced before starting to collect data. You can use an already synced external RPC for instant testing by changing the following lines in your
+backend.config.js file
+
+```
+//const DEFAULT_WS_PROVIDER_URL = 'wss://kusama-rpc.polkadot.io';
+const DEFAULT_WS_PROVIDER_URL = 'ws://substrate-node:9944'; 
+```
+
+Just uncomment out the first one and comment the second and rebuild the dockers.
+
+```
+npm run docker:clean
+npm run docker
+```
+
+Then browse to http://localhost:8082
+
+Click on "Data" at the top menu
+
+![](images/hasura-data.png)
+
+Then add all tables to the tracking process
+
+![](images/hasura-track.png)
+
+From now on, hasura will be collecting and tracking all the changes in the data base.
+
+In order to check it and see its power you could start a new subscription or just perform an example query such us this one:
+
+### Query example. Static
+
+- Block query example:
+```
+query {
+  block  {
+    block_hash
+    block_author
+    block_number
+    block_author_name
+    current_era
+    current_index
+    new_accounts
+    session_length
+    session_per_era
+    session_progress
+  }
+}
+```
+
+- Rewards query example:
+```
+query {
+  rewards {
+    era_index
+    era_rewards
+    stash_id
+    timestamp
+  }
+}
+```
+
+- Validator by number of nominators example:
+```
+query {
+  validator_num_nominators {
+    block_number
+    nominators
+    timestamp
+  }
+}
+```
+
+- Account query example:
+```
+query {
+  account {
+    account_id
+    balances
+    identity
+  }
+}
+```
+
+### Subscription example. Dynamic
+
+- Block subscription example:
+```
+subscription {
+  block {
+    block_number
+    block_hash
+    current_era
+    current_index
+  }
+}
+```
+
+- Validator active subscription example:
+```
+subscription MySubscription {
+	validator_active {
+    account_id
+    active
+    block_number
+    session_index
+    timestamp
+  }
+}
+```
+
+- Account subscription example:
+```
+subscription MySubscription {
+  account {
+    account_id
+    balances
+  }
+}
+```
