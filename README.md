@@ -92,6 +92,7 @@ From now on, hasura will be collecting and tracking all the changes in the data 
 
 In order to check it and see its power you could start a new subscription or just perform an example query such us this one:
 
+### Query example. Static
 
 - Block query example:
 ```
