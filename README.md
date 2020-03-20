@@ -60,3 +60,29 @@ The crawler is able to detect and fill the gaps in postgres database by harvesti
 ## Phragmen
 
 This container includes an offline-phragmen binary. It is a forked modification of [Kianenigma](https://github.com/kianenigma/offline-phragmen) repository.
+
+## Hasura demo
+
+Browse to http://localhost:8082
+
+Click on "Data" at the top menu
+
+![](images/hasura-data.png)
+
+Then add all tables to the tracking process
+
+![](images/hasura-track.png)
+
+From now on, hasura will be collecting and tracking all the changes in the data base.
+
+In order to check it and see its power you could start a new subscription or just perform an example query such us this one:
+
+
+```
+// Query example. Static
+```
+
+```
+// Subscription example. Dynamic
+```
+
