@@ -1,4 +1,3 @@
-// Also wss://kusama-rpc.polkadot.io
 const DEFAULT_WS_PROVIDER_URL = 'ws://substrate-node:9944';
 
 module.exports = {
@@ -35,7 +34,7 @@ module.exports = {
       enabled: true,
       module: require('./lib/crawlers/activeAccounts.js'),
       config: {
-        pollingTime: 1 * 60 * 1000,
+        pollingTime: 10 * 60 * 1000,
       },
     },
 
@@ -45,7 +44,7 @@ module.exports = {
     },
 
     {
-      enabled: true,
+      enabled: false,
       module: require('./lib/crawlers/phragmen.js'),
       config: {
         wsProviderUrl: process.env.WS_PROVIDER_URL || DEFAULT_WS_PROVIDER_URL,

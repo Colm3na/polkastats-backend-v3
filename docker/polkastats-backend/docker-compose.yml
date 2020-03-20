@@ -63,6 +63,7 @@ services:
     restart: on-failure
     environment:
       - NODE_ENV=production
+      - WS_PROVIDER_URL=ws://substrate-node:9944
 #
 # Persisten volumes
 #
