@@ -126,6 +126,22 @@ CREATE TABLE IF NOT EXISTS account  (
    PRIMARY KEY ( account_id )  
 );
 
+CREATE TABLE IF NOT EXISTS polkastats_identity (  
+   account_id VARCHAR(100) NOT NULL,
+   username VARCHAR(50) NOT NULL,
+   username_cased VARCHAR(50) NOT NULL,
+   full_name VARCHAR(100) NOT NULL,
+   location VARCHAR(100) NOT NULL,
+   bio VARCHAR(200) NOT NULL,
+   logo VARCHAR(100) NOT NULL,
+   website VARCHAR(100) NOT NULL,
+   twitter VARCHAR(100) NOT NULL,
+   github VARCHAR(100) NOT NULL, 
+   created INT(8) NOT NULL,    
+   updated INT(8) NOT NULL,
+   PRIMARY KEY ( account_id )
+);
+
 CREATE INDEX IF NOT EXISTS validator_bonded_account_id_idx ON validator_bonded (account_id);
 CREATE INDEX IF NOT EXISTS validator_selfbonded_account_id_idx ON validator_selfbonded (account_id);
 CREATE INDEX IF NOT EXISTS validator_num_nominators_account_id_idx ON validator_num_nominators (account_id);
@@ -144,3 +160,4 @@ GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE rewards TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE account TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE phragmen TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE polkastats_identity TO polkastats;
