@@ -43,7 +43,8 @@ module.exports = {
       module: require('./lib/crawlers/activeAccounts'),
       config: {
         pollingTime: parseInt(
-          process.env.CRAWLER_ACTIVE_ACCOUNTS_POLLING_TIME_MS,
+          process.env.CRAWLER_ACTIVE_ACCOUNTS_POLLING_TIME_MS ||
+          1 * 60 * 1000,
         ),
       },
     },
