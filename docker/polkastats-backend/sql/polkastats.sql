@@ -2,6 +2,7 @@ GRANT ALL PRIVILEGES ON DATABASE polkastats TO polkastats;
 
 CREATE TABLE IF NOT EXISTS block (  
   block_number BIGINT NOT NULL,
+  block_number_finalized BIGINT NOT NULL,
   block_author VARCHAR(47) NOT NULL,
   block_author_name VARCHAR(100) NOT NULL,
   block_hash VARCHAR(66) NOT NULL,
