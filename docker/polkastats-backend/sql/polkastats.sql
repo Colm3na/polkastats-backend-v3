@@ -118,6 +118,15 @@ CREATE TABLE IF NOT EXISTS validator_active  (
   PRIMARY KEY ( block_number, session_index, account_id )  
 );
 
+CREATE TABLE IF NOT EXISTS intention_bonded  (
+  block_number BIGINT NOT NULL,
+  session_index INT NOT NULL,
+  account_id VARCHAR(47) NOT NULL,     
+  amount BIGINT NOT NULL,
+  timestamp BIGINT NOT NULL,
+  PRIMARY KEY ( block_number, session_index, account_id )  
+);
+
 CREATE TABLE IF NOT EXISTS account  (  
   account_id VARCHAR(47) NOT NULL,
   identity TEXT NOT NULL,
@@ -438,6 +447,7 @@ GRANT ALL PRIVILEGES ON TABLE validator_selfbonded TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE validator_num_nominators TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE validator_era_points TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE validator_active TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE intention_bonded TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE rewards TO polkastats;
