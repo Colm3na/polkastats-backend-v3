@@ -44,7 +44,7 @@ module.exports = {
       config: {
         pollingTime:
           parseInt(process.env.CRAWLER_ACTIVE_ACCOUNTS_POLLING_TIME_MS) ||
-          1 * 60 * 1000,
+          60 * 60 * 1000,
       },
     },
 
