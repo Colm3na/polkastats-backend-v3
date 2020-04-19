@@ -128,6 +128,7 @@ CREATE TABLE IF NOT EXISTS account  (
 
 CREATE TABLE IF NOT EXISTS system  (
   block_height BIGINT NOT NULL,
+  chain VARCHAR(100) NOT NULL,
   node_name VARCHAR(100) NOT NULL,
   node_version VARCHAR(100) NOT NULL,
   timestamp INT NOT NULL,
