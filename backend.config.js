@@ -46,6 +46,11 @@ module.exports = {
 
     {
       enabled: true,
+      module: require('./lib/crawlers/chain.js'),
+    },
+
+    {
+      enabled: true,
       module: require('./lib/crawlers/rewards.js'),
     },
 

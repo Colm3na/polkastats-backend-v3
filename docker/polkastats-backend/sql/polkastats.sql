@@ -135,6 +135,16 @@ CREATE TABLE IF NOT EXISTS system  (
   PRIMARY KEY ( block_height )  
 );
 
+CREATE TABLE IF NOT EXISTS chain  (
+  block_height BIGINT NOT NULL,
+  block_height_finalized BIGINT NOT NULL,
+  session_index INT NOT NULL,
+  total_issuance BIGINT NOT NULL,,
+  active_accounts BIGINT NOT NULL,
+  timestamp BIGINT NOT NULL,
+  PRIMARY KEY ( block_height )  
+);
+
 CREATE TABLE IF NOT EXISTS polkastats_identity (  
   account_id VARCHAR(47) NOT NULL,
   username VARCHAR(100) NOT NULL,
@@ -435,3 +445,4 @@ GRANT ALL PRIVILEGES ON TABLE account TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE phragmen TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE polkastats_identity TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE system TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE chain TO polkastats;
