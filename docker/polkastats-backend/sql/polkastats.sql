@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS rewards  (
   era_points INT NOT NULL,
   stake_info TEXT,
   estimated_payout BIGINT NOT NULL,
-  timestamp INT NOT NULL,
+  timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, era_index, stash_id )  
 );
 
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS validator_staking  (
   block_number BIGINT NOT NULL,
   session_index INT NOT NULL,
   json TEXT NOT NULL,
-  timestamp INT NOT NULL,
+  timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, session_index )  
 );
 
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS intention_staking  (
   block_number BIGINT NOT NULL,
   session_index INT NOT NULL,
   json TEXT NOT NULL,
-  timestamp INT NOT NULL,
+  timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, session_index )  
 );
 
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS validator_bonded  (
   session_index INT NOT NULL,
   account_id VARCHAR(47) NOT NULL,     
   amount BIGINT NOT NULL,
-  timestamp INT NOT NULL,
+  timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, session_index, account_id )  
 );
 
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS validator_selfbonded  (
   session_index INT NOT NULL,
   account_id VARCHAR(47) NOT NULL,     
   amount BIGINT NOT NULL,
-  timestamp INT NOT NULL,
+  timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, session_index, account_id )  
 );
 
@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS validator_num_nominators  (
   session_index INT NOT NULL,
   account_id VARCHAR(47) NOT NULL,     
   nominators INT NOT NULL,
-  timestamp INT NOT NULL,
+  timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, session_index, account_id )  
 );
 
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS validator_era_points  (
   session_index INT NOT NULL,
   account_id VARCHAR(47) NOT NULL,     
   era_points INT NOT NULL,
-  timestamp INT NOT NULL,
+  timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, session_index, account_id )  
 );
 
@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS validator_active  (
   session_index INT NOT NULL,
   account_id VARCHAR(47) NOT NULL,     
   active BOOLEAN NOT NULL,
-  timestamp INT NOT NULL,
+  timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, session_index, account_id )  
 );
 
@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS system  (
   chain VARCHAR(100) NOT NULL,
   node_name VARCHAR(100) NOT NULL,
   node_version VARCHAR(100) NOT NULL,
-  timestamp INT NOT NULL,
+  timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_height )  
 );
 
@@ -146,8 +146,8 @@ CREATE TABLE IF NOT EXISTS polkastats_identity (
   website VARCHAR(100) NOT NULL,
   twitter VARCHAR(100) NOT NULL,
   github VARCHAR(100) NOT NULL, 
-  created INT NOT NULL,    
-  updated INT NOT NULL,
+  created BIGINT NOT NULL,    
+  updated BIGINT NOT NULL,
   PRIMARY KEY ( account_id )
 );
 
