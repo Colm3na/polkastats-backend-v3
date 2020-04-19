@@ -12,6 +12,12 @@ module.exports = {
   },
 
   crawlers: [
+
+    {
+      enabled: true,
+      module: require('./lib/crawlers/system.js'),
+    },
+    
     {
       enabled: true,
       module: require('./lib/crawlers/blockListener.js'),
