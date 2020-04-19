@@ -14,8 +14,8 @@ module.exports = {
   crawlers: [
 
     {
-      enabled: true,
-      module: require('./lib/crawlers/system.js'),
+      enabled: !process.env.CRAWLER_SYSTEM_DISABLE,
+      module: require('./lib/crawlers/system'),
     },
     
     {
@@ -46,6 +46,11 @@ module.exports = {
           process.env.CRAWLER_ACTIVE_ACCOUNTS_POLLING_TIME_MS,
         ),
       },
+    },
+
+    {
+      enabled: !process.env.CRAWLER_CHAIN_DISABLE,
+      module: require('./lib/crawlers/chain'),
     },
 
     {
