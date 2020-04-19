@@ -151,7 +151,7 @@ CREATE TABLE IF NOT EXISTS polkastats_identity (
   PRIMARY KEY ( account_id )
 );
 
-INSERT INTO `polkastats_identity` VALUES 
+INSERT INTO polkastats_identity VALUES 
   (
     'CanLB42xJughpTRC1vXStUryjWYkE679emign1af47QnAQC', 
     '5chdn',
