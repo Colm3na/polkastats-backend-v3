@@ -1,6 +1,6 @@
 {
   "name": "polkastats-backend-v3",
-  "version": "3.0.0",
+  "version": "3.0.0-milestone2",
   "description": "PolkaStats backend v3",
   "main": "index.js",
   "scripts": {
@@ -34,6 +34,9 @@
     "@polkadot/api": "^v1.8.0-beta.2",
     "axios": "^0.19.2",
     "bignumber.js": "^9.0.0",
-    "pg": "^7.18.1"
+    "pg": "^7.18.1",
+    "dotenv": "^8.2.0",
+    "lodash": "^4.17.15",
+    "pino": "^6.2.0"
   }
 }
