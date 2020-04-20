@@ -133,6 +133,7 @@ CREATE TABLE IF NOT EXISTS account  (
   balances TEXT NOT NULL,
   timestamp BIGINT NOT NULL,
   block_height BIGINT NOT NULL,
+  is_staking BOOLEAN NOT NULL,
   PRIMARY KEY ( account_id )  
 );
 
