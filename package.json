@@ -1,6 +1,6 @@
 {
   "name": "polkastats-backend-v3",
-  "version": "3.0.0",
+  "version": "milestone1",
   "description": "PolkaStats backend v3",
   "main": "index.js",
   "scripts": {
