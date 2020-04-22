@@ -6,13 +6,21 @@ New improved backend for https://polkastats.io!
 
 ### Table of Contents
 
-   * [Installation Instructions](#installation-instructions)
-   * [Usage Instructions](#usage-instructions)
-   * [List of current containers](#list-of-current-containers)
-   * [Updating containers](#updating-containers)
-   * [Crawler](#crawler)
-   * [Phragmen](#phragmen)
-
+- [PolkaStats Backend v3](#polkastats-backend-v3)
+    - [Table of Contents](#table-of-contents)
+  - [Installation Instructions](#installation-instructions)
+  - [Usage Instructions](#usage-instructions)
+  - [List of current containers](#list-of-current-containers)
+  - [Updating containers](#updating-containers)
+  - [Crawler](#crawler)
+  - [Phragmen](#phragmen)
+  - [Hasura demo](#hasura-demo)
+    - [Query example. Static](#query-example-static)
+    - [Subscription example. Dynamic](#subscription-example-dynamic)
+  - [Configuration](#configuration)
+    - [Substrate](#substrate)
+    - [Database](#database)
+    - [Crawlers](#crawlers)
 
 <!--te-->
 
@@ -27,10 +35,13 @@ npm install
 ## Usage Instructions
 
 To launch all docker containers at once:
+
 ```
 npm run docker
 ```
+
 To run them separately:
+
 ```
 npm run docker:<container-name>
 ```
@@ -41,7 +52,7 @@ npm run docker:<container-name>
 - postgres
 - graphql-engine
 - crawler
-- phragmen  (temporarily disabled)
+- phragmen (temporarily disabled)
 
 ## Updating containers
 
@@ -104,6 +115,7 @@ In order to check it and see its power you could start a new subscription or jus
 ### Query example. Static
 
 - Block query example:
+
 ```
 query {
   block  {
@@ -122,6 +134,7 @@ query {
 ```
 
 - Rewards query example:
+
 ```
 query {
   rewards {
@@ -134,6 +147,7 @@ query {
 ```
 
 - Validator by number of nominators example:
+
 ```
 query {
   validator_num_nominators {
@@ -145,6 +159,7 @@ query {
 ```
 
 - Account query example:
+
 ```
 query {
   account {
@@ -158,6 +173,7 @@ query {
 ### Subscription example. Dynamic
 
 - Block subscription example:
+
 ```
 subscription {
   block {
@@ -170,6 +186,7 @@ subscription {
 ```
 
 - Validator active subscription example:
+
 ```
 subscription MySubscription {
 	validator_active {
@@ -183,6 +200,7 @@ subscription MySubscription {
 ```
 
 - Account subscription example:
+
 ```
 subscription MySubscription {
   account {
@@ -191,3 +209,46 @@ subscription MySubscription {
   }
 }
 ```
+
+## Configuration
+
+You can customize your configuration through the following environment variables:
+
+### Substrate
+
+| Env name        | Description           | Default Value            |
+| --------------- | --------------------- | ------------------------ |
+| WS_PROVIDER_URL | Substrate node to use | ws://substrate-node:9944 |
+
+### Database
+
+| Env name          | Description              | Default Value |
+| ----------------- | ------------------------ | ------------- |
+| POSTGRES_USER     | PostgreSQL username      | polkastats    |
+| POSTGRES_PASSWORD | PostgreSQL user password | polkastats    |
+| POSTGRES_HOST     | PostgreSQL host          | postgres      |
+| POSTGRES_PORT     | PostgreSQL port          | 5432          |
+| POSTGRES_DATABASE | PostgreSQL database name | polkastats    |
+
+### Crawlers
+
+| Env name                                | Description                                 | Default Value                                  |
+| --------------------------------------- | ------------------------------------------- | ---------------------------------------------- |
+| CRAWLER_BLOCK_LISTENER_POLLING_TIME_MS  | Polling time for block listener (ms)        | 60000                                          |
+| CRAWLER_ACTIVE_ACCOUNTS_POLLING_TIME_MS | Polling time for accounts crawler (ms)      | 600000                                         |
+| CRAWLER_PHRAGMEN_POLLING_TIME_MS        | Polling time for phragmen executions (ms)   | 300000                                         |
+| CRAWLER_PHRAGMEN_OUTPUT_DIR             | Directory to store the phgramen JSON result | /tmp/phragmen                                  |
+| CRAWLER_PHRAGMEN_BINARY_PATH            | Path to the phragmen executable             | /usr/app/polkastats-backend-v3/offline-phragme |
+
+You can also disable specific crawlers with the following environment variables:
+
+- `CRAWLER_SYSTEM_DISABLE`
+- `CRAWLER_BLOCK_LISTENER_DISABLE`
+- `CRAWLER_BLOCK_HARVESTER_DISABLE`
+- `CRAWLER_STAKING_DISABLE`
+- `CRAWLER_ACTIVE_ACCOUNTS_DISABLE`
+- `CRAWLER_CHAIN_DISABLE`
+- `CRAWLER_REWARDS_DISABLE`
+- `CRAWLER_PHRAGMEN_DISABLE`
+
+For instance, if you want to disable phgramen crawler just set `CRAWLER_PHRAGMEN_DISABLE=true`.
