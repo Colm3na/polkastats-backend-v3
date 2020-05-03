@@ -8,7 +8,7 @@
 #
 #RUN cargo build --release
 
-FROM node
+FROM node:erbium
 
 WORKDIR /usr/app/polkastats-backend-v3
 
