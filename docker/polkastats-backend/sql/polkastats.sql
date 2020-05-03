@@ -57,6 +57,24 @@ CREATE TABLE IF NOT EXISTS rewards  (
   PRIMARY KEY ( block_number, era_index, stash_id )  
 );
 
+CREATE TABLE IF NOT EXISTS validator_slashes_era  (
+  block_number BIGINT NOT NULL,
+  era_index INT NOT NULL,
+  account_id VARCHAR(50),
+  amount BIGINT NOT NULL,
+  timestamp BIGINT NOT NULL,
+  PRIMARY KEY ( block_number, era_index, account_id )  
+);
+
+CREATE TABLE IF NOT EXISTS nominator_slashes_era  (
+  block_number BIGINT NOT NULL,
+  era_index INT NOT NULL,
+  account_id VARCHAR(50),
+  amount BIGINT NOT NULL,
+  timestamp BIGINT NOT NULL,
+  PRIMARY KEY ( block_number, era_index, account_id )  
+);
+
 CREATE TABLE IF NOT EXISTS validator_staking  (  
   block_number BIGINT NOT NULL,
   session_index INT NOT NULL,
