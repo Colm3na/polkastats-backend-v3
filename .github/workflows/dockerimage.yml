@@ -2,17 +2,46 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ master, develop ]
-  pull_request:
-    branches: [ master ]
+    branches: 
+      - master
+      - develop
+    tags:
+      - v*
+
+env:
+  IMAGE_NAME: polkastats-crawler
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
+      
     - name: Build the Docker image
       run: docker build -t polkastats/polkastats-crawlers . -f docker/polkastats-backend/backend/Dockerfile
+      
+    - name: Log into registry
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+      
+    - name: Push image
+      run: |
+          IMAGE_ID=polkastats/${{ github.repository }}/$IMAGE_NAME
+          
+          # Change all uppercase to lowercase
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+
+          # Strip "v" prefix from tag name
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "develop" ] && VERSION=latest
+
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+
+          docker tag image $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
