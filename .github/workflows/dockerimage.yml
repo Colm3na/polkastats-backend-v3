@@ -22,7 +22,7 @@ jobs:
       run: docker build -t image . -f docker/polkastats-backend/backend/Dockerfile
       
     - name: Log into registry
-      run: echo "8ac13898-1668-442f-a3cc-f3378d7d22ef" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+      run: echo "8ac13898-1668-442f-a3cc-f3378d7d22ef" | docker login -u ${{ github.actor }} --password-stdin
       
     - name: Push image
       run: |
