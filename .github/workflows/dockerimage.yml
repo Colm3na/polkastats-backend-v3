@@ -22,11 +22,11 @@ jobs:
       run: docker build -t polkastats/polkastats-crawlers . -f docker/polkastats-backend/backend/Dockerfile
       
     - name: Log into registry
-      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login -u ${{ github.actor }} --password-stdin
       
     - name: Push image
       run: |
-          IMAGE_ID=polkastats/${{ github.repository }}/$IMAGE_NAME
+          IMAGE_ID=polkastats/$IMAGE_NAME
           
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
