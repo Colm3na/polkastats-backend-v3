@@ -22,7 +22,7 @@ jobs:
       run: docker build -t polkastats/polkastats-crawlers . -f docker/polkastats-backend/backend/Dockerfile
       
     - name: Log into registry
-      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login -u ${{ github.actor }} --password-stdin
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
       
     - name: Push image
       run: |
