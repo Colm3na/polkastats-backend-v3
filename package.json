@@ -1,6 +1,6 @@
 {
   "name": "polkastats-backend-v3",
-  "version": "3.0.0-milestone2",
+  "version": "3.0.0-milestone2-1",
   "description": "PolkaStats backend v3",
   "main": "index.js",
   "scripts": {
@@ -31,12 +31,12 @@
   },
   "homepage": "https://github.com/Colm3na/polkastats-backend-v3#readme",
   "dependencies": {
-    "@polkadot/api": "^v1.8.0-beta.2",
+    "@polkadot/api": "^1.12.2",
     "axios": "^0.19.2",
     "bignumber.js": "^9.0.0",
-    "pg": "^7.18.1",
     "dotenv": "^8.2.0",
     "lodash": "^4.17.15",
+    "pg": "^7.18.1",
     "pino": "^6.2.0"
   }
 }

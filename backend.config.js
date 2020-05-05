@@ -55,7 +55,7 @@ module.exports = {
 
     {
       enabled: !process.env.CRAWLER_REWARDS_DISABLE,
-      module: require('./lib/crawlers/rewards'),
+      module: require('./lib/crawlers/rewardsSlashes'),
     },
 
     {
