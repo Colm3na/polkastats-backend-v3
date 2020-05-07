@@ -14,7 +14,7 @@ WORKDIR /usr/app/polkastats-backend-v3
 
 #COPY --from=builder /app/offline-phragmen-master/target/release/offline-phragmen /usr/app/polkastats-backend-v3
 
-RUN wget https://github.com/Bigomby/offline-phragmen/releases/download/0.1.0/offline-phragmen; \
+RUN wget https://github.com/Bigomby/offline-phragmen/releases/download/milestone2/offline-phragmen; \
     chmod +x offline-phragmen
 
 COPY . /usr/app/polkastats-backend-v3
