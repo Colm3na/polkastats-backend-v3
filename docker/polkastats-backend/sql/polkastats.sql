@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS validator_produced_blocks (
   block_number BIGINT NOT NULL,
   session_index INT NOT NULL,
   account_id VARCHAR(47) NOT NULL,
-  amount BIGINT NOT NULL,
+  produced_blocks BIGINT NOT NULL,
   timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, session_index, account_id )  
 );
