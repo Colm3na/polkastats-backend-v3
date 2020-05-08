@@ -64,9 +64,7 @@ module.exports = {
       config: {
         wsProviderUrl:
           process.env.WS_PROVIDER_URL || 'ws://substrate-node:9944',
-        pollingTime:
-          parseInt(process.env.CRAWLER_PHRAGMEN_POLLING_TIME_MS) ||
-          5 * 60 * 1000,
+        pollingTime: parseInt(process.env.CRAWLER_PHRAGMEN_POLLING_TIME_MS),
         phragmenOutputDir:
           process.env.CRAWLER_PHRAGMEN_OUTPUT_DIR || '/tmp/phragmen',
         offlinePhragmenPath:
