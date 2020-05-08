@@ -66,15 +66,6 @@ CREATE TABLE IF NOT EXISTS validator_slashes_era  (
   PRIMARY KEY ( block_number, era_index, account_id )  
 );
 
-CREATE TABLE IF NOT EXISTS validator_produced_blocks_era  (
-  block_number BIGINT NOT NULL,
-  era_index INT NOT NULL,
-  account_id VARCHAR(50),
-  amount BIGINT NOT NULL,
-  timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number, era_index, account_id )  
-);
-
 CREATE TABLE IF NOT EXISTS nominator_slashes_era  (
   block_number BIGINT NOT NULL,
   era_index INT NOT NULL,
@@ -132,6 +123,15 @@ CREATE TABLE IF NOT EXISTS validator_era_points  (
   session_index INT NOT NULL,
   account_id VARCHAR(47) NOT NULL,     
   era_points INT NOT NULL,
+  timestamp BIGINT NOT NULL,
+  PRIMARY KEY ( block_number, session_index, account_id )  
+);
+
+CREATE TABLE IF NOT EXISTS validator_produced_blocks (
+  block_number BIGINT NOT NULL,
+  session_index INT NOT NULL,
+  account_id VARCHAR(47) NOT NULL,
+  amount BIGINT NOT NULL,
   timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number, session_index, account_id )  
 );
