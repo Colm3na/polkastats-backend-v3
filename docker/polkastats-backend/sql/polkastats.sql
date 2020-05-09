@@ -127,6 +127,14 @@ CREATE TABLE IF NOT EXISTS validator_era_points  (
   PRIMARY KEY ( block_number, session_index, account_id )  
 );
 
+CREATE TABLE IF NOT EXISTS validator_produced_blocks (
+  session_index INT NOT NULL,
+  account_id VARCHAR(47) NOT NULL,
+  produced_blocks BIGINT NOT NULL,
+  timestamp BIGINT NOT NULL,
+  PRIMARY KEY ( session_index, account_id )  
+);
+
 CREATE TABLE IF NOT EXISTS validator_active  (
   block_number BIGINT NOT NULL,
   session_index INT NOT NULL,
