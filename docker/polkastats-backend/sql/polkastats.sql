@@ -37,6 +37,18 @@ CREATE TABLE IF NOT EXISTS event  (
   PRIMARY KEY ( block_number, event_index ) 
 );
 
+CREATE TABLE IF NOT EXISTS extrinsic  (  
+  block_number BIGINT NOT NULL,
+  extrinsic_index INT NOT NULL,
+  signer VARCHAR(47),
+  section VARCHAR(100) NOT NULL,
+  method VARCHAR(100) NOT NULL,
+  args TEXT NOT NULL,
+  hash VARCHAR(100) NOT NULL,
+  doc TEXT NOT NULL,
+  PRIMARY KEY ( block_number, extrinsic_index ) 
+);
+
 CREATE TABLE IF NOT EXISTS phragmen  (  
   block_height BIGINT NOT NULL,
   phragmen_json TEXT NOT NULL,
@@ -460,12 +472,12 @@ INSERT INTO polkastats_identity VALUES
     1587202213
   );
 
-
 CREATE INDEX IF NOT EXISTS validator_bonded_account_id_idx ON validator_bonded (account_id);
 CREATE INDEX IF NOT EXISTS validator_selfbonded_account_id_idx ON validator_selfbonded (account_id);
 CREATE INDEX IF NOT EXISTS validator_num_nominators_account_id_idx ON validator_num_nominators (account_id);
 CREATE INDEX IF NOT EXISTS validator_era_points_account_id_idx ON validator_era_points (account_id);
 CREATE INDEX IF NOT EXISTS validator_active_account_id_idx ON validator_active (account_id);
+CREATE INDEX IF NOT EXISTS validator_produced_blocks_id_idx ON validator_produced_blocks (account_id);
 
 GRANT ALL PRIVILEGES ON TABLE validator_staking TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE intention_staking TO polkastats;
@@ -474,9 +486,11 @@ GRANT ALL PRIVILEGES ON TABLE validator_selfbonded TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE validator_num_nominators TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE validator_era_points TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE validator_active TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE validator_produced_blocks TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE intention_bonded TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE extrinsic TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE rewards TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE account TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE phragmen TO polkastats;
