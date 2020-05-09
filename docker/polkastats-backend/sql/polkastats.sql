@@ -40,10 +40,12 @@ CREATE TABLE IF NOT EXISTS event  (
 CREATE TABLE IF NOT EXISTS extrinsic  (  
   block_number BIGINT NOT NULL,
   extrinsic_index INT NOT NULL,
+  signer VARCHAR(47),
   section VARCHAR(100) NOT NULL,
   method VARCHAR(100) NOT NULL,
-  phase VARCHAR(100) NOT NULL,
-  data TEXT NOT NULL,
+  args TEXT NOT NULL,
+  hash VARCHAR(100) NOT NULL,
+  doc TEXT NOT NULL,
   PRIMARY KEY ( block_number, extrinsic_index ) 
 );
 
