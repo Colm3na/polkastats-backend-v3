@@ -169,9 +169,11 @@ CREATE TABLE IF NOT EXISTS intention_bonded  (
 CREATE TABLE IF NOT EXISTS account  (  
   account_id VARCHAR(47) NOT NULL,
   identity TEXT NOT NULL,
+  identity_display VARCHAR(100) NOT NULL,
   balances TEXT NOT NULL,
   available_balance BIGINT NOT NULL,
   free_balance BIGINT NOT NULL,
+  locked_balance BIGINT NOT NULL,
   timestamp BIGINT NOT NULL,
   block_height BIGINT NOT NULL,
   is_staking BOOLEAN NOT NULL,
