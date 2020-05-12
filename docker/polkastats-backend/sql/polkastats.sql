@@ -37,6 +37,19 @@ CREATE TABLE IF NOT EXISTS event  (
   PRIMARY KEY ( block_number, event_index ) 
 );
 
+CREATE TABLE IF NOT EXISTS extrinsic  (  
+  block_number BIGINT NOT NULL,
+  extrinsic_index INT NOT NULL,
+  is_signed BOOLEAN NOT NULL,
+  signer VARCHAR(47),
+  section VARCHAR(100) NOT NULL,
+  method VARCHAR(100) NOT NULL,
+  args TEXT NOT NULL,
+  hash VARCHAR(100) NOT NULL,
+  doc TEXT NOT NULL,
+  PRIMARY KEY ( block_number, extrinsic_index ) 
+);
+
 CREATE TABLE IF NOT EXISTS phragmen  (  
   block_height BIGINT NOT NULL,
   phragmen_json TEXT NOT NULL,
@@ -127,6 +140,14 @@ CREATE TABLE IF NOT EXISTS validator_era_points  (
   PRIMARY KEY ( block_number, session_index, account_id )  
 );
 
+CREATE TABLE IF NOT EXISTS validator_produced_blocks (
+  session_index INT NOT NULL,
+  account_id VARCHAR(47) NOT NULL,
+  produced_blocks BIGINT NOT NULL,
+  timestamp BIGINT NOT NULL,
+  PRIMARY KEY ( session_index, account_id )  
+);
+
 CREATE TABLE IF NOT EXISTS validator_active  (
   block_number BIGINT NOT NULL,
   session_index INT NOT NULL,
@@ -148,7 +169,11 @@ CREATE TABLE IF NOT EXISTS intention_bonded  (
 CREATE TABLE IF NOT EXISTS account  (  
   account_id VARCHAR(47) NOT NULL,
   identity TEXT NOT NULL,
+  identity_display VARCHAR(100) NOT NULL,
   balances TEXT NOT NULL,
+  available_balance BIGINT NOT NULL,
+  free_balance BIGINT NOT NULL,
+  locked_balance BIGINT NOT NULL,
   timestamp BIGINT NOT NULL,
   block_height BIGINT NOT NULL,
   is_staking BOOLEAN NOT NULL,
@@ -452,12 +477,12 @@ INSERT INTO polkastats_identity VALUES
     1587202213
   );
 
-
 CREATE INDEX IF NOT EXISTS validator_bonded_account_id_idx ON validator_bonded (account_id);
 CREATE INDEX IF NOT EXISTS validator_selfbonded_account_id_idx ON validator_selfbonded (account_id);
 CREATE INDEX IF NOT EXISTS validator_num_nominators_account_id_idx ON validator_num_nominators (account_id);
 CREATE INDEX IF NOT EXISTS validator_era_points_account_id_idx ON validator_era_points (account_id);
 CREATE INDEX IF NOT EXISTS validator_active_account_id_idx ON validator_active (account_id);
+CREATE INDEX IF NOT EXISTS validator_produced_blocks_id_idx ON validator_produced_blocks (account_id);
 
 GRANT ALL PRIVILEGES ON TABLE validator_staking TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE intention_staking TO polkastats;
@@ -466,9 +491,11 @@ GRANT ALL PRIVILEGES ON TABLE validator_selfbonded TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE validator_num_nominators TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE validator_era_points TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE validator_active TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE validator_produced_blocks TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE intention_bonded TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE extrinsic TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE rewards TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE account TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE phragmen TO polkastats;
