@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS rewards  (
   stake_info TEXT,
   estimated_payout BIGINT NOT NULL,
   timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number, era_index, stash_id )  
+  PRIMARY KEY ( era_index, stash_id )  
 );
 
 CREATE TABLE IF NOT EXISTS validator_slashes_era  (
@@ -170,10 +170,12 @@ CREATE TABLE IF NOT EXISTS account  (
   account_id VARCHAR(47) NOT NULL,
   identity TEXT NOT NULL,
   identity_display VARCHAR(100) NOT NULL,
+  identity_display_parent VARCHAR(100) NOT NULL,
   balances TEXT NOT NULL,
   available_balance BIGINT NOT NULL,
   free_balance BIGINT NOT NULL,
   locked_balance BIGINT NOT NULL,
+  nonce BIGINT NOT NULL,
   timestamp BIGINT NOT NULL,
   block_height BIGINT NOT NULL,
   is_staking BOOLEAN NOT NULL,
