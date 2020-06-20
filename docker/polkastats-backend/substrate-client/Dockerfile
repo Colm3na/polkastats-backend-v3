@@ -2,7 +2,7 @@ FROM phusion/baseimage:0.11
 LABEL maintainer "@ColmenaLabs_svq"
 LABEL description="Small image with the Substrate binary."
 
-ARG VERSION=v0.8.7
+ARG VERSION=v0.8.10
 
 RUN apt-get update && apt-get install wget curl jq -y
 
