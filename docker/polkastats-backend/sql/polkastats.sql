@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS extrinsic  (
   args TEXT NOT NULL,
   hash VARCHAR(100) NOT NULL,
   doc TEXT NOT NULL,
+  success BOOLEAN NOT NULL,
   PRIMARY KEY ( block_number, extrinsic_index ) 
 );
 
