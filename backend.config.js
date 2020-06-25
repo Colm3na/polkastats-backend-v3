@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 module.exports = {
+  substrateNetwork: process.env.SUBSTRATE_NETWORK || 'polkadot',
   wsProviderUrl: process.env.WS_PROVIDER_URL || 'ws://substrate-node:9944',
 
   postgresConnParams: {
@@ -62,9 +63,8 @@ module.exports = {
       enabled: !process.env.CRAWLER_PHRAGMEN_DISABLE,
       module: require('./lib/crawlers/phragmen'),
       config: {
-        substrateNetwork: process.env.SUBSTRATE_NETWORK || 'polkadot',
-        wsProviderUrl:
-          process.env.WS_PROVIDER_URL || 'ws://substrate-node:9944',
+        substrateNetwork,
+        wsProviderUrl,
         pollingTime: parseInt(process.env.CRAWLER_PHRAGMEN_POLLING_TIME_MS),
         phragmenOutputDir:
           process.env.CRAWLER_PHRAGMEN_OUTPUT_DIR || '/tmp/phragmen',
