@@ -5,15 +5,18 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "docker": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d",
-    "docker:build": "docker-compose -f docker/polkastats-backend/docker-compose.yml build",
+    "docker": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml up -d",
+    "docker:build": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml build",
+    "docker:build:polkadot": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml build",
+    "docker:build:kusama": "docker-compose -f docker/polkastats-backend/docker-compose-kusama.yml build",
+    "docker:build:westend": "docker-compose -f docker/polkastats-backend/docker-compose-westend.yml build",
     "docker:clean": "bash docker/polkastats-backend/clean-polkastats-dockers",
     "docker:stop": "docker stop polkastats-backend_crawler_1 polkastats-backend_graphql-engine_1 polkastats-backend_postgres_1 polkastats-backend_substrate-node_1 polkastats-backend_phragmen_1",
-    "docker:node": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d substrate-node",
-    "docker:postgres": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d postgres",
-    "docker:graphql": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d graphql-engine",
-    "docker:crawler": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d crawler",
-    "docker:phragmen": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d phragmen"
+    "docker:node": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml up -d substrate-node",
+    "docker:postgres": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml up -d postgres",
+    "docker:graphql": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml up -d graphql-engine",
+    "docker:crawler": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml up -d crawler",
+    "docker:phragmen": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml up -d phragmen"
   },
   "repository": {
     "type": "git",
