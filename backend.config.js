@@ -63,8 +63,8 @@ module.exports = {
       enabled: !process.env.CRAWLER_PHRAGMEN_DISABLE,
       module: require('./lib/crawlers/phragmen'),
       config: {
-        substrateNetwork,
-        wsProviderUrl,
+        substrateNetwork: module.exports.substrateNetwork,
+        wsProviderUrl: module.exports.wsProviderUrl,
         pollingTime: parseInt(process.env.CRAWLER_PHRAGMEN_POLLING_TIME_MS),
         phragmenOutputDir:
           process.env.CRAWLER_PHRAGMEN_OUTPUT_DIR || '/tmp/phragmen',
