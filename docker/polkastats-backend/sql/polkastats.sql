@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS extrinsic  (
   args TEXT NOT NULL,
   hash VARCHAR(100) NOT NULL,
   doc TEXT NOT NULL,
+  success BOOLEAN NOT NULL,
   PRIMARY KEY ( block_number, extrinsic_index ) 
 );
 
@@ -194,7 +195,7 @@ CREATE TABLE IF NOT EXISTS system  (
 CREATE TABLE IF NOT EXISTS chain  (
   block_height BIGINT NOT NULL,
   session_index INT NOT NULL,
-  total_issuance BIGINT NOT NULL,
+  total_issuance VARCHAR(100) NOT NULL,
   active_accounts BIGINT NOT NULL,
   timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_height )  
