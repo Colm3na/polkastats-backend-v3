@@ -14,7 +14,7 @@ services:
       - '30333:30333'
       - '9933:9933'
       - '9944:9944'
-    command: -d /data --unsafe-ws-external --rpc-cors all --pruning=archive --name 'Polkastats 🤖 v3 --chain polkadot'
+    command: -d /data --unsafe-ws-external --rpc-cors all --pruning=archive --name 'Polkastats 🤖 v3' --chain polkadot --ws-max-connections 200
     restart: on-failure
   #
   # SQL data base
