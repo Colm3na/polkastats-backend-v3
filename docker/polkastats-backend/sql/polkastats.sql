@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS block (
 );
 
 CREATE TABLE IF NOT EXISTS event  (  
-  block_number TEXT NOT NULL,
+  block_number BIGINT NOT NULL,
   event_index INT NOT NULL,
   section TEXT NOT NULL,
   method TEXT NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS event  (
 );
 
 CREATE TABLE IF NOT EXISTS extrinsic  (  
-  block_number TEXT NOT NULL,
+  block_number BIGINT NOT NULL,
   extrinsic_index INT NOT NULL,
   is_signed BOOLEAN NOT NULL,
   signer TEXT,
@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS phragmen  (
 );
 
 CREATE TABLE IF NOT EXISTS rewards  (
-  block_number TEXT NOT NULL,
+  block_number BIGINT NOT NULL,
   era_index INT NOT NULL,
   stash_id TEXT,
   commission TEXT,
@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS rewards  (
 );
 
 CREATE TABLE IF NOT EXISTS validator_slashes_era  (
-  block_number TEXT NOT NULL,
+  block_number BIGINT NOT NULL,
   era_index INT NOT NULL,
   account_id TEXT,
   amount TEXT NOT NULL,
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS validator_slashes_era  (
 );
 
 CREATE TABLE IF NOT EXISTS nominator_slashes_era  (
-  block_number TEXT NOT NULL,
+  block_number BIGINT NOT NULL,
   era_index INT NOT NULL,
   account_id TEXT,
   amount TEXT NOT NULL,
@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS nominator_slashes_era  (
 );
 
 CREATE TABLE IF NOT EXISTS validator_staking  (  
-  block_number TEXT NOT NULL,
+  block_number BIGINT NOT NULL,
   session_index INT NOT NULL,
   json TEXT NOT NULL,
   timestamp TEXT NOT NULL,
@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS validator_staking  (
 );
 
 CREATE TABLE IF NOT EXISTS intention_staking  (  
-  block_number TEXT NOT NULL,
+  block_number BIGINT NOT NULL,
   session_index INT NOT NULL,
   json TEXT NOT NULL,
   timestamp TEXT NOT NULL,
@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS intention_staking  (
 );
 
 CREATE TABLE IF NOT EXISTS validator_bonded  (
-  block_number TEXT NOT NULL,
+  block_number BIGINT NOT NULL,
   session_index INT NOT NULL,
   account_id TEXT NOT NULL,     
   amount TEXT NOT NULL,
@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS validator_bonded  (
 );
 
 CREATE TABLE IF NOT EXISTS validator_selfbonded  (
-  block_number TEXT NOT NULL,
+  block_number BIGINT NOT NULL,
   session_index INT NOT NULL,
   account_id TEXT NOT NULL,     
   amount TEXT NOT NULL,
@@ -124,7 +124,7 @@ CREATE TABLE IF NOT EXISTS validator_selfbonded  (
 );
 
 CREATE TABLE IF NOT EXISTS validator_num_nominators  (
-  block_number TEXT NOT NULL,
+  block_number BIGINT NOT NULL,
   session_index INT NOT NULL,
   account_id TEXT NOT NULL,     
   nominators INT NOT NULL,
@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS validator_num_nominators  (
 );
 
 CREATE TABLE IF NOT EXISTS validator_era_points  (
-  block_number TEXT NOT NULL,
+  block_number BIGINT NOT NULL,
   session_index INT NOT NULL,
   account_id TEXT NOT NULL,     
   era_points INT NOT NULL,
@@ -150,7 +150,7 @@ CREATE TABLE IF NOT EXISTS validator_produced_blocks (
 );
 
 CREATE TABLE IF NOT EXISTS validator_active  (
-  block_number TEXT NOT NULL,
+  block_number BIGINT NOT NULL,
   session_index INT NOT NULL,
   account_id TEXT NOT NULL,     
   active BOOLEAN NOT NULL,
@@ -159,7 +159,7 @@ CREATE TABLE IF NOT EXISTS validator_active  (
 );
 
 CREATE TABLE IF NOT EXISTS intention_bonded  (
-  block_number TEXT NOT NULL,
+  block_number BIGINT NOT NULL,
   session_index INT NOT NULL,
   account_id TEXT NOT NULL,     
   amount TEXT NOT NULL,
@@ -178,13 +178,13 @@ CREATE TABLE IF NOT EXISTS account  (
   locked_balance TEXT NOT NULL,
   nonce TEXT NOT NULL,
   timestamp TEXT NOT NULL,
-  block_height TEXT NOT NULL,
+  block_height BIGINT NOT NULL,
   is_staking BOOLEAN NOT NULL,
   PRIMARY KEY ( account_id )  
 );
 
 CREATE TABLE IF NOT EXISTS system  (
-  block_height TEXT NOT NULL,
+  block_height BIGINT NOT NULL,
   chain TEXT NOT NULL,
   node_name TEXT NOT NULL,
   node_version TEXT NOT NULL,
@@ -193,7 +193,7 @@ CREATE TABLE IF NOT EXISTS system  (
 );
 
 CREATE TABLE IF NOT EXISTS chain  (
-  block_height TEXT NOT NULL,
+  block_height BIGINT NOT NULL,
   session_index INT NOT NULL,
   total_issuance TEXT NOT NULL,
   active_accounts TEXT NOT NULL,
