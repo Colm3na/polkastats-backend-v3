@@ -223,6 +223,5 @@ GRANT ALL PRIVILEGES ON TABLE extrinsic TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE rewards TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE account TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE phragmen TO polkastats;
-GRANT ALL PRIVILEGES ON TABLE polkastats_identity TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE system TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE chain TO polkastats;
