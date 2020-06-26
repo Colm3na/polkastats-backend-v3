@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS rewards  (
   era_rewards TEXT,
   era_points INT NOT NULL,
   stake_info TEXT,
-  estimated_payout BIGINT NOT NULL,
+  estimated_payout TEXT NOT NULL,
   timestamp TEXT NOT NULL,
   PRIMARY KEY ( era_index, stash_id )  
 );
@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS validator_slashes_era  (
   block_number BIGINT NOT NULL,
   era_index INT NOT NULL,
   account_id TEXT,
-  amount BIGINT NOT NULL,
+  amount TEXT NOT NULL,
   timestamp TEXT NOT NULL,
   PRIMARY KEY ( block_number, era_index, account_id )  
 );
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS nominator_slashes_era  (
   block_number BIGINT NOT NULL,
   era_index INT NOT NULL,
   account_id TEXT,
-  amount BIGINT NOT NULL,
+  amount TEXT NOT NULL,
   timestamp TEXT NOT NULL,
   PRIMARY KEY ( block_number, era_index, account_id )  
 );
@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS validator_bonded  (
   block_number BIGINT NOT NULL,
   session_index INT NOT NULL,
   account_id TEXT NOT NULL,     
-  amount BIGINT NOT NULL,
+  amount TEXT NOT NULL,
   timestamp TEXT NOT NULL,
   PRIMARY KEY ( block_number, session_index, account_id )  
 );
@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS validator_selfbonded  (
   block_number BIGINT NOT NULL,
   session_index INT NOT NULL,
   account_id TEXT NOT NULL,     
-  amount BIGINT NOT NULL,
+  amount TEXT NOT NULL,
   timestamp TEXT NOT NULL,
   PRIMARY KEY ( block_number, session_index, account_id )  
 );
@@ -136,7 +136,7 @@ CREATE TABLE IF NOT EXISTS validator_era_points  (
   block_number BIGINT NOT NULL,
   session_index INT NOT NULL,
   account_id TEXT NOT NULL,     
-  era_points INT NOT NULL,
+  era_points TEXT NOT NULL,
   timestamp TEXT NOT NULL,
   PRIMARY KEY ( block_number, session_index, account_id )  
 );
@@ -162,7 +162,7 @@ CREATE TABLE IF NOT EXISTS intention_bonded  (
   block_number BIGINT NOT NULL,
   session_index INT NOT NULL,
   account_id TEXT NOT NULL,     
-  amount BIGINT NOT NULL,
+  amount TEXT NOT NULL,
   timestamp TEXT NOT NULL,
   PRIMARY KEY ( block_number, session_index, account_id )  
 );
