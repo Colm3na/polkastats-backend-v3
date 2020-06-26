@@ -2,7 +2,7 @@ GRANT ALL PRIVILEGES ON DATABASE polkastats TO polkastats;
 
 CREATE TABLE IF NOT EXISTS block (  
   block_number BIGINT NOT NULL,
-  block_number_finalized TEXT NOT NULL,
+  block_number_finalized BIGINT NOT NULL,
   block_author TEXT NOT NULL,
   block_author_name TEXT NOT NULL,
   block_hash TEXT NOT NULL,
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS rewards  (
   era_rewards TEXT,
   era_points INT NOT NULL,
   stake_info TEXT,
-  estimated_payout TEXT NOT NULL,
+  estimated_payout BIGINT NOT NULL,
   timestamp TEXT NOT NULL,
   PRIMARY KEY ( era_index, stash_id )  
 );
@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS validator_slashes_era  (
   block_number BIGINT NOT NULL,
   era_index INT NOT NULL,
   account_id TEXT,
-  amount TEXT NOT NULL,
+  amount BIGINT NOT NULL,
   timestamp TEXT NOT NULL,
   PRIMARY KEY ( block_number, era_index, account_id )  
 );
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS nominator_slashes_era  (
   block_number BIGINT NOT NULL,
   era_index INT NOT NULL,
   account_id TEXT,
-  amount TEXT NOT NULL,
+  amount BIGINT NOT NULL,
   timestamp TEXT NOT NULL,
   PRIMARY KEY ( block_number, era_index, account_id )  
 );
@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS validator_bonded  (
   block_number BIGINT NOT NULL,
   session_index INT NOT NULL,
   account_id TEXT NOT NULL,     
-  amount TEXT NOT NULL,
+  amount BIGINT NOT NULL,
   timestamp TEXT NOT NULL,
   PRIMARY KEY ( block_number, session_index, account_id )  
 );
@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS validator_selfbonded  (
   block_number BIGINT NOT NULL,
   session_index INT NOT NULL,
   account_id TEXT NOT NULL,     
-  amount TEXT NOT NULL,
+  amount BIGINT NOT NULL,
   timestamp TEXT NOT NULL,
   PRIMARY KEY ( block_number, session_index, account_id )  
 );
@@ -162,7 +162,7 @@ CREATE TABLE IF NOT EXISTS intention_bonded  (
   block_number BIGINT NOT NULL,
   session_index INT NOT NULL,
   account_id TEXT NOT NULL,     
-  amount TEXT NOT NULL,
+  amount BIGINT NOT NULL,
   timestamp TEXT NOT NULL,
   PRIMARY KEY ( block_number, session_index, account_id )  
 );
@@ -173,10 +173,10 @@ CREATE TABLE IF NOT EXISTS account  (
   identity_display TEXT NOT NULL,
   identity_display_parent TEXT NOT NULL,
   balances TEXT NOT NULL,
-  available_balance TEXT NOT NULL,
-  free_balance TEXT NOT NULL,
-  locked_balance TEXT NOT NULL,
-  nonce TEXT NOT NULL,
+  available_balance BIGINT NOT NULL,
+  free_balance BIGINT NOT NULL,
+  locked_balance BIGINT NOT NULL,
+  nonce BIGINT NOT NULL,
   timestamp TEXT NOT NULL,
   block_height BIGINT NOT NULL,
   is_staking BOOLEAN NOT NULL,
