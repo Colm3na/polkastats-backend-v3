@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS phragmen  (
   PRIMARY KEY ( block_height )  
 );
 
-CREATE TABLE IF NOT EXISTS rewards  (
+CREATE TABLE IF NOT EXISTS reward  (
   block_number BIGINT NOT NULL,
   era_index INT NOT NULL,
   stash_id TEXT,
