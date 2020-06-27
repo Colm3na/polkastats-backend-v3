@@ -151,6 +151,7 @@ CREATE TABLE IF NOT EXISTS validator  (
   im_online TEXT NOT NULL,
   current_elected TEXT NOT NULL,
   next_elected TEXT NOT NULL,
+  produced_blocks INT NOT NULL,
   timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_height, session_index, account_id )
 );
