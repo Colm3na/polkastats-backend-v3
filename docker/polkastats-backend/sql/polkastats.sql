@@ -89,84 +89,6 @@ CREATE TABLE IF NOT EXISTS nominator_slashes_era  (
   PRIMARY KEY ( block_number, era_index, account_id )  
 );
 
-CREATE TABLE IF NOT EXISTS validator_staking  (  
-  block_number BIGINT NOT NULL,
-  session_index INT NOT NULL,
-  json TEXT NOT NULL,
-  timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number, session_index )  
-);
-
-CREATE TABLE IF NOT EXISTS intention_staking  (  
-  block_number BIGINT NOT NULL,
-  session_index INT NOT NULL,
-  json TEXT NOT NULL,
-  timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number, session_index )  
-);
-
-CREATE TABLE IF NOT EXISTS validator_bonded  (
-  block_number BIGINT NOT NULL,
-  session_index INT NOT NULL,
-  account_id TEXT NOT NULL,     
-  amount BIGINT NOT NULL,
-  timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number, session_index, account_id )  
-);
-
-CREATE TABLE IF NOT EXISTS validator_selfbonded  (
-  block_number BIGINT NOT NULL,
-  session_index INT NOT NULL,
-  account_id TEXT NOT NULL,     
-  amount BIGINT NOT NULL,
-  timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number, session_index, account_id )  
-);
-
-CREATE TABLE IF NOT EXISTS validator_num_nominators  (
-  block_number BIGINT NOT NULL,
-  session_index INT NOT NULL,
-  account_id TEXT NOT NULL,     
-  nominators INT NOT NULL,
-  timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number, session_index, account_id )  
-);
-
-CREATE TABLE IF NOT EXISTS validator_era_points  (
-  block_number BIGINT NOT NULL,
-  session_index INT NOT NULL,
-  account_id TEXT NOT NULL,     
-  era_points INT NOT NULL,
-  timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number, session_index, account_id )  
-);
-
-CREATE TABLE IF NOT EXISTS validator_produced_blocks (
-  session_index INT NOT NULL,
-  account_id TEXT NOT NULL,
-  produced_blocks BIGINT NOT NULL,
-  timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( session_index, account_id )  
-);
-
-CREATE TABLE IF NOT EXISTS validator_active  (
-  block_number BIGINT NOT NULL,
-  session_index INT NOT NULL,
-  account_id TEXT NOT NULL,     
-  active BOOLEAN NOT NULL,
-  timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number, session_index, account_id )  
-);
-
-CREATE TABLE IF NOT EXISTS intention_bonded  (
-  block_number BIGINT NOT NULL,
-  session_index INT NOT NULL,
-  account_id TEXT NOT NULL,     
-  amount BIGINT NOT NULL,
-  timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number, session_index, account_id )  
-);
-
 CREATE TABLE IF NOT EXISTS account  (  
   account_id TEXT NOT NULL,
   identity TEXT NOT NULL,
@@ -259,26 +181,10 @@ CREATE TABLE IF NOT EXISTS intention  (
 CREATE INDEX IF NOT EXISTS validator_account_id_idx ON validator (account_id);
 CREATE INDEX IF NOT EXISTS intention_account_id_idx ON intention (account_id);
 
-CREATE INDEX IF NOT EXISTS validator_bonded_account_id_idx ON validator_bonded (account_id);
-CREATE INDEX IF NOT EXISTS validator_selfbonded_account_id_idx ON validator_selfbonded (account_id);
-CREATE INDEX IF NOT EXISTS validator_num_nominators_account_id_idx ON validator_num_nominators (account_id);
-CREATE INDEX IF NOT EXISTS validator_era_points_account_id_idx ON validator_era_points (account_id);
-CREATE INDEX IF NOT EXISTS validator_active_account_id_idx ON validator_active (account_id);
-CREATE INDEX IF NOT EXISTS validator_produced_blocks_id_idx ON validator_produced_blocks (account_id);
-
-GRANT ALL PRIVILEGES ON TABLE validator_staking TO polkastats;
-GRANT ALL PRIVILEGES ON TABLE intention_staking TO polkastats;
-GRANT ALL PRIVILEGES ON TABLE validator_bonded TO polkastats;
-GRANT ALL PRIVILEGES ON TABLE validator_selfbonded TO polkastats;
-GRANT ALL PRIVILEGES ON TABLE validator_num_nominators TO polkastats;
-GRANT ALL PRIVILEGES ON TABLE validator_era_points TO polkastats;
-GRANT ALL PRIVILEGES ON TABLE validator_active TO polkastats;
-GRANT ALL PRIVILEGES ON TABLE validator_produced_blocks TO polkastats;
-GRANT ALL PRIVILEGES ON TABLE intention_bonded TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE extrinsic TO polkastats;
-GRANT ALL PRIVILEGES ON TABLE rewards TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE reward TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE account TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE phragmen TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE system TO polkastats;
