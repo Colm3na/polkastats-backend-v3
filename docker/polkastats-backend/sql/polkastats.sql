@@ -238,6 +238,7 @@ CREATE TABLE IF NOT EXISTS intention  (
   account_id TEXT NOT NULL,
   controller_id TEXT NOT NULL,
   stash_id TEXT NOT NULL,
+  identity TEXT NOT NULL,
   display_name TEXT NOT NULL,
   exposure TEXT NOT NULL,
   exposure_total TEXT NOT NULL,
