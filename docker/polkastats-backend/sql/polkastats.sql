@@ -89,6 +89,7 @@ CREATE TABLE IF NOT EXISTS nominator  (
   controller_id TEXT NOT NULL,
   stash_id TEXT NOT NULL,
   rank INT NOT NULL,
+  total_staked TEXT NOT NULL,
   identity TEXT NOT NULL,
   display_name TEXT NOT NULL,
   balances TEXT NOT NULL,
