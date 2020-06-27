@@ -246,8 +246,6 @@ CREATE TABLE IF NOT EXISTS intention  (
   reward_destination TEXT NOT NULL,
   staking_ledger TEXT NOT NULL,
   staking_ledger_total TEXT NOT NULL,
-  staking_ledger_own TEXT NOT NULL,
-  staking_ledger_others TEXT NOT NULL,
   validator_prefs TEXT NOT NULL,
   commission TEXT NOT NULL,
   next_session_ids TEXT NOT NULL,
