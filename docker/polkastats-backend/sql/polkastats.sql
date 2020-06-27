@@ -252,7 +252,6 @@ CREATE TABLE IF NOT EXISTS intention  (
   commission TEXT NOT NULL,
   next_session_ids TEXT NOT NULL,
   next_session_id_hex TEXT NOT NULL,
-  redeemable TEXT NOT NULL,
   next_elected TEXT NOT NULL,
   timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_height, session_index, account_id )
