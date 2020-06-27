@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS validator  (
   controller_id TEXT NOT NULL,
   stash_id TEXT NOT NULL,
   rank INT NOT NULL,
+  stakers TEXT NOT NULL,
   identity TEXT NOT NULL,
   display_name TEXT NOT NULL,
   exposure TEXT NOT NULL,
@@ -95,7 +96,7 @@ CREATE TABLE IF NOT EXISTS nominator  (
   free_balance BIGINT NOT NULL,
   locked_balance BIGINT NOT NULL,
   nonce BIGINT NOT NULL,
-  validators TEXT NOT NULL,
+  targets TEXT NOT NULL,
   timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_height, session_index, account_id )
 );
