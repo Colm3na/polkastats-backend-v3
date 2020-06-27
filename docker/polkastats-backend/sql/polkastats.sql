@@ -27,6 +27,79 @@ CREATE TABLE IF NOT EXISTS block (
   PRIMARY KEY ( block_number )  
 );
 
+CREATE TABLE IF NOT EXISTS validator  (
+  block_height BIGINT NOT NULL,
+  session_index INT NOT NULL,
+  account_id TEXT NOT NULL,
+  controller_id TEXT NOT NULL,
+  stash_id TEXT NOT NULL,
+  rank INT NOT NULL,
+  identity TEXT NOT NULL,
+  display_name TEXT NOT NULL,
+  exposure TEXT NOT NULL,
+  exposure_total TEXT NOT NULL,
+  exposure_own TEXT NOT NULL,
+  exposure_others TEXT NOT NULL,
+  nominators TEXT NOT NULL,
+  reward_destination TEXT NOT NULL,
+  staking_ledger TEXT NOT NULL,
+  validator_prefs TEXT NOT NULL,
+  commission TEXT NOT NULL,
+  session_ids TEXT NOT NULL,
+  next_session_ids TEXT NOT NULL,
+  session_id_hex TEXT NOT NULL,
+  next_session_id_hex TEXT NOT NULL,
+  redeemable TEXT NOT NULL,
+  im_online TEXT NOT NULL,
+  current_elected TEXT NOT NULL,
+  next_elected TEXT NOT NULL,
+  produced_blocks INT NOT NULL,
+  timestamp BIGINT NOT NULL,
+  PRIMARY KEY ( block_height, session_index, account_id )
+);
+
+CREATE TABLE IF NOT EXISTS intention  (
+  block_height BIGINT NOT NULL,
+  session_index INT NOT NULL,
+  account_id TEXT NOT NULL,
+  controller_id TEXT NOT NULL,
+  stash_id TEXT NOT NULL,
+  rank INT NOT NULL,
+  stakers TEXT NOT NULL,
+  identity TEXT NOT NULL,
+  display_name TEXT NOT NULL,
+  nominators TEXT NOT NULL,
+  reward_destination TEXT NOT NULL,
+  staking_ledger TEXT NOT NULL,
+  staking_ledger_total TEXT NOT NULL,
+  validator_prefs TEXT NOT NULL,
+  commission TEXT NOT NULL,
+  next_session_ids TEXT NOT NULL,
+  next_session_id_hex TEXT NOT NULL,
+  next_elected TEXT NOT NULL,
+  timestamp BIGINT NOT NULL,
+  PRIMARY KEY ( block_height, session_index, account_id )
+);
+
+CREATE TABLE IF NOT EXISTS nominator  (
+  block_height BIGINT NOT NULL,
+  session_index INT NOT NULL,
+  account_id TEXT NOT NULL,
+  controller_id TEXT NOT NULL,
+  stash_id TEXT NOT NULL,
+  rank INT NOT NULL,
+  identity TEXT NOT NULL,
+  display_name TEXT NOT NULL,
+  balances TEXT NOT NULL,
+  available_balance BIGINT NOT NULL,
+  free_balance BIGINT NOT NULL,
+  locked_balance BIGINT NOT NULL,
+  nonce BIGINT NOT NULL,
+  validators TEXT NOT NULL,
+  timestamp BIGINT NOT NULL,
+  PRIMARY KEY ( block_height, session_index, account_id )
+);
+
 CREATE TABLE IF NOT EXISTS event  (  
   block_number BIGINT NOT NULL,
   event_index INT NOT NULL,
@@ -123,61 +196,6 @@ CREATE TABLE IF NOT EXISTS chain  (
   PRIMARY KEY ( block_height )  
 );
 
--- New validator and intention tables
-
-CREATE TABLE IF NOT EXISTS validator  (
-  block_height BIGINT NOT NULL,
-  session_index INT NOT NULL,
-  account_id TEXT NOT NULL,
-  controller_id TEXT NOT NULL,
-  stash_id TEXT NOT NULL,
-  rank INT NOT NULL,
-  identity TEXT NOT NULL,
-  display_name TEXT NOT NULL,
-  exposure TEXT NOT NULL,
-  exposure_total TEXT NOT NULL,
-  exposure_own TEXT NOT NULL,
-  exposure_others TEXT NOT NULL,
-  nominators TEXT NOT NULL,
-  reward_destination TEXT NOT NULL,
-  staking_ledger TEXT NOT NULL,
-  validator_prefs TEXT NOT NULL,
-  commission TEXT NOT NULL,
-  session_ids TEXT NOT NULL,
-  next_session_ids TEXT NOT NULL,
-  session_id_hex TEXT NOT NULL,
-  next_session_id_hex TEXT NOT NULL,
-  redeemable TEXT NOT NULL,
-  im_online TEXT NOT NULL,
-  current_elected TEXT NOT NULL,
-  next_elected TEXT NOT NULL,
-  produced_blocks INT NOT NULL,
-  timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_height, session_index, account_id )
-);
-
-CREATE TABLE IF NOT EXISTS intention  (
-  block_height BIGINT NOT NULL,
-  session_index INT NOT NULL,
-  account_id TEXT NOT NULL,
-  controller_id TEXT NOT NULL,
-  stash_id TEXT NOT NULL,
-  rank INT NOT NULL,
-  stakers TEXT NOT NULL,
-  identity TEXT NOT NULL,
-  display_name TEXT NOT NULL,
-  nominators TEXT NOT NULL,
-  reward_destination TEXT NOT NULL,
-  staking_ledger TEXT NOT NULL,
-  staking_ledger_total TEXT NOT NULL,
-  validator_prefs TEXT NOT NULL,
-  commission TEXT NOT NULL,
-  next_session_ids TEXT NOT NULL,
-  next_session_id_hex TEXT NOT NULL,
-  next_elected TEXT NOT NULL,
-  timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_height, session_index, account_id )
-);
 
 CREATE INDEX IF NOT EXISTS validator_account_id_idx ON validator (account_id);
 CREATE INDEX IF NOT EXISTS intention_account_id_idx ON intention (account_id);
