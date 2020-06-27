@@ -240,6 +240,7 @@ CREATE TABLE IF NOT EXISTS intention  (
   controller_id TEXT NOT NULL,
   stash_id TEXT NOT NULL,
   rank INT NOT NULL,
+  stakers TEXT NOT NULL,
   identity TEXT NOT NULL,
   display_name TEXT NOT NULL,
   nominators TEXT NOT NULL,
