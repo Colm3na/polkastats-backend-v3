@@ -201,6 +201,67 @@ CREATE TABLE IF NOT EXISTS chain  (
   PRIMARY KEY ( block_height )  
 );
 
+-- New validator and intention tables
+
+CREATE TABLE IF NOT EXISTS validator  (
+  block_height BIGINT NOT NULL,
+  session_index INT NOT NULL,
+  account_id TEXT NOT NULL,
+  controller_id TEXT NOT NULL,
+  stash_id TEXT NOT NULL,
+  display_name TEXT NOT NULL,
+  exposure TEXT NOT NULL,
+  exposure_total TEXT NOT NULL,
+  exposure_own TEXT NOT NULL,
+  exposure_others TEXT NOT NULL,
+  nominators TEXT NOT NULL,
+  reward_destination TEXT NOT NULL,
+  staking_ledger TEXT NOT NULL,
+  validator_prefs TEXT NOT NULL,
+  commission TEXT NOT NULL,
+  session_ids TEXT NOT NULL,
+  next_session_ids TEXT NOT NULL,
+  session_id_hex TEXT NOT NULL,
+  next_session_id_hex TEXT NOT NULL,
+  redeemable TEXT NOT NULL,
+  im_online TEXT NOT NULL,
+  current_elected TEXT NOT NULL,
+  next_elected TEXT NOT NULL,
+  timestamp BIGINT NOT NULL,
+  PRIMARY KEY ( block_height, session_index, account_id )
+);
+
+CREATE TABLE IF NOT EXISTS intention  (
+  block_height BIGINT NOT NULL,
+  session_index INT NOT NULL,
+  account_id TEXT NOT NULL,
+  controller_id TEXT NOT NULL,
+  stash_id TEXT NOT NULL,
+  display_name TEXT NOT NULL,
+  exposure TEXT NOT NULL,
+  exposure_total TEXT NOT NULL,
+  exposure_own TEXT NOT NULL,
+  exposure_others TEXT NOT NULL,
+  nominators TEXT NOT NULL,
+  reward_destination TEXT NOT NULL,
+  staking_ledger TEXT NOT NULL,
+  validator_prefs TEXT NOT NULL,
+  commission TEXT NOT NULL,
+  session_ids TEXT NOT NULL,
+  next_session_ids TEXT NOT NULL,
+  session_id_hex TEXT NOT NULL,
+  next_session_id_hex TEXT NOT NULL,
+  redeemable TEXT NOT NULL,
+  im_online TEXT NOT NULL,
+  current_elected TEXT NOT NULL,
+  next_elected TEXT NOT NULL,
+  timestamp BIGINT NOT NULL,
+  PRIMARY KEY ( block_height, session_index, account_id )
+);
+
+CREATE INDEX IF NOT EXISTS validator_account_id_idx ON validator (account_id);
+CREATE INDEX IF NOT EXISTS intention_account_id_idx ON intention (account_id);
+
 CREATE INDEX IF NOT EXISTS validator_bonded_account_id_idx ON validator_bonded (account_id);
 CREATE INDEX IF NOT EXISTS validator_selfbonded_account_id_idx ON validator_selfbonded (account_id);
 CREATE INDEX IF NOT EXISTS validator_num_nominators_account_id_idx ON validator_num_nominators (account_id);
@@ -225,3 +286,6 @@ GRANT ALL PRIVILEGES ON TABLE account TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE phragmen TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE system TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE chain TO polkastats;
+
+GRANT ALL PRIVILEGES ON TABLE validator TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE intention TO polkastats;
