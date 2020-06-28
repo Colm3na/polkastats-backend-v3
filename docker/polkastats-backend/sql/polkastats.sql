@@ -52,7 +52,6 @@ CREATE TABLE IF NOT EXISTS validator  (
   next_session_id_hex TEXT NOT NULL,
   redeemable TEXT NOT NULL,
   im_online TEXT NOT NULL,
-  current_elected TEXT NOT NULL,
   next_elected TEXT NOT NULL,
   produced_blocks INT NOT NULL,
   timestamp BIGINT NOT NULL,
