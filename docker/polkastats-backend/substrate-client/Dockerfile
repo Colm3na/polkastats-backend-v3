@@ -2,7 +2,7 @@ FROM phusion/baseimage:0.11
 LABEL maintainer "@ColmenaLabs_svq"
 LABEL description="Small image with the Substrate binary."
 
-ARG VERSION=v0.8.12
+ARG VERSION=v0.8.13
 
 RUN apt-get update && apt-get install wget curl jq -y
 
@@ -16,6 +16,5 @@ EXPOSE 30333 9933 9944
 
 VOLUME ["/data"]
 
-#CMD ["/usr/local/bin/polkadot"]
 ENTRYPOINT ["polkadot"]
 CMD ["--dev"]
