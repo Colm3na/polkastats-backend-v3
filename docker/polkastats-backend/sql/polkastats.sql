@@ -144,7 +144,7 @@ CREATE TABLE IF NOT EXISTS reward  (
   PRIMARY KEY ( era_index, stash_id )  
 );
 
-CREATE TABLE IF NOT EXISTS validator_slashes_era  (
+CREATE TABLE IF NOT EXISTS validator_slash_era  (
   block_number BIGINT NOT NULL,
   era_index INT NOT NULL,
   account_id TEXT,
@@ -153,7 +153,7 @@ CREATE TABLE IF NOT EXISTS validator_slashes_era  (
   PRIMARY KEY ( block_number, era_index, account_id )  
 );
 
-CREATE TABLE IF NOT EXISTS nominator_slashes_era  (
+CREATE TABLE IF NOT EXISTS nominator_slash_era  (
   block_number BIGINT NOT NULL,
   era_index INT NOT NULL,
   account_id TEXT,
