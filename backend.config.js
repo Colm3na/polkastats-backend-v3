@@ -55,8 +55,13 @@ module.exports = {
     },
 
     {
-      enabled: !process.env.CRAWLER_REWARDS_DISABLE,
-      module: require('./lib/crawlers/rewardsSlashes'),
+      enabled: !process.env.CRAWLER_ERA_LISTENER_DISABLE,
+      module: require('./lib/crawlers/eraListener'),
+    },
+
+    {
+      enabled: !process.env.CRAWLER_ERA_HARVESTER_DISABLE,
+      module: require('./lib/crawlers/eraHarvester'),
     },
 
     {

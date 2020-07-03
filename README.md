@@ -248,7 +248,7 @@ You can also disable specific crawlers with the following environment variables:
 - `CRAWLER_STAKING_DISABLE`
 - `CRAWLER_ACTIVE_ACCOUNTS_DISABLE`
 - `CRAWLER_CHAIN_DISABLE`
-- `CRAWLER_REWARDS_DISABLE`
+- `CRAWLER_ERA_LISTENER_DISABLE`
 - `CRAWLER_PHRAGMEN_DISABLE`
 
 For instance, if you want to disable phgramen crawler just set `CRAWLER_PHRAGMEN_DISABLE=true`.
