@@ -132,9 +132,10 @@ CREATE TABLE IF NOT EXISTS phragmen  (
 );
 
 CREATE TABLE IF NOT EXISTS reward  (
-  block_number BIGINT NOT NULL,
   era_index INT NOT NULL,
   stash_id TEXT,
+  identity TEXT NOT NULL,
+  display_name TEXT NOT NULL,
   commission BIGINT,
   era_rewards TEXT,
   era_points INT NOT NULL,
@@ -145,21 +146,19 @@ CREATE TABLE IF NOT EXISTS reward  (
 );
 
 CREATE TABLE IF NOT EXISTS validator_slash_era  (
-  block_number BIGINT NOT NULL,
   era_index INT NOT NULL,
   account_id TEXT,
   amount BIGINT NOT NULL,
   timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number, era_index, account_id )  
+  PRIMARY KEY ( era_index, account_id )  
 );
 
 CREATE TABLE IF NOT EXISTS nominator_slash_era  (
-  block_number BIGINT NOT NULL,
   era_index INT NOT NULL,
   account_id TEXT,
   amount BIGINT NOT NULL,
   timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number, era_index, account_id )  
+  PRIMARY KEY ( era_index, account_id )  
 );
 
 CREATE TABLE IF NOT EXISTS account  (  
