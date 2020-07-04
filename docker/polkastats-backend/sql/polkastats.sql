@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS phragmen  (
   PRIMARY KEY ( block_height )  
 );
 
-CREATE TABLE IF NOT EXISTS reward  (
+CREATE TABLE IF NOT EXISTS validator_era_staking  (
   era_index INT NOT NULL,
   stash_id TEXT,
   identity TEXT NOT NULL,
@@ -145,7 +145,7 @@ CREATE TABLE IF NOT EXISTS reward  (
   PRIMARY KEY ( era_index, stash_id )  
 );
 
-CREATE TABLE IF NOT EXISTS validator_slash_era  (
+CREATE TABLE IF NOT EXISTS validator_era_slash  (
   era_index INT NOT NULL,
   account_id TEXT,
   amount BIGINT NOT NULL,
@@ -153,7 +153,7 @@ CREATE TABLE IF NOT EXISTS validator_slash_era  (
   PRIMARY KEY ( era_index, account_id )  
 );
 
-CREATE TABLE IF NOT EXISTS nominator_slash_era  (
+CREATE TABLE IF NOT EXISTS nominator_era_slash  (
   era_index INT NOT NULL,
   account_id TEXT,
   amount BIGINT NOT NULL,
@@ -195,18 +195,18 @@ CREATE TABLE IF NOT EXISTS chain  (
   PRIMARY KEY ( block_height )  
 );
 
-
 CREATE INDEX IF NOT EXISTS validator_account_id_idx ON validator (account_id);
 CREATE INDEX IF NOT EXISTS intention_account_id_idx ON intention (account_id);
 
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE extrinsic TO polkastats;
-GRANT ALL PRIVILEGES ON TABLE reward TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE account TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE phragmen TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE system TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE chain TO polkastats;
-
 GRANT ALL PRIVILEGES ON TABLE validator TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE intention TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE validator_era_staking TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE validator_era_slash TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE nominator_era_slash TO polkastats;
