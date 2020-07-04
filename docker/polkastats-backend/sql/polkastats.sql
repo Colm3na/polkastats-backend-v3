@@ -150,7 +150,7 @@ CREATE TABLE IF NOT EXISTS validator_era_slash  (
   stash_id TEXT,
   amount BIGINT NOT NULL,
   timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( era_index, account_id )  
+  PRIMARY KEY ( era_index, stash_id )  
 );
 
 CREATE TABLE IF NOT EXISTS nominator_era_slash  (
@@ -158,7 +158,7 @@ CREATE TABLE IF NOT EXISTS nominator_era_slash  (
   stash_id TEXT,
   amount BIGINT NOT NULL,
   timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( era_index, account_id )  
+  PRIMARY KEY ( era_index, stash_id )  
 );
 
 CREATE TABLE IF NOT EXISTS account  (  
