@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS block (
   era_length BIGINT NOT NULL,
   era_progress BIGINT NOT NULL,
   is_epoch BOOLEAN NOT NULL,
+  is_election BOOLEAN NOT NULL,
   session_length BIGINT NOT NULL,
   session_per_era INT NOT NULL,
   session_progress BIGINT NOT NULL,
