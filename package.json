@@ -6,6 +6,9 @@
   "scripts": {
     "start": "node index.js",
     "docker": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml up -d",
+    "docker:polkadot": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml up -d",
+    "docker:kusama": "docker-compose -f docker/polkastats-backend/docker-compose-kusama.yml up -d",
+    "docker:westend": "docker-compose -f docker/polkastats-backend/docker-compose-westend.yml up -d",
     "docker:build": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml build",
     "docker:build:polkadot": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml build",
     "docker:build:kusama": "docker-compose -f docker/polkastats-backend/docker-compose-kusama.yml build",
