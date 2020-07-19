@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS failed_block (
   block_number BIGINT NOT NULL,
   error TEXT NOT NULL,
   timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number ),
+  PRIMARY KEY ( block_number )
 );
 
 CREATE TABLE IF NOT EXISTS validator  (
