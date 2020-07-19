@@ -28,6 +28,13 @@ CREATE TABLE IF NOT EXISTS block (
   PRIMARY KEY ( block_number )  
 );
 
+CREATE TABLE IF NOT EXISTS failed_block (  
+  block_number BIGINT NOT NULL,
+  error TEXT NOT NULL,
+  timestamp BIGINT NOT NULL,
+  PRIMARY KEY ( block_number ),
+);
+
 CREATE TABLE IF NOT EXISTS validator  (
   block_height BIGINT NOT NULL,
   session_index INT NOT NULL,
@@ -199,7 +206,13 @@ CREATE TABLE IF NOT EXISTS chain  (
 CREATE INDEX IF NOT EXISTS validator_account_id_idx ON validator (account_id);
 CREATE INDEX IF NOT EXISTS intention_account_id_idx ON intention (account_id);
 
+CREATE INDEX IF NOT EXISTS extrinsic_section_idx ON extrinsic (section);
+CREATE INDEX IF NOT EXISTS extrinsic_method_idx ON extrinsic (method);
+CREATE INDEX IF NOT EXISTS extrinsic_signer_idx ON extrinsic (signer);
+CREATE INDEX IF NOT EXISTS extrinsic_args_idx ON extrinsic (args);
+
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE failed_block TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE extrinsic TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE account TO polkastats;
