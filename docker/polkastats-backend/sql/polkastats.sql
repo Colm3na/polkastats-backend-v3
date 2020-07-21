@@ -132,6 +132,15 @@ CREATE TABLE IF NOT EXISTS extrinsic  (
   PRIMARY KEY ( block_number, extrinsic_index ) 
 );
 
+CREATE TABLE IF NOT EXISTS log  (  
+  block_number BIGINT NOT NULL,
+  log_index INT NOT NULL,
+  type TEXT,
+  engine TEXT NOT NULL,
+  data TEXT NOT NULL,
+  PRIMARY KEY ( block_number, log_index ) 
+);
+
 CREATE TABLE IF NOT EXISTS phragmen  (  
   block_height BIGINT NOT NULL,
   phragmen_json TEXT NOT NULL,
@@ -215,6 +224,7 @@ GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE failed_block TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE extrinsic TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE log TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE account TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE phragmen TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE system TO polkastats;
