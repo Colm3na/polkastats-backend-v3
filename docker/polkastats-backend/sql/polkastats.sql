@@ -28,13 +28,6 @@ CREATE TABLE IF NOT EXISTS block (
   PRIMARY KEY ( block_number )  
 );
 
-CREATE TABLE IF NOT EXISTS failed_block (  
-  block_number BIGINT NOT NULL,
-  error TEXT NOT NULL,
-  timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number )
-);
-
 CREATE TABLE IF NOT EXISTS validator  (
   block_height BIGINT NOT NULL,
   session_index INT NOT NULL,
@@ -212,6 +205,14 @@ CREATE TABLE IF NOT EXISTS chain  (
   PRIMARY KEY ( block_height )  
 );
 
+CREATE TABLE IF NOT EXISTS total (  
+  name TEXT,
+  count BIGINT NOT NULL,
+  PRIMARY KEY ( name )
+);
+
+INSERT INTO total (name, count) VALUES ('blocks', 0),('extrinsics', 0),('events', 0);
+
 CREATE INDEX IF NOT EXISTS validator_account_id_idx ON validator (account_id);
 CREATE INDEX IF NOT EXISTS intention_account_id_idx ON intention (account_id);
 
@@ -234,3 +235,4 @@ GRANT ALL PRIVILEGES ON TABLE intention TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE validator_era_staking TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE validator_era_slash TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE nominator_era_slash TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE total TO polkastats;
