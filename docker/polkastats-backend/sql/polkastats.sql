@@ -28,6 +28,13 @@ CREATE TABLE IF NOT EXISTS block (
   PRIMARY KEY ( block_number )  
 );
 
+CREATE TABLE IF NOT EXISTS failed_block (  
+  block_number BIGINT NOT NULL,
+  error TEXT NOT NULL,
+  timestamp BIGINT NOT NULL,
+  PRIMARY KEY ( block_number )
+);
+
 CREATE TABLE IF NOT EXISTS validator  (
   block_height BIGINT NOT NULL,
   session_index INT NOT NULL,
