@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS block (
   total_events INT NOT NULL,
   num_transfers INT NOT NULL,
   new_accounts INT NOT NULL,
+  total_issuance TEXT NOT NULL,
   timestamp BIGINT NOT NULL,
   PRIMARY KEY ( block_number )  
 );
