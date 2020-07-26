@@ -29,11 +29,10 @@ CREATE TABLE IF NOT EXISTS block (
   PRIMARY KEY ( block_number )  
 );
 
-CREATE TABLE IF NOT EXISTS failed_block (  
+CREATE TABLE IF NOT EXISTS harvester_error (  
   block_number BIGINT NOT NULL,
   error TEXT NOT NULL,
-  timestamp BIGINT NOT NULL,
-  PRIMARY KEY ( block_number )
+  timestamp BIGINT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS validator  (
@@ -230,7 +229,7 @@ CREATE INDEX IF NOT EXISTS extrinsic_signer_idx ON extrinsic (signer);
 CREATE INDEX IF NOT EXISTS extrinsic_args_idx ON extrinsic (args);
 
 GRANT ALL PRIVILEGES ON TABLE block TO polkastats;
-GRANT ALL PRIVILEGES ON TABLE failed_block TO polkastats;
+GRANT ALL PRIVILEGES ON TABLE harvester_error TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE event TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE extrinsic TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE log TO polkastats;
