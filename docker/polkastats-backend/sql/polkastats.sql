@@ -218,7 +218,7 @@ CREATE TABLE IF NOT EXISTS total (
   PRIMARY KEY ( name )
 );
 
-INSERT INTO total (name, count) VALUES ('blocks', 0),('extrinsics', 0),('events', 0);
+INSERT INTO total (name, count) VALUES ('blocks', 0),('extrinsics', 0),('transfers', 0),('events', 0);
 
 CREATE INDEX IF NOT EXISTS validator_account_id_idx ON validator (account_id);
 CREATE INDEX IF NOT EXISTS intention_account_id_idx ON intention (account_id);
