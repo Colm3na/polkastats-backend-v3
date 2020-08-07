@@ -76,7 +76,7 @@ module.exports = {
           process.env.CRAWLER_PHRAGMEN_OUTPUT_DIR || '/tmp/phragmen',
         offlinePhragmenPath:
           process.env.CRAWLER_PHRAGMEN_BINARY_PATH ||
-          '/usr/app/polkastats-backend-v3/offline-phragmen',
+          '/usr/app/polkastats-backend-v3/offline-election',
       },
     },
   ],
