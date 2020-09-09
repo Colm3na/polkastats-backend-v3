@@ -8,7 +8,6 @@ cd ~/backup
 
 # Stop all cointainers
 docker stop polkastats-backend_crawler_1
-docker stop polkastats-backend_phragmen_1
 docker stop polkastats-backend_postgres_1
 docker stop polkastats-backend_graphql-engine_1
 
