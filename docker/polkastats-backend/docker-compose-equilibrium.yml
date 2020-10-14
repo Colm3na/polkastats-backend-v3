@@ -67,7 +67,7 @@ services:
     environment:
       - NODE_ENV=production
       - WS_PROVIDER_URL=ws://substrate-node:9944
-      - SUBSTRATE_NETWORK=westend
+      - SUBSTRATE_NETWORK=equilibrium
 #
 # Persisten volumes
 #
