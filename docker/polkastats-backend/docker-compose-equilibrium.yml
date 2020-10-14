@@ -5,16 +5,14 @@ services:
   # Blockchain archive node
   #
   substrate-node:
-    image: substrate-client:kusama-latest
+    image: equilab/eq-node:rc1
     hostname: substrate-node
-    build: ./substrate-client
     volumes:
       - 'substrate-data:/data'
     ports:
-      - '30333:30333'
+      - '30303:30303'
       - '9933:9933'
       - '9944:9944'
-    command: -d /data --unsafe-ws-external --unsafe-rpc-external --rpc-cors all --pruning=archive --name 'Polkastats 🤖 v3' --chain westend
     restart: on-failure
   #
   # SQL data base
