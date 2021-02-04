@@ -36,7 +36,7 @@
   },
   "homepage": "https://github.com/Colm3na/polkastats-backend-v3#readme",
   "dependencies": {
-    "@polkadot/api": "^2.8.2",
+    "@polkadot/api": "^3.7.3",
     "axios": "^0.21.0",
     "bignumber.js": "^9.0.1",
     "dotenv": "^8.2.0",
