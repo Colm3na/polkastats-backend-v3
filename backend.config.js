@@ -30,7 +30,7 @@ module.exports = {
       config: {
         pollingTime:
           parseInt(process.env.CRAWLER_BLOCK_LISTENER_POLLING_TIME_MS) ||
-          1 * 60 * 1000,
+          60 * 60 * 1000,
       },
     },
 
@@ -45,7 +45,7 @@ module.exports = {
       config: {
         pollingTime:
           parseInt(process.env.CRAWLER_ACTIVE_ACCOUNTS_POLLING_TIME_MS) ||
-          60 * 60 * 1000,
+          30 * 60 * 1000,
       },
     },
 
