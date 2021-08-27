@@ -2,7 +2,11 @@ require('dotenv').config();
 
 module.exports = {
   substrateNetwork: process.env.SUBSTRATE_NETWORK || 'polkadot',
+<<<<<<< HEAD
   wsProviderUrl: process.env.WS_PROVIDER_URL || 'ws://substrate-node:9944',
+=======
+  wsProviderUrl: process.env.WS_PROVIDER_URL || 'wss://testnet2.uniquenetwork.io',
+>>>>>>> 6d644aa... updated
 
   postgresConnParams: {
     user: process.env.POSTGRES_USER || 'polkastats',
