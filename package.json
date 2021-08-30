@@ -1,23 +1,14 @@
 {
   "name": "polkastats-backend-v3",
-  "version": "3.0.0-milestone3",
-  "description": "PolkaStats backend v3",
+  "version": "3.0.0",
+  "description": "Block explorer UniqueNetwork",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "docker": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml up -d",
+    "docker": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d",
     "docker:polkadot": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml up -d",
-<<<<<<< HEAD
-    "docker:kusama": "docker-compose -f docker/polkastats-backend/docker-compose-kusama.yml up -d",
-    "docker:westend": "docker-compose -f docker/polkastats-backend/docker-compose-westend.yml up -d",
     "docker:build": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml build",
     "docker:build:polkadot": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml build",
-    "docker:build:kusama": "docker-compose -f docker/polkastats-backend/docker-compose-kusama.yml build",
-    "docker:build:westend": "docker-compose -f docker/polkastats-backend/docker-compose-westend.yml build",
-=======
-    "docker:build": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml build",
-    "docker:build:polkadot": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml build",
->>>>>>> 6d644aa... updated
     "docker:clean": "bash docker/polkastats-backend/clean-polkastats-dockers",
     "docker:stop": "docker stop polkastats-backend_crawler_1 polkastats-backend_graphql-engine_1 polkastats-backend_postgres_1 polkastats-backend_substrate-node_1 polkastats-backend_phragmen_1",
     "docker:postgres:backup": "docker exec -t polkastats-backend_postgres_1 pg_dump polkastats -c -U polkastats > polkastats_dump.sql",
@@ -25,23 +16,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Colm3na/polkastats-backend-v3.git"
+    "url": "git+https://github.com/UniqueNetwork/polkastats-backend-v3.git"
   },
   "keywords": [
     "blockchain",
     "block explorer",
-    "polkadot",
-    "kusama",
+    "polkadot",    
     "substrate"
   ],
   "author": "PolkaStats Team",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/Colm3na/polkastats-backend-v3/issues"
-  },
-  "homepage": "https://github.com/Colm3na/polkastats-backend-v3#readme",
+  "license": "Apache-2.0",  
+  "homepage": "https://github.com/UniqueNetwork/polkastats-backend-v3#readme",
   "dependencies": {
-    "@polkadot/api": "^2.8.2",
+    "@polkadot/api": "4.2.2-1",    
     "axios": "^0.21.1",
     "bignumber.js": "^9.0.1",
     "dotenv": "^8.2.0",
