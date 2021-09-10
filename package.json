@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "docker": "docker-compose -f docker/polkastats-backend/docker-compose.yml up",
+    "docker": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d",
     "docker:polkadot": "docker-compose -f docker/polkastats-backend/docker-compose.yml up",
     "docker:local": "docker-compose -f docker/polkastats-backend/docker-compose.local.yml up",
     "docker:build": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml build",
@@ -15,7 +15,7 @@
     "docker:postgres:backup": "docker exec -t polkastats-backend_postgres_1 pg_dump polkastats -c -U polkastats > polkastats_dump.sql",
     "docker:rebuild:graphql": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml up -d graphql-engine"
   },
-  "types": "module",  
+  "types": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/UniqueNetwork/polkastats-backend-v3.git"
@@ -23,14 +23,14 @@
   "keywords": [
     "blockchain",
     "block explorer",
-    "polkadot",    
+    "polkadot",
     "substrate"
   ],
   "author": "PolkaStats Team",
-  "license": "Apache-2.0",  
+  "license": "Apache-2.0",
   "homepage": "https://github.com/UniqueNetwork/polkastats-backend-v3#readme",
   "dependencies": {
-    "@polkadot/api": "4.2.2-1",    
+    "@polkadot/api": "^5.7.1",
     "axios": "^0.21.1",
     "bignumber.js": "^9.0.1",
     "dotenv": "^8.2.0",

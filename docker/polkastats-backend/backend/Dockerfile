@@ -1,6 +1,6 @@
 #FROM rust AS builder
 #
-FROM node:erbium
+FROM node:lts
 
 WORKDIR /usr/app/polkastats-backend-v3
 

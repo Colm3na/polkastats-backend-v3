@@ -6,7 +6,7 @@ module.exports = {
 
   postgresConnParams: {
     user: process.env.POSTGRES_USER || 'polkastats',
-    host: process.env.POSTGRES_HOST || 'postgres',
+    host: process.env.POSTGRES_HOST || 'localhost',
     database: process.env.POSTGRES_DATABASE || 'polkastats',
     password: process.env.POSTGRES_PASSWORD || 'polkastats',
     port: process.env.POSTGRES_PORT || 5432,
