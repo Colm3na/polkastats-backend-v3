@@ -212,13 +212,29 @@ CREATE TABLE IF NOT EXISTS chain  (
   PRIMARY KEY ( block_height )  
 );
 
+CREATE TABLE IF NOT EXISTS collection (
+  collection_id INT NOT NULL,
+  owner TEXT NOT NULL,
+  name TEXT NOT NULL,
+  description TEXT NOT NULL,
+  offchain_schema TEXT NOT NULL,
+  token_limit BIGINT NOT NULL,
+  PRIMARY KEY (collection_id)
+);
+
 CREATE TABLE IF NOT EXISTS total (  
   name TEXT,
   count BIGINT NOT NULL,
   PRIMARY KEY ( name )
 );
 
-INSERT INTO total (name, count) VALUES ('blocks', 0),('extrinsics', 0),('transfers', 0),('events', 0);
+INSERT INTO total (name, count) VALUES 
+('blocks', 0),
+('extrinsics', 0),
+('transfers', 0),
+('events', 0),
+('collection', 0),
+('token', 0);
 
 CREATE INDEX IF NOT EXISTS validator_account_id_idx ON validator (account_id);
 CREATE INDEX IF NOT EXISTS intention_account_id_idx ON intention (account_id);
