@@ -185,8 +185,8 @@ CREATE TABLE IF NOT EXISTS account  (
   identity_display_parent TEXT NOT NULL,
   balances TEXT NOT NULL,
   available_balance BIGINT NOT NULL,
-  free_balance BIGINT NOT NULL,
-  locked_balance BIGINT NOT NULL,
+  free_balance TEXT NOT NULL,
+  locked_balance TEXT NOT NULL,
   nonce BIGINT NOT NULL,
   timestamp BIGINT NOT NULL,
   block_height BIGINT NOT NULL,
@@ -215,9 +215,9 @@ CREATE TABLE IF NOT EXISTS chain  (
 CREATE TABLE IF NOT EXISTS collection (
   collection_id INT NOT NULL,
   owner TEXT NOT NULL,
-  name TEXT NOT NULL,
-  description TEXT NOT NULL,
-  offchain_schema TEXT NOT NULL,
+  name TEXT,
+  description TEXT,
+  offchain_schema TEXT,
   token_limit BIGINT NOT NULL,
   PRIMARY KEY (collection_id)
 );
