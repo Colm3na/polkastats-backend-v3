@@ -1,3 +1,4 @@
+import { ILoggerOptions } from './../types/type';
 import pino from 'pino'
 import BigNumber from 'bignumber.js'
 import { setTimeout } from 'timers/promises'
@@ -165,7 +166,7 @@ export function getDisplayName(identity: any): string {
   }
 }
 
-export async function storeEraStakingInfo(api: ApiPromise, pool: Pool, eraIndex: any, denom: any, loggerOptions: any): Promise<any> {
+export async function storeEraStakingInfo(api: ApiPromise, pool: Pool, eraIndex: any, denom: any, loggerOptions: ILoggerOptions): Promise<any> {
   if (eraIndex === 0) return;
   logger.info(loggerOptions, `Storing staking info for era #${eraIndex}`);
 
