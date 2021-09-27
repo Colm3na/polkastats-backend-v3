@@ -38,7 +38,6 @@ module.exports = {
       enabled: !process.env.CRAWLER_STAKING_DISABLE,
       module: require('./lib/crawlers/staking'),
     },
-
     {
       enabled: !process.env.CRAWLER_ACTIVE_ACCOUNTS_DISABLE,
       module: require('./lib/crawlers/activeAccounts'),
@@ -48,7 +47,6 @@ module.exports = {
           60 * 60 * 1000,
       },
     },
-
     {
       enabled: !process.env.CRAWLER_CHAIN_DISABLE,
       module: require('./lib/crawlers/chain'),
@@ -78,5 +76,14 @@ module.exports = {
           '/usr/app/polkastats-backend-v3/offline-election',
       },
     },
+    {      
+        enabled: !process.env.CRAWLER_COLLECTION_DISABLE,
+        module: require('./lib/crawlers/collectionListener'),
+        config: {
+          pollingTime:
+            parseInt(process.env.CRAWLER_COLLECTION_POLLING_TIME_MS) ||
+            60 * 60 * 1000,
+        },      
+    }
   ],
 };

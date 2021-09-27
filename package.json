@@ -8,11 +8,12 @@
     "docker": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d",
     "docker:polkadot": "docker-compose -f docker/polkastats-backend/docker-compose.yml up",
     "docker:local": "docker-compose -f docker/polkastats-backend/docker-compose.local.yml up",
-    "docker:build": "docker-compose -f docker/polkastats-backend/docker-compose.yml build",    
+    "docker:build": "docker-compose -f docker/polkastats-backend/docker-compose.yml build",
     "docker:clean": "bash docker/polkastats-backend/clean-polkastats-dockers",
     "docker:stop": "docker stop polkastats-backend_crawler_1 polkastats-backend_graphql-engine_1 polkastats-backend_postgres_1 polkastats-backend_substrate-node_1 polkastats-backend_phragmen_1",
     "docker:postgres:backup": "docker exec -t polkastats-backend_postgres_1 pg_dump polkastats -c -U polkastats > polkastats_dump.sql",
-    "docker:rebuild:graphql": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml up -d graphql-engine"
+    "docker:rebuild:graphql": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml up -d graphql-engine",
+    "test": "jest"
   },
   "types": "module",
   "repository": {
@@ -36,5 +37,15 @@
     "lodash": "^4.17.20",
     "pg": "^8.4.2",
     "pino": "^6.7.0"
+  },
+  "devDependencies": {
+    "@polkadot/dev": "^0.62.67",
+    "@polkadot/types": "^5.9.1",
+    "@polkadot/util": "^7.3.1",
+    "@types/lodash": "^4.14.173",
+    "@types/pg": "^8.6.1",
+    "@types/pino": "^6.3.11",
+    "jest": "^27.2.1",
+    "typescript": "^4.4.3"
   }
 }
