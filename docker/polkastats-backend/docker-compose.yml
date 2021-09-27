@@ -4,18 +4,18 @@ services:
   #
   # Blockchain archive node
   #
-  # substrate-node:
-  #   image: substrate-client:kusama-latest
-  #   hostname: substrate-node
-  #   build: ./substrate-client
-  #   volumes:
-  #     - 'substrate-data:/data'
-  #   ports:
-  #     - '30333:30333'
-  #     - '9933:9933'
-  #     - '9944:9944'
-  #   command: -d /data --unsafe-ws-external --unsafe-rpc-external --rpc-cors all --pruning=archive --name 'Polkastats' --chain polkadot
-  #   restart: on-failure
+  substrate-node:
+    image: substrate-client:kusama-latest
+    hostname: substrate-node
+    build: ./substrate-client
+    volumes:
+      - 'substrate-data:/data'
+    ports:
+      - '30333:30333'
+      - '9933:9933'
+      - '9944:9944'
+    command: -d /data --unsafe-ws-external --unsafe-rpc-external --rpc-cors all --pruning=archive --name 'Polkastats' --chain polkadot
+    restart: on-failure
   #
   # SQL data base
   #
@@ -25,6 +25,8 @@ services:
     volumes:
       - 'db-data:/var/lib/postgresql/data'
       - './sql/polkastats.sql:/docker-entrypoint-initdb.d/polkastats.sql'
+    ports:
+      - 5432:5432
     environment:
       POSTGRES_USER: 'polkastats'
       POSTGRES_PASSWORD: 'polkastats'
@@ -70,4 +72,4 @@ services:
 #
 volumes:
   db-data: {}
-  #substrate-data: {}
+  substrate-data: {}
