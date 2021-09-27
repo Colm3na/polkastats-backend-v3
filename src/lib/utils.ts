@@ -1,77 +1,77 @@
-const pino = require("pino");
-const logger = pino();
-const { BigNumber } = require("bignumber.js");
+import { ILoggerOptions } from './../types/type';
+import pino from 'pino'
+import BigNumber from 'bignumber.js'
+import { setTimeout } from 'timers/promises'
+import { Pool } from 'pg';
+import { ApiPromise } from '@polkadot/api';
 
-const formatNumber = function (num) {
+const logger = pino()
+
+export function formatNumber(num: any): string {
   return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
-};
+}
 
-const shortHash = function (hash) {
+export function shortHash(hash: string): string {
   return `${hash.substr(0, 6)}…${hash.substr(hash.length - 5, 4)}`;
-};
+}
 
-const wait = async function (ms) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-};
+export async function wait(ms: number) {
+  await setTimeout(ms)
+}
 
-const storeExtrinsics = async function (
-  pool,
-  blockNumber,
-  extrinsics,
-  blockEvents,
-  loggerOptions
-) {
-  // Start execution
-  const startTime = new Date().getTime();
-
-  extrinsics.forEach(async (extrinsic, index) => {
+export async function storeExtrinsics(
+  pool: Pool,
+  blockNumber: any,
+  extrinsics: any,
+  blockEvents: any,
+  loggerOptions: any
+): Promise<void> {
+  const startTime: number = new Date().getTime()
+  extrinsics.forEach(async (extrinsic: any, index: number) => {
     const isSigned = extrinsic.isSigned;
-    const signer = isSigned ? extrinsic.signer.toString() : ``;
-    const section = extrinsic.toHuman().method.section;
-    const method = extrinsic.toHuman().method.method;
-    const args = JSON.stringify(extrinsic.args);
-    const hash = extrinsic.hash.toHex();
-    //const doc = extrinsic.meta.documentation.toString().replace(/'/g, "''");
-    const doc = extrinsic.meta.docs.toString().replace(/'/g, "''");
-    const success = module.exports.getExtrinsicSuccess(index, blockEvents);
+    const signer: string = isSigned ? extrinsic.signer.toString() : ``;
+    const section: any = extrinsic.toHuman().method.section;
+    const method: any = extrinsic.toHuman().method.method;
+    const args: any = JSON.stringify(extrinsic.args);
+    const hash: any = extrinsic.hash.toHex();
+    const doc: string = extrinsic.meta.docs.toString().replace(/'/g, "''");
+    const success: any = getExtrinsicSuccess(index, blockEvents);
 
-    const sql = `INSERT INTO extrinsic (
-          block_number,
-          extrinsic_index,
-          is_signed,
-          signer,
-          section,
-          method,
-          args,
-          hash,
-          doc,
-          success
-        ) VALUES (
-          '${blockNumber}',
-          '${index}',
-          '${isSigned}',
-          '${signer}',
-          '${section}',
-          '${method}',
-          '${args}',
-          '${hash}',
-          '${doc}',
-          '${success}'
-        )
-        ON CONFLICT ON CONSTRAINT extrinsic_pkey 
-        DO NOTHING;
-        ;`;
+    const sql: string = `INSERT INTO extrinsic (
+      block_number,
+      extrinsic_index,
+      is_signed,
+      signer,
+      section,
+      method,
+      args,
+      hash,
+      doc,
+      success
+    ) VALUES (
+      '${blockNumber}',
+      '${index}',
+      '${isSigned}',
+      '${signer}',
+      '${section}',
+      '${method}',
+      '${args}',
+      '${hash}',
+      '${doc}',
+      '${success}'
+    )
+    ON CONFLICT ON CONSTRAINT extrinsic_pkey 
+    DO NOTHING;
+    ;`;
 
     try {
-      await pool.query(sql);
+      await pool.query(sql)
       logger.info(
         loggerOptions,
-        `Added extrinsic ${blockNumber}-${index} (${module.exports.shortHash(
+        `Added extrinsic ${blockNumber}-${index} (${shortHash(
           hash
         )}) ${section} ➡ ${method}`
-      );
+      )
     } catch (error) {
       logger.error(
         loggerOptions,
@@ -80,10 +80,9 @@ const storeExtrinsics = async function (
         )}`
       );
     }
-  });
+  })
 
-  // Log execution time
-  const endTime = new Date().getTime();
+  const endTime: number = new Date().getTime();
   logger.info(
     loggerOptions,
     `Added ${extrinsics.length} extrinsics in ${(
@@ -91,17 +90,16 @@ const storeExtrinsics = async function (
       1000
     ).toFixed(3)}s`
   );
-};
+}
 
-const storeLogs = async function (pool, blockNumber, logs, loggerOptions) {
-  // Start execution
-  const startTime = new Date().getTime();
+export async function storeLogs(pool: Pool, blockNumber: any, logs: any, loggerOptions: any): Promise<void> {
+  const startTime: number = new Date().getTime();
 
-  logs.forEach(async (log, index) => {
+  logs.forEach(async (log: any, index: number) => {
     const { type } = log;
     const [[engine, data]] = Object.values(log.toJSON());
 
-    const sql = `INSERT INTO log (
+    const sql: string = `INSERT INTO log (
           block_number,
           log_index,
           type,
@@ -135,15 +133,14 @@ const storeLogs = async function (pool, blockNumber, logs, loggerOptions) {
     loggerOptions,
     `Added ${logs.length} logs in ${((endTime - startTime) / 1000).toFixed(3)}s`
   );
-};
+}
 
-const getExtrinsicSuccess = function (index, blockEvents) {
-  // assume success if no events were extracted
+export function getExtrinsicSuccess(index: number, blockEvents: any): boolean {
   if (blockEvents.length === 0) {
     return true;
   }
   let extrinsicSuccess = false;
-  blockEvents.forEach((record) => {
+  blockEvents.forEach((record: any) => {
     const { event, phase } = record;
     if (
       parseInt(phase.toHuman().ApplyExtrinsic) === index &&
@@ -154,9 +151,9 @@ const getExtrinsicSuccess = function (index, blockEvents) {
     }
   });
   return extrinsicSuccess;
-};
+}
 
-const getDisplayName = function (identity) {
+export function getDisplayName(identity: any): string {
   if (
     identity.displayParent &&
     identity.displayParent !== `` &&
@@ -167,52 +164,42 @@ const getDisplayName = function (identity) {
   } else {
     return identity.display || ``;
   }
-};
+}
 
-const storeEraStakingInfo = async function (
-  api,
-  pool,
-  eraIndex,
-  denom,
-  loggerOptions
-) {
-  // Handle PoA, when there is no era change
+export async function storeEraStakingInfo(api: ApiPromise, pool: Pool, eraIndex: any, denom: any, loggerOptions: ILoggerOptions): Promise<any> {
   if (eraIndex === 0) return;
-
   logger.info(loggerOptions, `Storing staking info for era #${eraIndex}`);
 
   // Get reward for era
-  const eraRewards = await api.query.staking.erasValidatorReward(eraIndex);
+  const eraRewards: any = await api.query.staking.erasValidatorReward(eraIndex);
 
   // Get era points
-  let eraPoints = await api.query.staking.erasRewardPoints(eraIndex);
-  let validatorEraPoints = [];
-  eraPoints.individual.forEach((val, index) => {
+  let eraPoints: any = await api.query.staking.erasRewardPoints(eraIndex);
+  let validatorEraPoints: Array<any> = [];
+  eraPoints.individual.forEach((val: any, index: any) => {
     validatorEraPoints.push({ accountId: index.toHuman(), points: val });
   });
-  const totalEraPoints = eraPoints.total.toNumber();
+  const totalEraPoints: number = eraPoints.total.toNumber();
 
-  // Retrieve all exposures for the era
-  const exposures = await api.query.staking.erasStakers.entries(eraIndex);
-  const eraExposures = exposures.map(([key, exposure]) => {
+  const exposures: Array<any> = await api.query.staking.erasStakers.entries(eraIndex);
+  const eraExposures: Array<any> = exposures.map(([key, exposure]) => {
     return {
       accountId: key.args[1].toHuman(),
       exposure: JSON.parse(JSON.stringify(exposure)),
     };
   });
 
-  // Get validator addresses for the era
-  const endEraValidatorList = eraExposures.map((exposure) => {
+  const endEraValidatorList: Array<any> = eraExposures.map((exposure) => {
     return exposure.accountId;
   });
 
   // Get validator and nominator slashes for era
-  const eraSlahes = await api.derive.staking.eraSlashes(eraIndex);
-  const eraValidatorSlashes = Object.values(eraSlahes.validators);
-  const eraNominatorSlashes = Object.values(eraSlahes.nominators);
+  const eraSlahes: any = await api.derive.staking.eraSlashes(eraIndex);
+  const eraValidatorSlashes: Array<any> = Object.values(eraSlahes.validators);
+  const eraNominatorSlashes: Array<any> = Object.values(eraSlahes.nominators);
 
-  endEraValidatorList.forEach(async (validator, index) => {
-    const slash = eraValidatorSlashes.find((slash) => slash[0] === validator);
+  endEraValidatorList.forEach(async (validator: any, index: number) => {
+    const slash: any = eraValidatorSlashes.find((slash) => slash[0] === validator);
     if (slash) {
       const amount = slash[1];
       const sql = `INSERT INTO validator_era_slash (era_index, stash_id, amount, timestamp) 
@@ -258,12 +245,12 @@ const storeEraStakingInfo = async function (
         );
       }
     }
-  });
+  })
 
   for (const slash in eraNominatorSlashes) {
     const nominator = slash[0];
     const amount = slash[1];
-    const sqlInsert = `INSERT INTO nominator_era_slash (era_index, stash_id, amount, timestamp) 
+    const sqlInsert: string = `INSERT INTO nominator_era_slash (era_index, stash_id, amount, timestamp) 
       VALUES ('${eraIndex}', '${nominator}', '${amount}', '${Date.now()}')
       ON CONFLICT ON CONSTRAINT nominator_era_slash_pkey 
       DO NOTHING
@@ -289,8 +276,7 @@ const storeEraStakingInfo = async function (
     }
   }
 
-  // Get validator commission for the era (in same order as endEraValidatorList)
-  const eraValidatorCommission = await Promise.all(
+  const eraValidatorCommission: any = await Promise.all(
     endEraValidatorList.map((accountId) =>
       api.query.staking.erasValidatorPrefs(eraIndex, accountId)
     )
@@ -298,19 +284,22 @@ const storeEraStakingInfo = async function (
 
   endEraValidatorList.forEach(async (validator, index) => {
     const { identity } = await api.derive.accounts.info(validator);
-    const displayName = module.exports.getDisplayName(identity);
+    const displayName: string = getDisplayName(identity);
 
     const commission = eraValidatorCommission[index].commission / 10000000;
     const exposure = eraExposures.find(
       (exposure) => exposure.accountId === validator
     ).exposure;
+
     const totalExposure = new BigNumber(exposure.total)
       .dividedBy(1e12)
       .toNumber()
       .toFixed(3);
+
     const endEraValidatorWithPoints = validatorEraPoints.find(
       (item) => item.accountId === validator
     );
+
     const eraPoints = endEraValidatorWithPoints
       ? endEraValidatorWithPoints.points.toNumber()
       : 0;
@@ -346,17 +335,15 @@ const storeEraStakingInfo = async function (
       .dividedBy(1e12)
       .toNumber()
       .toFixed(3);
-
-    const sql = `INSERT INTO validator_era_staking (era_index, stash_id, identity, display_name, commission, era_rewards, era_points, stake_info, estimated_payout, timestamp) 
+    const sql: string = `INSERT INTO validator_era_staking (era_index, stash_id, identity, display_name, commission, era_rewards, era_points, stake_info, estimated_payout, timestamp) 
         VALUES ('${eraIndex}', '${validator}', '${JSON.stringify(
       identity
-    )}', '${displayName}', '${
-      eraValidatorCommission[index].commission
-    }', '${poolRewardWithCommission.toString(
-      10
-    )}', '${eraPoints}', '${JSON.stringify(
-      exposure
-    )}', '${estimatedPayout.toFixed(0)}', '${Date.now()}')
+    )}', '${displayName}', '${eraValidatorCommission[index].commission
+      }', '${poolRewardWithCommission.toString(
+        10
+      )}', '${eraPoints}', '${JSON.stringify(
+        exposure
+      )}', '${estimatedPayout.toFixed(0)}', '${Date.now()}')
         ON CONFLICT ON CONSTRAINT validator_era_staking_pkey 
         DO NOTHING
         `;
@@ -374,64 +361,47 @@ const storeEraStakingInfo = async function (
         )}`
       );
     }
-  });
-  return true;
-};
+  })
 
-const updateTotals = async function (pool, loggerOptions) {
-  const sql = `
+  return true;
+}
+
+export async function updateTotals(pool: Pool, loggerOptions: any): Promise<void> {
+  const sql: string = `
   UPDATE total SET count = (SELECT count(*) FROM block) WHERE name = 'blocks';
   UPDATE total SET count = (SELECT count(*) FROM extrinsic) WHERE name = 'extrinsics';
   UPDATE total SET count = (SELECT count(*) FROM extrinsic WHERE section = 'balances' and method = 'transfer' ) WHERE name = 'transfers';
-  UPDATE total SET count = (SELECT count(*) FROM event) WHERE name = 'events';
+  UPDATE total SET count = (SELECT count(*) FROM event) WHERE name = 'events'
   UPDATE collection SET count (SELECT count(*) FROM collection) WHERE name ='collection'
-  ;
-`;
+  ;`;
+
   try {
-    await pool.query(sql);
+    await pool.query(sql)
   } catch (error) {
-    logger.error(
-      loggerOptions,
-      `Error updating total harvested blocks, extrinsics and events: ${error}`
-    );
+    logger.error(loggerOptions, `Error updating total harvested blocks, extrinsics and events: ${error}`)
   }
-};
+}
 
-
-const parseHexToString = function(value) {
+export function parseHexToString(value: any): string | null {
   try {
     const source = value.toString().replace('0x', '')
-    return Buffer(source, 'hex').toString('utf-8')
+    return new Buffer(source, 'hex').toString('utf-8')
   } catch (error) {
     return ''
-  }  
+  }
 }
 
-const bufferToString = function(value) {  
+export function bufferToString(value: any): string | null {
   try {
-    return Buffer(value, 'hex').toString('utf-8')
+    return new Buffer(value, 'hex').toString('utf-8')
   } catch (error) {
-    return ''
-  }  
+    return null;
+  }
 }
 
-const genArrayRange = (min, max) =>
-  Array.from(
+export function genArrayRange(min: number, max: number) {
+  return Array.from(
     { length: max - min },
     (_, i) => i + ((min === 0 ? -1 : min - 1) + 1)
-  );
-
-module.exports = {
-  storeLogs,
-  storeExtrinsics,
-  wait,
-  shortHash,
-  formatNumber,
-  getExtrinsicSuccess,
-  getDisplayName,
-  storeEraStakingInfo,
-  updateTotals,
-  parseHexToString,
-  bufferToString,
-  genArrayRange
-};
+  )
+}
