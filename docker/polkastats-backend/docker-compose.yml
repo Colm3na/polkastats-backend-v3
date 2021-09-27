@@ -25,8 +25,6 @@ services:
     volumes:
       - 'db-data:/var/lib/postgresql/data'
       - './sql/polkastats.sql:/docker-entrypoint-initdb.d/polkastats.sql'
-    ports:
-      - 5432:5432
     environment:
       POSTGRES_USER: 'polkastats'
       POSTGRES_PASSWORD: 'polkastats'
@@ -67,6 +65,7 @@ services:
       - NODE_ENV=production
       - WS_PROVIDER_URL=wss://testnet2.uniquenetwork.io
       - SUBSTRATE_NETWORK=polkadot
+      - POSTGRES_HOST=postgres
 #
 # Persisten volumes
 #
