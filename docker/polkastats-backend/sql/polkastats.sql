@@ -259,3 +259,7 @@ GRANT ALL PRIVILEGES ON TABLE validator_era_staking TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE validator_era_slash TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE nominator_era_slash TO polkastats;
 GRANT ALL PRIVILEGES ON TABLE total TO polkastats;
+
+ALTER TABLE account 
+  ALTER COLUMN available_balance TYPE TEXT,
+  ALTER COLUMN nonce TYPE TEXT;  
