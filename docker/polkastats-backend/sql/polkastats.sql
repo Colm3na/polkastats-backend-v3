@@ -263,3 +263,18 @@ GRANT ALL PRIVILEGES ON TABLE total TO polkastats;
 ALTER TABLE account 
   ALTER COLUMN available_balance TYPE TEXT,
   ALTER COLUMN nonce TYPE TEXT;  
+
+CREATE SEQUENCE IF NOT EXISTS serial START 1;
+
+CREATE TABLE IF NOT EXISTS tokens (
+  id INT PRIMARY KEY DEFAULT nextval('serial'), 
+  token_id INT NOT NULL,
+  collection_id INT NOT NULL,
+  owner TEXT NOT NULL  
+);
+
+ALTER TABLE IF EXISTS collection 
+  RENAME TO collections;
+
+UPDATE total SET name = 'tokens' WHERE name = 'token';
+UPDATE total SET name = 'collections' WHERE name = 'collection';

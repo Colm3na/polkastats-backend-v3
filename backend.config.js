@@ -84,6 +84,15 @@ module.exports = {
             parseInt(process.env.CRAWLER_COLLECTION_POLLING_TIME_MS) ||
             60 * 60 * 1000,
         },      
+    },
+    {      
+      enabled: !process.env.CRAWLER_TOKEN_DISABLE,
+      module: require('./lib/crawlers/tokenListener'),
+      config: {
+        pollingTime:
+          parseInt(process.env.CRAWLER_TOKEN_POLLING_TIME_MS) ||
+          60 * 60 * 1000,
+      },      
     }
   ],
 };
