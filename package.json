@@ -4,7 +4,7 @@
   "description": "Block explorer UniqueNetwork",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node -r dotenv/config index.js",
     "docker": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d",
     "docker:polkadot": "docker-compose -f docker/polkastats-backend/docker-compose.yml up",
     "docker:local": "docker-compose -f docker/polkastats-backend/docker-compose.local.yml up",
@@ -33,7 +33,7 @@
     "@polkadot/api": "^5.7.1",
     "axios": "^0.21.1",
     "bignumber.js": "^9.0.1",
-    "dotenv": "^8.2.0",
+    "dotenv": "^10.0.0",
     "lodash": "^4.17.20",
     "pg": "^8.4.2",
     "pino": "^6.7.0"
