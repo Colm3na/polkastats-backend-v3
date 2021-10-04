@@ -23,7 +23,7 @@ services:
     image: postgres
     restart: always
     volumes:
-      - 'db-data:/var/lib/postgresql/data'
+      - './data/db:/var/lib/postgresql/data'
       - './sql/polkastats.sql:/docker-entrypoint-initdb.d/polkastats.sql'
     environment:
       POSTGRES_USER: 'polkastats'
@@ -68,7 +68,3 @@ services:
       - POSTGRES_HOST=postgres
 #
 # Persisten volumes
-#
-volumes:
-  db-data: {}
-  # substrate-data: {}
