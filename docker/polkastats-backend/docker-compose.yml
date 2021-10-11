@@ -23,7 +23,7 @@ services:
     image: postgres
     restart: always
     volumes:
-      - './data/db:/var/lib/postgresql/data'
+      - 'db-data:/var/lib/postgresql/data'
       - './sql/polkastats.sql:/docker-entrypoint-initdb.d/polkastats.sql'
     environment:
       POSTGRES_USER: 'polkastats'
@@ -66,5 +66,7 @@ services:
       - WS_PROVIDER_URL=wss://testnet2.uniquenetwork.io
       - SUBSTRATE_NETWORK=polkadot
       - POSTGRES_HOST=postgres
+volumes:
+  db-data: {}
 #
 # Persisten volumes
