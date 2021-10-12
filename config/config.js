@@ -19,8 +19,8 @@ export const dbConnect = getConnect();
 
 export const crawlers = [
   {
-    enabled: !process.env.CRAWLER_SYSTEM_DISABLE,
-    module: '/lib/crawlers/system.js',
+    enabled: !process.env.CRAWLER_SYSTEM_DISABLE,    
+    module: `${process.cwd()}/crawlers/system.js`,
   },
   
   {
@@ -81,7 +81,7 @@ export const crawlers = [
   },
   {      
       enabled: !process.env.CRAWLER_COLLECTION_DISABLE,
-      module: '/lib/crawlers/collectionListener.js',
+      module: `${process.cwd()}/crawlers/collectionListener.js`,
       config: {
         pollingTime:
           parseInt(process.env.CRAWLER_COLLECTION_POLLING_TIME_MS) ||

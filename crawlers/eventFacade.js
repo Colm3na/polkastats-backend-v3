@@ -1,20 +1,22 @@
-const _ = require('lodash');
-const { getCollection, saveCollection } = require('./collectionListener');
-const { getToken, checkToken, saveToken, deleteToken, moveToken} = require('./tokenListener');
+import { getCollection, saveCollection } from '/collectionListener.js'
+import { getToken, checkToken, saveToken, deleteToken, moveToken } from './tokenListener.js'
+import * as _ from 'lodash'
+
 
 const TYPE_CREATE_COLLECTION = 'CollectionCreated'
 const TYPE_CREATE_TOKEN = 'ItemCreated'
 const TYPE_ITEM_DESTROYED = 'ItemDestroyed'
 const TYPE_TRANSFARE = 'Transfer'
-class EventFacade {
+
+export class EventFacade {
   /**
    * 
    * @param {string} type event.method 
    * @param {ApiPromise} api
    */
-  constructor(api, pool) {    
+  constructor(api, sequelize) {    
     this.api = api
-    this.pool = pool
+    this.sequelize = sequelize
   }  
   /**
    * 
@@ -50,12 +52,12 @@ class EventFacade {
    * @returns 
    */
   async saveCollection(data) {          
-    const collectionId = data[0];    
+    const collectionId = data[0];        
     if (_.isNumber(collectionId)) {
       const collection = await getCollection(this.api, collectionId);      
       await saveCollection({
         collection,
-        pool: this.pool
+        sequelize: this.sequelize
       })
     }
     return null;
@@ -64,8 +66,8 @@ class EventFacade {
   async insertToken(data) {    
     if (this.#checkNumber(this.#parseData(data))) {
       const token = await getToken({api:this.api, ...this.#parseData(data)});
-      const check = await checkToken(this.pool, token);      
-      await saveToken(this.pool,{...token, check});              
+      const check = await checkToken(this.sequelize, token);      
+      await saveToken(this.sequelize,{...token, check});              
     }
   }
 
@@ -75,14 +77,14 @@ class EventFacade {
 
   async delToken(data) {    
     if (this.#checkNumber(this.#parseData(data))) {
-      await deleteToken({pool: this.pool, ...this.#parseData(data)})
+      await deleteToken({sequelize: this.sequelize, ...this.#parseData(data)})
     }
   }
 
   async transferToken(data) {    
     if (this.#checkNumber(this.#parseData(data))) {
       await moveToken({
-        pool: this.pool,
+        sequelize: this.sequelize,
         ...this.#parseData(data),
         ...this.#parseOwners(data)
       });
@@ -100,5 +102,3 @@ class EventFacade {
     return { collectionId, tokenId };
   }
 }
-
-module.exports = EventFacade;
