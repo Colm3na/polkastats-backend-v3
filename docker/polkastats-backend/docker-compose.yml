@@ -18,7 +18,7 @@ services:
   #   restart: on-failure
   #
   # SQL data base
-  #
+  #  
   postgres:
     image: postgres
     restart: always
@@ -39,7 +39,7 @@ services:
   graphql-engine:
     image: hasura/graphql-engine:latest
     ports:
-      - '8082:8080'
+      - '8080:80'      
     depends_on:
       - 'postgres'
     restart: always
