@@ -1,18 +1,24 @@
-import Sequelize from 'sequelize'
-import pino from 'pino'
-import { shortHash, storeExtrinsics, storeLogs, getDisplayName, updateTotals } from '../utils/utils.js'
+import Sequelize from "sequelize";
+import pino from "pino";
+import {
+  shortHash,
+  storeExtrinsics,
+  storeLogs,
+  getDisplayName,
+  updateTotals,
+} from "../utils/utils.js";
+import { EventFacade } from "./eventFacade.js";
 
-const logger = pino()
-const { QueryTypes } = Sequelize
+const logger = pino();
+const { QueryTypes } = Sequelize;
 
 const loggerOptions = {
-  crawler: `blockListener`
+  crawler: `blockListener`,
 };
 
-export async function start (api, sequelize, config) {
+export async function start(api, sequelize, config) {
   logger.info(loggerOptions, `Starting block listener...`);
   await api.rpc.chain.subscribeNewHeads(async (header) => {
-
     logger.info(`last block #${header.number} has hash ${header.hash}`);
     // Get block number
     const blockNumber = header.number.toNumber();
@@ -26,93 +32,107 @@ export async function start (api, sequelize, config) {
       blockNumberFinalized,
       extendedHeader,
       runtimeVersion,
-      totalIssuance,        
+      totalIssuance,
     ] = await Promise.all([
       //api.derive.session.progress(),
       api.rpc.chain.getBlock(blockHash),
       api.derive.chain.bestNumberFinalized(),
       api.derive.chain.getHeader(blockHash),
       api.rpc.state.getRuntimeVersion(blockHash),
-      api.query.balances.totalIssuance.at(blockHash)
+      api.query.balances.totalIssuance.at(blockHash),
     ]);
 
     // Get block parent hash
     const parentHash = header.parentHash;
-    
+
     // Get block extrinsics root
     const extrinsicsRoot = header.extrinsicsRoot;
 
     // Get block state root
-    
+
     // Get block author
-    const blockAuthor = extendedHeader.author ||  null;
+    const blockAuthor = extendedHeader.author || null;
 
     // Get block author identity display name
     const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
     const blockAuthorName = getDisplayName(blockAuthorIdentity.identity);
-    
+
     // Get epoch duration
     const epochDuration = api.consts?.babe?.epochDuration || 0;
 
-
-    let res = await sequelize.query('SELECT block_number FROM block WHERE block_number = :blockNumber', {
-      type: QueryTypes.SELECT,
-      logging: false,
-      replacements: {
-        blockNumber
+    let res = await sequelize.query(
+      "SELECT block_number FROM block WHERE block_number = :blockNumber",
+      {
+        type: QueryTypes.SELECT,
+        logging: false,
+        replacements: {
+          blockNumber,
+        },
       }
-    })
-    // Handle chain reorganizations    
-    
-    if (res.length > 0) {
+    );
+    // Handle chain reorganizations
+
+    if (res > 0) {
       // Chain reorganization detected! We need to update block_author, block_hash and state_root
-      logger.info(loggerOptions, `Detected chain reorganization at block #${blockNumber}, updating author, author name, hash and state root`);
+      logger.info(
+        loggerOptions,
+        `Detected chain reorganization at block #${blockNumber}, updating author, author name, hash and state root`
+      );
 
       // Get block author
       const blockAuthor = extendedHeader.author;
 
       // Get block author identity display name
-      const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);      
+      const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
 
-      await sequelize.query(`UPDATE block SET block_author = :block_author, 
-      block_author_name = :block_author_name, 
+      await sequelize.query(
+        `UPDATE block SET block_author = :block_author,
+      block_author_name = :block_author_name,
       block_hash = :block_hash,
-      state_root = :state_root WHERE block_number = :block_number`, {
-        type: QueryTypes.UPDATE,
-        logging: false,
-        replacements: {
-          block_author: blockAuthor,          
-          block_author_name: blockAuthorIdentity.identity.display || ``,
-          block_hash: blockHash,
-          state_root: header.stateRoot,
-          block_number: blockNumber
+      state_root = :state_root WHERE block_number = :block_number`,
+        {
+          type: QueryTypes.UPDATE,
+          logging: false,
+          replacements: {
+            block_author: blockAuthor,
+            block_author_name: blockAuthorIdentity.identity.display || ``,
+            block_hash: blockHash,
+            state_root: header.stateRoot,
+            block_number: blockNumber,
+          },
         }
-      })
-
+      );
     } else {
-
       // Get block events
       const blockEvents = await api.query.system.events.at(blockHash);
 
       // Get election status
-      const eraElectionStatus = await api.query?.staking?.eraElectionStatus() || null;
+      const eraElectionStatus =
+        (await api.query?.staking?.eraElectionStatus()) || null;
 
       // Find number of balance transfers in this block
       const numTransfers =
-        blockEvents
-          .filter( record => (record.event.section === `balances` && record.event.method === `Transfer`))
-          .length || 0;
+        blockEvents.filter(
+          (record) =>
+            record.event.section === `balances` &&
+            record.event.method === `Transfer`
+        ).length || 0;
 
       // Find number of new accounts in this block
       const newAccounts =
-        blockEvents
-          .filter( record => (record.event.section === `balances` && record.event.method === `Endowed`))
-          .length || 0;
+        blockEvents.filter(
+          (record) =>
+            record.event.section === `balances` &&
+            record.event.method === `Endowed`
+        ).length || 0;
 
       // Store new block
-      logger.info(loggerOptions, `Adding block #${blockNumber} (${shortHash(blockHash.toString())})`);
-      
-      const timestampMs = await api.query.timestamp.now.at(blockHash);      
+      logger.info(
+        loggerOptions,
+        `Adding block #${blockNumber} (${shortHash(blockHash.toString())})`
+      );
+
+      const timestampMs = await api.query.timestamp.now.at(blockHash);
 
       await sequelize.query(
         `INSERT INTO block (block_number, block_number_finalized, block_author, block_author_name,
@@ -128,87 +148,103 @@ export async function start (api, sequelize, config) {
           :spec_name, :spec_version, :total_events, :num_transfers, :new_accounts,
           :total_issuance, :timestamp
         )
-        ON CONFLICT ON CONSTRAINT block_pkey 
-        DO NOTHING;`, {
+        ON CONFLICT ON CONSTRAINT block_pkey
+        DO NOTHING;`,
+        {
           type: QueryTypes.INSERT,
           logging: false,
           replacements: {
-            block_number: blockNumber, 
-            block_number_finalized: blockNumberFinalized, 
-            block_author: blockAuthor, 
+            block_number: blockNumber,
+            block_number_finalized: blockNumberFinalized,
+            block_author: blockAuthor,
             block_author_name: getDisplayName(blockAuthorIdentity.identity),
-            block_hash: blockHash, 
-            parent_hash: header.parentHash, 
-            extrinsics_root: header.extrinsicsRoot, 
-            state_root: header.stateRoot, 
+            block_hash: blockHash,
+            parent_hash: header.parentHash,
+            extrinsics_root: header.extrinsicsRoot,
+            state_root: header.stateRoot,
             current_era: 0,
-            current_index: 0, 
-            era_length: 0, 
-            era_progress: 0, 
-            is_epoch: false, 
-            is_election: eraElectionStatus?.toString() === `Close` ? false : true,
-            session_length: (api.consts?.babe?.epochDuration || 0).toString(), 
-            session_per_era: 0, 
-            session_progress: 0, 
+            current_index: 0,
+            era_length: 0,
+            era_progress: 0,
+            is_epoch: false,
+            is_election:
+              eraElectionStatus?.toString() === `Close` ? false : true,
+            session_length: (api.consts?.babe?.epochDuration || 0).toString(),
+            session_per_era: 0,
+            session_progress: 0,
             validator_count: 0,
-            spec_name: runtimeVersion.specName, 
-            spec_version: runtimeVersion.specVersion, 
-            total_events: blockEvents.length || 0, 
-            num_transfers: numTransfers, 
+            spec_name: runtimeVersion.specName,
+            spec_version: runtimeVersion.specVersion,
+            total_events: blockEvents.length || 0,
+            num_transfers: numTransfers,
             new_accounts: newAccounts,
-            total_issuance: totalIssuance, 
-            timestamp:  Math.floor(timestampMs / 1000)
-          }
+            total_issuance: totalIssuance,
+            timestamp: Math.floor(timestampMs / 1000),
+          },
         }
-      );      
-      
+      );
+
       // Store block extrinsics
-      await storeExtrinsics(sequelize, blockNumber, block.extrinsics, blockEvents, loggerOptions);
-      
+      await storeExtrinsics(
+        sequelize,
+        blockNumber,
+        block.extrinsics,
+        blockEvents,
+        loggerOptions
+      );
+
       const eventFacade = new EventFacade(api, sequelize);
       // Loop through the Vec<EventRecord>
-      await blockEvents.forEach( async (record, index) => {
+      await blockEvents.forEach(async (record, index) => {
+        console.log('record->', record);
         // Extract the phase and event
         const { event, phase } = record;
 
-        let sql = `SELECT FROM event WHERE block_number = '${blockNumber}' AND event_index = '${index}';`;
-        let res = await pool.query(sql);
-
-        if (res.rows.length === 0) {
-      
-          sql = 
-            `INSERT INTO event (
-              block_number,
-              event_index,
-              section,
-              method,
-              phase,
-              data
-            ) VALUES (
-              '${blockNumber}',
-              '${index}',
-              '${event.section}',
-              '${event.method}',
-              '${phase.toString()}',
-              '${JSON.stringify(event.data)}'
-            )
-            ON CONFLICT ON CONSTRAINT event_pkey 
-            DO NOTHING
-            ;`;
-          try {
-            if (event.section !== 'system' && event.method !== 'ExtrinsicSuccess' && index !== 0) {
-              const rows = await pool.query(sql);
-              logger.info(loggerOptions, `Added event #${blockNumber}-${index} ${event.section} ➡ ${event.method}`);                          
-              if (rows) {
-                eventFacade.save(event.method, event.data.toJSON());
-              }
-            }              
-          } catch (error) {
-            logger.error(loggerOptions, `Error adding event #${blockNumber}-${index}: ${error}, sql: ${sql}`);
+        const res = await sequelize.query(
+          "SELECT FROM event WHERE block_number = :blockNumber AND event_index = :index",
+          {
+            type: QueryTypes.SELECT,
+            logging: false,
+            plain: true,
+            replacements: {
+              blockNumber,
+              index,
+            },
           }
+        );
+
+        if (
+          !res &&
+          event.section !== "system" &&
+          event.method !== "ExtrinsicSuccess" &&
+          index !== 0
+        ) {
+          await sequelize.query(
+            `INSERT INTO event (block_number,event_index, section, method, phase, data)
+            VALUES (:block_number,:event_index, :section, :method, :phase, :data)
+            ON CONFLICT ON CONSTRAINT event_pkey
+            DO NOTHING;`,
+            {
+              type: QueryTypes.INSERT,
+              logging: false,
+              replacements: {
+                block_number: blockNumber,
+                event_index: index,
+                section: event.section,
+                method: event.method,
+                phase: phase.toString(),
+                data: JSON.stringify(event.data),
+              },
+            }
+          );
+          logger.info(
+            loggerOptions,
+            `Added event #${blockNumber}-${index} ${event.section} ➡ ${event.method}`
+          );
+          eventFacade.save(event.method, event.data.toJSON());
         }
       });
     }
-    updateTotals(pool, loggerOptions);
+    updateTotals(sequelize, loggerOptions);
   });
 }

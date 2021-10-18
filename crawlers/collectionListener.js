@@ -100,18 +100,19 @@ export async function setExcaption(sequelize, error, collectionId) {
 };
 
 export async function saveCollection ({ collection, sequelize }) {
+  const {collection_id } = collection;
   const res = await sequelize.query(
     'SELECT collection_id, name, description, offchain_schema, token_limit, owner FROM collections WHERE collection_id = :collection_id', {
       type: QueryTypes.SELECT,
       plain: true,
       logging: false,
       replacements: {
-        collection_id: collection.collection_id
+        collection_id
       }
     }
   );
 
-  if (res.length === 0) {
+  if (!res) {
     await insertCollection(collection, sequelize)
     try {
     } catch (error) {

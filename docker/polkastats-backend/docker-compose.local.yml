@@ -28,8 +28,8 @@ services:
     ports:
       - 5432:5432
     environment:
-      POSTGRES_USER: 'polkastats'
-      POSTGRES_PASSWORD: 'polkastats'
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U polkastats']
       interval: 5s
@@ -41,16 +41,19 @@ services:
   graphql-engine:
     image: hasura/graphql-engine:latest
     ports:
-      - '8082:8080'
+      - '8080:8080'      
     depends_on:
       - 'postgres'
     restart: always
     environment:
-      HASURA_GRAPHQL_DATABASE_URL: postgres://polkastats:polkastats@postgres:5432/polkastats
-      HASURA_GRAPHQL_ENABLE_CONSOLE: 'true' # set to "false" to disable console
+      HASURA_GRAPHQL_DATABASE_URL: '${GRAPHQL_DATABASE_URL}'
+      HASURA_GRAPHQL_ENABLE_CONSOLE: '${GRAPHQL_ENABLE_CONSOLE}' # set to "false" to disable console
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      HASURA_GRAPHQL_DISABLE_CORS: '${GRAPHQL_DISABLE_CORS}'
+      HASURA_GRAPHQL_JWT_SECRET: '${GRAPHQL_JWT_SECRET}'
       ## uncomment next line to set an admin secret
-      # HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
+      HASURA_GRAPHQL_ADMIN_SECRET: '${GRAPHQL_ADMIN_SECRET}'
+      HASURA_GRAPHQL_PG_CONNECTIONS: '${GRAPHQL_PG_CONNECTIONS}'
   #
   # Block crawler
   #

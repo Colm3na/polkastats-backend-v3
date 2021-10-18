@@ -25,7 +25,7 @@ export const crawlers = [
   
   {
     enabled: !process.env.CRAWLER_BLOCK_LISTENER_DISABLE,
-    module: '/lib/crawlers/blockListener.js',
+    module: `${process.cwd()}/crawlers/blockListener.js`,
   },
 
   {
@@ -43,7 +43,7 @@ export const crawlers = [
   },
   {
     enabled: !process.env.CRAWLER_ACTIVE_ACCOUNTS_DISABLE,
-    module:'/lib/crawlers/activeAccounts.js',
+    module: `${process.cwd()}/crawlers/activeAccounts.js`,
     config: {
       pollingTime:
         parseInt(process.env.CRAWLER_ACTIVE_ACCOUNTS_POLLING_TIME_MS) ||
@@ -52,7 +52,7 @@ export const crawlers = [
   },
   {
     enabled: !process.env.CRAWLER_CHAIN_DISABLE,
-    module: '/lib/crawlers/chain.js',
+    module: `${process.cwd()}/crawlers/chain.js`,
   },
 
   {

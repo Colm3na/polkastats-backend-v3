@@ -1,4 +1,4 @@
-import { getCollection, saveCollection } from '/collectionListener.js'
+import { getCollection, saveCollection } from './collectionListener.js'
 import { getToken, checkToken, saveToken, deleteToken, moveToken } from './tokenListener.js'
 import * as _ from 'lodash'
 

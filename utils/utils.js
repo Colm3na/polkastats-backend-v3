@@ -343,7 +343,7 @@ export async function updateTotals(sequelize) {
 export function parseHexToString(value) {
   try {
     const source = value.toString().replace('0x', '')
-    return Buffer(source, 'hex').toString('utf-8')
+    return Buffer.from(source, 'hex').toString('utf-8')
   } catch (error) {
     return ''
   }
@@ -357,7 +357,7 @@ export function bufferToString(value) {
     if (value.join('').includes('123')) {
       return ''
     }
-    return Buffer(value, 'hex').toString('utf-8')
+    return Buffer.from(value, 'hex').toString('utf-8')
   } catch (error) {
     return ''
   }

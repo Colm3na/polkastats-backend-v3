@@ -3,9 +3,10 @@
   "version": "3.3.0",
   "description": "Block explorer UniqueNetwork",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node -r dotenv/config index.js",
-    "docker": "docker-compose --env-file .env  -f docker/polkastats-backend/docker-compose.yml up -d",    
+    "docker": "docker-compose docker/polkastats-backend/docker-compose.yml up -d",    
     "docker:polkadot": "docker-compose -f docker/polkastats-backend/docker-compose.yml up",
     "docker:local": "docker-compose --env-file .env.dev -f docker/polkastats-backend/docker-compose.local.yml up",
     "docker:build": "docker-compose -f docker/polkastats-backend/docker-compose.yml build",

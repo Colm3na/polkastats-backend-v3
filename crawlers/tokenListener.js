@@ -64,7 +64,7 @@ async function checkToken(sequelize, {owner, collectionId, tokenId}) {
     logging: false,
     plain: true
   });  
-  if (res.length === 0) {
+  if (res) {
     return 'insert';
   } else {            
     if (res.owner === owner) {

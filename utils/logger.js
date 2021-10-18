@@ -18,6 +18,10 @@ export class Logger {
   info(msg) {
     log(chalk.blue(`${msg}`))
   }  
+
+  green(msg) {
+    log(chalk.green(`${msg}`))
+  }
   
   error({message, name, stack}) {
     log(chalk.bgRed(`${name}`));
