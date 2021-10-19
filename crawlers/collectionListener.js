@@ -74,7 +74,7 @@ export async function insertCollection (collection, sequelize) {
       type: QueryTypes.INSERT,      
       logging: false,
       replacements: {
-        collection_id: collection.collectionId,
+        collection_id: collection.collection_id,
         owner: collection.owner, 
         name:collection.name,
         description: collection.description,
@@ -99,22 +99,21 @@ export async function setExcaption(sequelize, error, collectionId) {
   )  
 };
 
-export async function saveCollection ({ collection, sequelize }) {
-  const {collection_id } = collection;
+export async function saveCollection ({ collection, sequelize }) {  
   const res = await sequelize.query(
     'SELECT collection_id, name, description, offchain_schema, token_limit, owner FROM collections WHERE collection_id = :collection_id', {
       type: QueryTypes.SELECT,
       plain: true,
       logging: false,
       replacements: {
-        collection_id
+        collection_id: collection.collection_id
       }
     }
   );
 
-  if (!res) {
-    await insertCollection(collection, sequelize)
+  if (!res) {    
     try {
+      await insertCollection(collection, sequelize)
     } catch (error) {
       await setExcaption(sequelize, error, collection.collection_id);
     }
@@ -153,8 +152,7 @@ export async function deleteCollection (collectionId, sequelize) {
 export async function getCollectionCount (api) {
   const createdCollectionCount = (
     await api.query.nft.createdCollectionCount()
-  ).toNumber();
-  console.log(createdCollectionCount);
+  ).toNumber();  
   return createdCollectionCount;
 };
 
@@ -162,8 +160,9 @@ export async function start ({api, sequelize, config}) {
   const pollingTime = config.pollingTime || DEFAULT_POLLING_TIME_MS  
   logger.info(loggerOptions, "Starting collection crawler..."); 
   (async function run() {
-    const countCollection = await getCollectionCount(api);
-    const collections = await getCollections(api, countCollection);
+    const countCollection = await getCollectionCount(api);    
+    // const collections = await getCollections(api, countCollection);
+    const collections = await getCollections(api, 10);
       for (const item of collections) {
         await saveCollection({
           collection: item,      

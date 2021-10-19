@@ -16,7 +16,7 @@ const loggerOptions = {
   crawler: `blockListener`,
 };
 
-export async function start(api, sequelize, config) {
+export async function start({api, sequelize, config}) {
   logger.info(loggerOptions, `Starting block listener...`);
   await api.rpc.chain.subscribeNewHeads(async (header) => {
     logger.info(`last block #${header.number} has hash ${header.hash}`);

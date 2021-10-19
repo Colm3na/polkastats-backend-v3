@@ -24,9 +24,9 @@ async function insertRow({sequelize, blockHeight, currentSessionIndex, totalIssu
       type: QueryTypes.INSERT,
       logging: false,
       replacements: {        
-        block_height: blockHeight, 
-        session_index: currentSessionIndex, 
-        total_issuance: totalIssuance, 
+        block_height: blockHeight.toString(), 
+        session_index: currentSessionIndex || 0, 
+        total_issuance: totalIssuance.toString(), 
         active_accounts: activeAccounts, 
         timestamp: new Date().getTime()
       }
@@ -63,7 +63,7 @@ export async function start({api, sequelize, config}) {
         type: QueryTypes.SELECT,
         plain: true
       })      
-      if (res) {
+      if (!res) {
         const activeAccounts = await getTotalActiveAccounts(api);
         await insertRow({sequelize, blockHeight, currentIndex, totalIssuance, activeAccounts});
       }
