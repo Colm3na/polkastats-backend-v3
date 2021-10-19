@@ -124,7 +124,9 @@ const makeQuery = (state, block, timestamp) => {
  * @param {Object}  pool    Postgres connection pool
  */
 const execQuery = (state, sequelize) => {
-  const queryResult = sequelize.query(state.query)
+  const queryResult = sequelize.query(state.query, {
+    logging: false
+  })
     .catch(err =>
       logger.error(loggerOptions, `Error updating account ${state.account.id}: ${err}`),
     );

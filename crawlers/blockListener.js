@@ -212,18 +212,11 @@ export async function start({api, sequelize, config}) {
             },
           }
         );
-
-        if (
-          !res &&
-          event.section !== "system" &&
-          event.method !== "ExtrinsicSuccess" &&
-          index !== 0
-        ) {
+        
+        if (!res && event.section !== "system" && event.method !== 'ExtrinsicSuccess') {
           await sequelize.query(
             `INSERT INTO event (block_number,event_index, section, method, phase, data)
-            VALUES (:block_number,:event_index, :section, :method, :phase, :data)
-            ON CONFLICT ON CONSTRAINT event_pkey
-            DO NOTHING;`,
+            VALUES (:block_number,:event_index, :section, :method, :phase, :data);`,
             {
               type: QueryTypes.INSERT,
               logging: false,

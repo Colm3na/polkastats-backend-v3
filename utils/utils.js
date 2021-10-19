@@ -70,6 +70,7 @@ storeExtrinsics(
     ON CONFLICT ON CONSTRAINT extrinsic_pkey DO NOTHING;`,
       {
         type: QueryTypes.INSERT,
+        logging: false,
         replacements: {
           block_number: blockNumber,
           extrinsic_index: index,
@@ -319,17 +320,17 @@ export async function storeEraStakingInfo(api, sequelize, eraIndex, denom, logge
 }
 
 export async function updateTotals(sequelize) {
-  await sequelize.query(`UPDATE total SET count = (SELECT count(*) FROM block) WHERE name = 'blocks'`, { type: QueryTypes.UPDATE })
+  await sequelize.query(`UPDATE total SET count = (SELECT count(*) FROM block) WHERE name = 'blocks'`, { type: QueryTypes.UPDATE, logging: false })
 
-  await sequelize.query(`UPDATE total SET count = (SELECT count(*) FROM extrinsic) WHERE name = 'extrinsics'`, { type: QueryTypes.UPDATE })
+  await sequelize.query(`UPDATE total SET count = (SELECT count(*) FROM extrinsic) WHERE name = 'extrinsics'`, { type: QueryTypes.UPDATE, logging: false })
 
-  await sequelize.query(`UPDATE total SET count = (SELECT count(*) FROM extrinsic WHERE section = 'balances' and method = 'transfer' ) WHERE name = 'transfers'`, { type: QueryTypes.UPDATE })
+  await sequelize.query(`UPDATE total SET count = (SELECT count(*) FROM extrinsic WHERE section = 'balances' and method = 'transfer' ) WHERE name = 'transfers'`, { type: QueryTypes.UPDATE, logging: false })
 
-  await sequelize.query(`UPDATE total SET count = (SELECT count(*) FROM event) WHERE name = 'events'`, { type: QueryTypes.UPDATE })
+  await sequelize.query(`UPDATE total SET count = (SELECT count(*) FROM event) WHERE name = 'events'`, { type: QueryTypes.UPDATE, logging: false })
 
-  await sequelize.query(`UPDATE total SET count = (SELECT count(*) FROM collections) WHERE name ='collections'`, { type: QueryTypes.UPDATE })
+  await sequelize.query(`UPDATE total SET count = (SELECT count(*) FROM collections) WHERE name ='collections'`, { type: QueryTypes.UPDATE, logging: false })
 
-  await sequelize.query(`UPDATE total SET count = (SELECT count(*) FROM tokens) WHERE name ='tokens'`, { type: QueryTypes.UPDATE })
+  await sequelize.query(`UPDATE total SET count = (SELECT count(*) FROM tokens) WHERE name ='tokens'`, { type: QueryTypes.UPDATE, logging: false })
 }
 
 export function parseHexToString(value) {

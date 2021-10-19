@@ -1,12 +1,14 @@
 import { getCollection, saveCollection } from './collectionListener.js'
 import { getToken, checkToken, saveToken, deleteToken, moveToken } from './tokenListener.js'
-import * as _ from 'lodash'
+import lodash from 'lodash'
 
 
 const TYPE_CREATE_COLLECTION = 'CollectionCreated'
 const TYPE_CREATE_TOKEN = 'ItemCreated'
 const TYPE_ITEM_DESTROYED = 'ItemDestroyed'
 const TYPE_TRANSFARE = 'Transfer'
+
+const { isNumber } = lodash;
 
 export class EventFacade {
   /**
@@ -53,7 +55,7 @@ export class EventFacade {
    */
   async saveCollection(data) {          
     const collectionId = data[0];        
-    if (_.isNumber(collectionId)) {
+    if (isNumber(collectionId)) {
       const collection = await getCollection(this.api, collectionId);      
       await saveCollection({
         collection,
@@ -72,7 +74,7 @@ export class EventFacade {
   }
 
   #checkNumber({collectionId, tokenId}) {
-    return _.isNumber(collectionId) && _.isNumber(tokenId);
+    return isNumber(collectionId) && isNumber(tokenId);
   }
 
   async delToken(data) {    

@@ -161,8 +161,7 @@ export async function start ({api, sequelize, config}) {
   logger.info(loggerOptions, "Starting collection crawler..."); 
   (async function run() {
     const countCollection = await getCollectionCount(api);    
-    // const collections = await getCollections(api, countCollection);
-    const collections = await getCollections(api, 10);
+    const collections = await getCollections(api, countCollection);    
       for (const item of collections) {
         await saveCollection({
           collection: item,      
