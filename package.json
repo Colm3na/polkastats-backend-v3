@@ -6,9 +6,9 @@
   "type": "module",
   "scripts": {
     "start": "node -r dotenv/config index.js",
-    "docker": "docker-compose docker/polkastats-backend/docker-compose.yml up -d",    
+    "docker": "docker-compose --env-file .env -f docker/polkastats-backend/docker-compose.yml up -d",    
     "docker:polkadot": "docker-compose -f docker/polkastats-backend/docker-compose.yml up",
-    "docker:local": "docker-compose --env-file .env.dev -f docker/polkastats-backend/docker-compose.local.yml up",
+    "docker:local": "docker-compose --env-file .env -f docker/polkastats-backend/docker-compose.local.yml up",
     "docker:build": "docker-compose -f docker/polkastats-backend/docker-compose.yml build",
     "docker:clean": "bash docker/polkastats-backend/clean-polkastats-dockers",
     "docker:stop": "docker stop polkastats-backend_crawler_1 polkastats-backend_graphql-engine_1 polkastats-backend_postgres_1 polkastats-backend_substrate-node_1 polkastats-backend_phragmen_1",

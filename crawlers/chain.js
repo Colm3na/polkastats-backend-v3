@@ -61,7 +61,8 @@ export async function start({api, sequelize, config}) {
 
       const res = await sequelize.query('SELECT session_index FROM chain ORDER by session_index DESC LIMIT 1', {
         type: QueryTypes.SELECT,
-        plain: true
+        plain: true,
+        logging: false,
       })      
       if (!res) {
         const activeAccounts = await getTotalActiveAccounts(api);

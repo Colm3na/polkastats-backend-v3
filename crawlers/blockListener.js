@@ -72,7 +72,7 @@ export async function start({api, sequelize, config}) {
     );
     // Handle chain reorganizations
 
-    if (res > 0) {
+    if (res.length > 0) {
       // Chain reorganization detected! We need to update block_author, block_hash and state_root
       logger.info(
         loggerOptions,
@@ -155,13 +155,13 @@ export async function start({api, sequelize, config}) {
           logging: false,
           replacements: {
             block_number: blockNumber,
-            block_number_finalized: blockNumberFinalized,
+            block_number_finalized: blockNumberFinalized.toString(),
             block_author: blockAuthor,
             block_author_name: getDisplayName(blockAuthorIdentity.identity),
-            block_hash: blockHash,
-            parent_hash: header.parentHash,
-            extrinsics_root: header.extrinsicsRoot,
-            state_root: header.stateRoot,
+            block_hash: blockHash.toString(),
+            parent_hash: header.parentHash.toString(),
+            extrinsics_root: header.extrinsicsRoot.toString(),
+            state_root: header.stateRoot.toString(),
             current_era: 0,
             current_index: 0,
             era_length: 0,
@@ -173,12 +173,12 @@ export async function start({api, sequelize, config}) {
             session_per_era: 0,
             session_progress: 0,
             validator_count: 0,
-            spec_name: runtimeVersion.specName,
-            spec_version: runtimeVersion.specVersion,
+            spec_name: runtimeVersion.specName.toString(),
+            spec_version: runtimeVersion.specVersion.toString(),
             total_events: blockEvents.length || 0,
             num_transfers: numTransfers,
             new_accounts: newAccounts,
-            total_issuance: totalIssuance,
+            total_issuance: totalIssuance.toString(),
             timestamp: Math.floor(timestampMs / 1000),
           },
         }
@@ -196,7 +196,7 @@ export async function start({api, sequelize, config}) {
       const eventFacade = new EventFacade(api, sequelize);
       // Loop through the Vec<EventRecord>
       await blockEvents.forEach(async (record, index) => {
-        console.log('record->', record);
+        //console.log('record->', record);
         // Extract the phase and event
         const { event, phase } = record;
 

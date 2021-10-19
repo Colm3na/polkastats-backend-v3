@@ -41,7 +41,8 @@ export function getExtrinsicSuccess(index, blockEvents) {
   return extrinsicSuccess;
 };
 
-export async function storeExtrinsics(
+export async function 
+storeExtrinsics(
   sequelize,
   blockNumber,
   extrinsics,
@@ -63,17 +64,8 @@ export async function storeExtrinsics(
       hash,
       doc,
       success
-    ) VALUES (
-      ':block_number',
-      ':extrinsic_index',
-      ':is_signed',
-      ':signer',
-      ':section',
-      ':method',
-      ':args',
-      ':hash',
-      ':doc',
-      ':success'
+    ) VALUES (:block_number, :extrinsic_index,
+      :is_signed, :signer, :section, :method, :args, :hash, :doc, :success
     )
     ON CONFLICT ON CONSTRAINT extrinsic_pkey DO NOTHING;`,
       {
@@ -82,7 +74,7 @@ export async function storeExtrinsics(
           block_number: blockNumber,
           extrinsic_index: index,
           is_signed: isSigned,
-          signer: isSigned ? extrinsic.signer.toString() : ``,
+          signer: isSigned ? extrinsic.signer.toString() : '',
           section: extrinsic.toHuman().method.section,
           method: extrinsic.toHuman().method.method,
           args: JSON.stringify(extrinsic.args),
