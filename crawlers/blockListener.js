@@ -3,7 +3,6 @@ import pino from "pino";
 import {
   shortHash,
   storeExtrinsics,
-  storeLogs,
   getDisplayName,
   updateTotals,
 } from "../utils/utils.js";
@@ -41,12 +40,6 @@ export async function start({api, sequelize, config}) {
       api.rpc.state.getRuntimeVersion(blockHash),
       api.query.balances.totalIssuance.at(blockHash),
     ]);
-
-    // Get block parent hash
-    const parentHash = header.parentHash;
-
-    // Get block extrinsics root
-    const extrinsicsRoot = header.extrinsicsRoot;
 
     // Get block state root
 

@@ -23,11 +23,11 @@ services:
     image: postgres
     restart: always
     volumes:
-      - 'db-data:/var/lib/postgresql/data'
-      - './sql/polkastats.sql:/docker-entrypoint-initdb.d/polkastats.sql'
+      - 'db-data:/var/lib/postgresql/data'      
     ports:
       - 5432:5432
     environment:
+      POSTGRES_DB: ${POSTGRES_DATABASE}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     healthcheck:

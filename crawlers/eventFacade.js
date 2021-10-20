@@ -25,9 +25,9 @@ export class EventFacade {
    * @param {Array} data event.data
    * @returns 
    */
-  async save(type, data) {    
+  async save(type, data) {
     switch (type) {
-      case TYPE_CREATE_COLLECTION: {                                
+      case TYPE_CREATE_COLLECTION: {
         return await this.saveCollection(data)
       }
 
