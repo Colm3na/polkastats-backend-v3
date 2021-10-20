@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - develop
+      - release/**
+      - hotfix/**
   workflow_dispatch:
 
 jobs:
@@ -16,10 +18,7 @@ jobs:
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
-      - name: echo
-        shell: bash
-        run: echo ${{ steps.extract_branch.outputs.branch }}
-#       - name: curl
-#         uses: wei/curl@v1
-#         with:
-#           args: -X POST -F token=${{ secrets.GITLAB_TOKEN }} -F ref=develop -F variables[BRANCH_NAME]= https://gitlab.usetech.ru/api/v4/projects/334/trigger/pipeline
+      - name: curl
+        uses: wei/curl@v1
+        with:
+          args: -X POST -F token=${{ secrets.GITLAB_TOKEN }} -F ref=develop -F variables[BRANCH_NAME]=${{ steps.extract_branch.outputs.branch }} https://gitlab.usetech.ru/api/v4/projects/334/trigger/pipeline
