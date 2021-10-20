@@ -12,9 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     environment: development
     steps:
-      - name: echo
+      - name: Extract branch name
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+      - name: echo
+        shell: bash
+        run: echo ${{ steps.extract_branch.outputs.branch }}
 #       - name: curl
 #         uses: wei/curl@v1
 #         with:
