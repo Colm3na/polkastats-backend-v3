@@ -1,0 +1,18 @@
+name: Gitlab
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+
+jobs:
+  run-gitlab-pipeline:
+    name: Run gitlab pipeline
+    runs-on: ubuntu-latest
+    environment: development
+    steps:
+      - name: curl
+        uses: wei/curl@v1
+        with:
+          args: -X POST -F token=${{ secrets.GITLAB_TOKEN }} -F ref=develop https://gitlab.usetech.ru/api/v4/projects/334/trigger/pipeline
