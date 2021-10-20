@@ -1,9 +1,9 @@
-import chalk from 'chalk'
+const chalk = require('chalk')
 
 let instance = null;
 let log = console.log
 
-export class Logger {
+class Logger {
   constructor() {
     if(!instance) {
       instance = this;
@@ -29,3 +29,5 @@ export class Logger {
     log(chalk.red(`Stack: ${stack}`))
   }
 }
+
+module.exports.Logger = Logger;

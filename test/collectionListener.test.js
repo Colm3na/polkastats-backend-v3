@@ -1,4 +1,4 @@
-const { getCollection, insertCollection, saveCollection } = require('../crawlers/collectionListener')
+const { getCollection, insertCollection, saveCollection } = require('../crawlers/collectionListener.js')
 const { api } = require('./utils.js')
 
 

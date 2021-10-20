@@ -1,4 +1,4 @@
-export const api = {
+const api = {
   query: {
     nft: {
       async collectionById(collectionId) {
@@ -35,3 +35,5 @@ export const api = {
     },
   },
 };
+
+module.exports = { api }

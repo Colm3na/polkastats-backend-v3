@@ -1,28 +1,24 @@
-import pino from 'pino'
-import BN  from 'bignumber.js'
-import Sequelize from 'sequelize'
+const pino = require("pino");
+const { BigNumber } = require("bignumber.js");
+const { QueryTypes } = require("sequelize");
 
-const { QueryTypes } = Sequelize
-const { BigNumber } = BN; 
+const logger = pino();
 
-const logger = pino()
-
-
-export function formatNumber(num) {
+function formatNumber(num) {
   return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
 }
 
-export function shortHash(hash) {
+function shortHash(hash) {
   return `${hash.substr(0, 6)}…${hash.substr(hash.length - 5, 4)}`;
 }
 
-export async function wait(ms) {
+async function wait(ms) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
 }
 
-export function getExtrinsicSuccess(index, blockEvents) {
+function getExtrinsicSuccess(index, blockEvents) {
   // assume success if no events were extracted
   if (blockEvents.length === 0) {
     return true;
@@ -39,10 +35,9 @@ export function getExtrinsicSuccess(index, blockEvents) {
     }
   });
   return extrinsicSuccess;
-};
+}
 
-export async function 
-storeExtrinsics(
+async function storeExtrinsics(
   sequelize,
   blockNumber,
   extrinsics,
@@ -53,7 +48,8 @@ storeExtrinsics(
   const startTime = new Date().getTime();
   extrinsics.forEach(async (extrinsic, index) => {
     const isSigned = extrinsic.isSigned;
-    await sequelize.query(`INSERT INTO extrinsic (
+    await sequelize.query(
+      `INSERT INTO extrinsic (
       block_number,
       extrinsic_index,
       is_signed,
@@ -75,15 +71,16 @@ storeExtrinsics(
           block_number: blockNumber,
           extrinsic_index: index,
           is_signed: isSigned,
-          signer: isSigned ? extrinsic.signer.toString() : '',
+          signer: isSigned ? extrinsic.signer.toString() : "",
           section: extrinsic.toHuman().method.section,
           method: extrinsic.toHuman().method.method,
           args: JSON.stringify(extrinsic.args),
           hash: extrinsic.hash.toHex(),
           doc: extrinsic.meta.docs.toString().replace(/'/g, "''"),
-          success: getExtrinsicSuccess(index, blockEvents)
-        }
-      })
+          success: getExtrinsicSuccess(index, blockEvents),
+        },
+      }
+    );
   });
 
   // Log execution time
@@ -97,23 +94,26 @@ storeExtrinsics(
   );
 }
 
-export async function storeLogs(sequelize, blockNumber, logs, loggerOptions) {
+async function storeLogs(sequelize, blockNumber, logs, loggerOptions) {
   const startTime = new Date().getTime();
 
   logs.forEach(async (log, index) => {
     const { type } = log;
     const [[engine, data]] = Object.values(log.toJSON());
 
-    await sequelize.query(`INSERT INTO log (block_number, log_index, type, engine, data) 
+    await sequelize.query(
+      `INSERT INTO log (block_number, log_index, type, engine, data) 
     VALUES (:block_number, :log_index, :type, :engine, :data)
     ON CONFLICT ON CONSTRAINT log_pkey 
-    DO NOTHING;`, {
-      block_number: blockNumber,
-      log_index: index,
-      type,
-      engine,
-      data
-    });
+    DO NOTHING;`,
+      {
+        block_number: blockNumber,
+        log_index: index,
+        type,
+        engine,
+        data,
+      }
+    );
   });
 
   // Log execution time
@@ -124,7 +124,7 @@ export async function storeLogs(sequelize, blockNumber, logs, loggerOptions) {
   );
 }
 
-export function getDisplayName(identity) {
+function getDisplayName(identity) {
   if (
     identity.displayParent &&
     identity.displayParent !== `` &&
@@ -137,7 +137,13 @@ export function getDisplayName(identity) {
   }
 }
 
-export async function storeEraStakingInfo(api, sequelize, eraIndex, denom, loggerOptions) {
+async function storeEraStakingInfo(
+  api,
+  sequelize,
+  eraIndex,
+  denom,
+  loggerOptions
+) {
   if (eraIndex === 0) return;
   logger.info(loggerOptions, `Storing staking info for era #${eraIndex}`);
 
@@ -173,17 +179,20 @@ export async function storeEraStakingInfo(api, sequelize, eraIndex, denom, logge
     const slash = eraValidatorSlashes.find((slash) => slash[0] === validator);
     if (slash) {
       const amount = slash[1];
-      await sequelize.query(`INSERT INTO validator_era_slash (era_index, stash_id, amount, timestamp) VALUES(:era_index, :stash_id, :amount, :timestamp)
+      await sequelize.query(
+        `INSERT INTO validator_era_slash (era_index, stash_id, amount, timestamp) VALUES(:era_index, :stash_id, :amount, :timestamp)
       ON CONFLICT ON CONSTRAINT validator_era_slash_pkey 
-      DO NOTHING;`, {
-        type: QueryTypes.INSERT,
-        replacements: {
-          era_index: eraIndex,
-          stash_id: validator,
-          amount,
-          timestamp: Date.now()
+      DO NOTHING;`,
+        {
+          type: QueryTypes.INSERT,
+          replacements: {
+            era_index: eraIndex,
+            stash_id: validator,
+            amount,
+            timestamp: Date.now(),
+          },
         }
-      })
+      );
       logger.info(
         loggerOptions,
         `Adding validator slash for ${validator} in era ${eraIndex}: ${new BigNumber(
@@ -194,17 +203,20 @@ export async function storeEraStakingInfo(api, sequelize, eraIndex, denom, logge
           .toFixed(3)} ${denom}`
       );
     } else {
-      await sequelize.query(`INSERT INTO validator_era_slash (era_index, stash_id, amount, timestamp) VALUES(:era_index, :stash_id, :amount, :timestamp)
+      await sequelize.query(
+        `INSERT INTO validator_era_slash (era_index, stash_id, amount, timestamp) VALUES(:era_index, :stash_id, :amount, :timestamp)
       ON CONFLICT ON CONSTRAINT validator_era_slash_pkey 
-      DO NOTHING;`, {
-        type: QueryTypes.INSERT,
-        replacements: {
-          era_index: eraIndex,
-          stash_id: validator,
-          amount: 0,
-          timestamp: Date.now()
+      DO NOTHING;`,
+        {
+          type: QueryTypes.INSERT,
+          replacements: {
+            era_index: eraIndex,
+            stash_id: validator,
+            amount: 0,
+            timestamp: Date.now(),
+          },
         }
-      })
+      );
       logger.info(
         loggerOptions,
         `Adding validator slash for ${validator} in era ${eraIndex}`
@@ -215,17 +227,20 @@ export async function storeEraStakingInfo(api, sequelize, eraIndex, denom, logge
   for (const slash in eraNominatorSlashes) {
     const nominator = slash[0];
     const amount = slash[1];
-    await sequelize.query(`
+    await sequelize.query(
+      `
     INSERT INTO nominator_era_slash (era_index, stash_id, amount, timestamp) VALUES(:era_index, :stash_id, :amount, :timestamp)   ON CONFLICT ON CONSTRAINT nominator_era_slash_pkey 
-    DO NOTHING;`, {
-      type: QueryTypes.INSERT,
-      replacements: {
-        era_index: eraIndex,
-        stash_id: nominator,
-        amount,
-        timestamp: Date.now()
+    DO NOTHING;`,
+      {
+        type: QueryTypes.INSERT,
+        replacements: {
+          era_index: eraIndex,
+          stash_id: nominator,
+          amount,
+          timestamp: Date.now(),
+        },
       }
-    })
+    );
     logger.info(
       loggerOptions,
       `Adding nominator slash for ${nominator} in era ${eraIndex}: ${new BigNumber(
@@ -294,23 +309,26 @@ export async function storeEraStakingInfo(api, sequelize, eraIndex, denom, logge
       .toNumber()
       .toFixed(3);
 
-    await sequelize.query(`INSERT INTO validator_era_staking (era_index, stash_id, identity, display_name, commission, era_rewards, era_points, stake_info, estimated_payout, timestamp) 
+    await sequelize.query(
+      `INSERT INTO validator_era_staking (era_index, stash_id, identity, display_name, commission, era_rewards, era_points, stake_info, estimated_payout, timestamp) 
     VALUES (:era_index, :stash_id, :identity, :display_name, :commission, :era_rewards, :era_points, :stake_info, :estimated_payout, :timestamp) ON CONFLICT ON CONSTRAINT validator_era_staking_pkey 
-    DO NOTHING;`, {
-      type: QueryTypes.INSERT,
-      replacements: {
-        era_index: eraIndex,
-        stash_id: validator,
-        identity: JSON.stringify(identity),
-        display_name: displayName,
-        commission: eraValidatorCommission[index].commission,
-        era_rewards: poolRewardWithCommission.toString(10),
-        era_points: eraPoints,
-        stake_info: JSON.stringify(exposure),
-        estimated_payout: estimatedPayout.toFixed(0),
-        timestamp: Date.now()
+    DO NOTHING;`,
+      {
+        type: QueryTypes.INSERT,
+        replacements: {
+          era_index: eraIndex,
+          stash_id: validator,
+          identity: JSON.stringify(identity),
+          display_name: displayName,
+          commission: eraValidatorCommission[index].commission,
+          era_rewards: poolRewardWithCommission.toString(10),
+          era_points: eraPoints,
+          stake_info: JSON.stringify(exposure),
+          estimated_payout: estimatedPayout.toFixed(0),
+          timestamp: Date.now(),
+        },
       }
-    });
+    );
     logger.info(
       loggerOptions,
       `Adding staking info for validator ${validator} and era: ${eraIndex}, commission: ${commission}%, points: ${eraPoints} (${eraPointsPercent}%), exposure: ${totalExposure} ${denom}, reward: ${poolRewardWithCommissionKSM} ${denom} (without ${commission}% = ${poolRewardWithoutCommissionKSM} ${denom}), estimated era profit for 1000 ${denom}: ${estimatedPayoutKSM} ${denom}`
@@ -319,46 +337,79 @@ export async function storeEraStakingInfo(api, sequelize, eraIndex, denom, logge
   return true;
 }
 
-export async function updateTotals(sequelize) {
-  await sequelize.query(`UPDATE total SET count = (SELECT count(*) FROM block) WHERE name = 'blocks'`, { type: QueryTypes.UPDATE, logging: false })
+async function updateTotals(sequelize) {
+  await sequelize.query(
+    `UPDATE total SET count = (SELECT count(*) FROM block) WHERE name = 'blocks'`,
+    { type: QueryTypes.UPDATE, logging: false }
+  );
 
-  await sequelize.query(`UPDATE total SET count = (SELECT count(*) FROM extrinsic) WHERE name = 'extrinsics'`, { type: QueryTypes.UPDATE, logging: false })
+  await sequelize.query(
+    `UPDATE total SET count = (SELECT count(*) FROM extrinsic) WHERE name = 'extrinsics'`,
+    { type: QueryTypes.UPDATE, logging: false }
+  );
 
-  await sequelize.query(`UPDATE total SET count = (SELECT count(*) FROM extrinsic WHERE section = 'balances' and method = 'transfer' ) WHERE name = 'transfers'`, { type: QueryTypes.UPDATE, logging: false })
+  await sequelize.query(
+    `UPDATE total SET count = (SELECT count(*) FROM extrinsic WHERE section = 'balances' and method = 'transfer' ) WHERE name = 'transfers'`,
+    { type: QueryTypes.UPDATE, logging: false }
+  );
 
-  await sequelize.query(`UPDATE total SET count = (SELECT count(*) FROM event) WHERE name = 'events'`, { type: QueryTypes.UPDATE, logging: false })
+  await sequelize.query(
+    `UPDATE total SET count = (SELECT count(*) FROM event) WHERE name = 'events'`,
+    { type: QueryTypes.UPDATE, logging: false }
+  );
 
-  await sequelize.query(`UPDATE total SET count = (SELECT count(*) FROM collections) WHERE name ='collections'`, { type: QueryTypes.UPDATE, logging: false })
+  await sequelize.query(
+    `UPDATE total SET count = (SELECT count(*) FROM collections) WHERE name ='collections'`,
+    { type: QueryTypes.UPDATE, logging: false }
+  );
 
-  await sequelize.query(`UPDATE total SET count = (SELECT count(*) FROM tokens) WHERE name ='tokens'`, { type: QueryTypes.UPDATE, logging: false })
+  await sequelize.query(
+    `UPDATE total SET count = (SELECT count(*) FROM tokens) WHERE name ='tokens'`,
+    { type: QueryTypes.UPDATE, logging: false }
+  );
 }
 
-export function parseHexToString(value) {
+function parseHexToString(value) {
   try {
-    const source = value.toString().replace('0x', '')
-    return Buffer.from(source, 'hex').toString('utf-8')
+    const source = value.toString().replace("0x", "");
+    return Buffer.from(source, "hex").toString("utf-8");
   } catch (error) {
-    return ''
+    return "";
   }
 }
 
-export function bufferToString(value) {
+function bufferToString(value) {
   try {
     if (value.length === 0 || value.length <= 3) {
-      return ''
+      return "";
     }
-    if (value.join('').includes('123')) {
-      return ''
+    if (value.join("").includes("123")) {
+      return "";
     }
-    return Buffer.from(value, 'hex').toString('utf-8')
+    return Buffer.from(value, "hex").toString("utf-8");
   } catch (error) {
-    return ''
+    return "";
   }
 }
 
-export function genArrayRange(min, max) {
+function genArrayRange(min, max) {
   return Array.from(
     { length: max - min },
     (_, i) => i + ((min === 0 ? -1 : min - 1) + 1)
   );
 }
+
+module.exports = {
+  formatNumber,
+  shortHash,
+  wait,
+  genArrayRange,
+  bufferToString,
+  parseHexToString,
+  updateTotals,
+  storeEraStakingInfo,
+  getDisplayName,
+  storeLogs,
+  storeExtrinsics,
+  getExtrinsicSuccess
+};

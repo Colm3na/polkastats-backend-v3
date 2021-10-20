@@ -1,8 +1,7 @@
-import Sequelize from 'sequelize'
-import pino from 'pino'
+const { QueryTypes } = require('sequelize');
 
+import pino from 'pino'
 const logger = pino()
-const { QueryTypes } = Sequelize
 
 const loggerOptions = {
   crawler: `system`
@@ -14,7 +13,7 @@ const loggerOptions = {
  * @param {object} api             Polkadot API object
  * @param {object} sequelize            Postgres pool object
  */
-export async function start({api, sequelize, config}) {
+async function start({api, sequelize, config}) {
 
   logger.info(loggerOptions, `Starting system crawler`);
 
@@ -59,3 +58,5 @@ async function insertRow(sequelize, blockHeight, chain, nodeName, nodeVersion) {
     }
   );    
 }
+
+module.exports = { start }
