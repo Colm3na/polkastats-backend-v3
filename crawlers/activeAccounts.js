@@ -1,11 +1,9 @@
 
-import lodash from 'lodash'
-import Sequelize from 'sequelize';
-import pino from 'pino'
+const { zip } = require('lodash')
+const { QueryTypes } = require('sequelize')
+const pino = require('pino')
 
-const { zip } = lodash;
 const logger = pino();
-const { QueryTypes } = Sequelize
 
 const loggerOptions = {
   crawler: `activeAccounts`
@@ -178,7 +176,7 @@ const exec = async (api, sequelize) => {
  * @param {*} pool    Postgres connection pool
  * @param {*} config  Crawler configuration
  */
-export async function start({api, sequelize, config}) {
+async function start({api, sequelize, config}) {
   const pollingTime = config.pollingTime || DEFAULT_POLLING_TIME_MS;
   (async function run() {
     await exec(api, sequelize).catch(err =>
@@ -187,3 +185,5 @@ export async function start({api, sequelize, config}) {
     setTimeout(() => run(), pollingTime);
   })();
 }
+
+module.exports = { start }

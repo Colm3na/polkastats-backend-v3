@@ -1,11 +1,12 @@
-import Sequelize from 'sequelize'
-import pino from 'pino'
-import { parseHexToString,
+const pino = require("pino");
+const { QueryTypes } = require("sequelize");
+const {
+  parseHexToString,
   bufferToString,
-  genArrayRange } from '../utils/utils.js'
+  genArrayRange,
+} = require("../utils/utils.js");
 
-const logger = pino()
-const { QueryTypes } = Sequelize
+const logger = pino();
 
 const loggerOptions = {
   crawler: "collectionListener",
@@ -13,13 +14,13 @@ const loggerOptions = {
 
 const DEFAULT_POLLING_TIME_MS = 60 * 60 * 1000;
 
-export async function getCollection (api, collectionId) {  
-  let source = await api.query.nft.collectionById(collectionId);    
-  if (!('Owner' in source)) {
+async function getCollection(api, collectionId) {
+  let source = await api.query.nft.collectionById(collectionId);
+  if (!("Owner" in source)) {
     source = source.toJSON();
-  }    
+  }
   let collection = null;
-    
+
   if (source instanceof Object) {
     const { Owner, Name, Description, OffchainSchema, Limits } = source;
     collection = {
@@ -32,9 +33,9 @@ export async function getCollection (api, collectionId) {
     };
   }
   return collection;
-};
+}
 
-async function getCollections (api, countCollection) {
+async function getCollections(api, countCollection) {
   const range = genArrayRange(1, countCollection);
   const collections = [];
   for (const item of range) {
@@ -44,130 +45,153 @@ async function getCollections (api, countCollection) {
     }
   }
   return collections;
-};
+}
 
-export async function updateCollection ({
-  name, description, token_limit, collection, sequelize
-}) {    
-  if (name !== collection.name  || description !== collection.description || token_limit !== collection.token_limit) {    
-
+async function updateCollection({
+  name,
+  description,
+  token_limit,
+  collection,
+  sequelize,
+}) {
+  if (
+    name !== collection.name ||
+    description !== collection.description ||
+    token_limit !== collection.token_limit
+  ) {
     await sequelize.query(
-      `UPDATE collections SET owner = :owner, name = :name, description = :description, token_limit = :token_limit WHERE collection_id = :collection_id`, {
+      `UPDATE collections SET owner = :owner, name = :name, description = :description, token_limit = :token_limit WHERE collection_id = :collection_id`,
+      {
         type: QueryTypes.UPDATE,
         logging: false,
         replacements: {
           owner: collection.owner,
-          name:collection.name,
+          name: collection.name,
           description: collection.description,
-          token_limit: collection.token_limit, 
-          collection_id: collection.collection_id
-        }
+          token_limit: collection.token_limit,
+          collection_id: collection.collection_id,
+        },
       }
-    )
+    );
   }
 }
 
-export async function insertCollection (collection, sequelize) {
+async function insertCollection(collection, sequelize) {
   await sequelize.query(
     `INSERT INTO collections (collection_id, owner, name, description, offchain_schema, token_limit
-    ) VALUES (:collection_id,:owner, :name, :description, :offchain_schema, :token_limit)`, {
-      type: QueryTypes.INSERT,      
+    ) VALUES (:collection_id,:owner, :name, :description, :offchain_schema, :token_limit)`,
+    {
+      type: QueryTypes.INSERT,
       logging: false,
       replacements: {
         collection_id: collection.collection_id,
-        owner: collection.owner, 
-        name:collection.name,
+        owner: collection.owner,
+        name: collection.name,
         description: collection.description,
         offchain_schema: collection.offchain_schema,
-        token_limit: collection.token_limit
-      }
+        token_limit: collection.token_limit,
+      },
     }
-  )  
-};
+  );
+}
 
-export async function setExcaption(sequelize, error, collectionId) {
+async function setExcaption(sequelize, error, collectionId) {
   logger.error(loggerOptions, `Error setting collection ${collectionId}`);
   await sequelize.query(
-    `INSERT INTO harvester_error (block_number, error, timestamp) VALUES (:block_number, :error, :timestamp)`, {
+    `INSERT INTO harvester_error (block_number, error, timestamp) VALUES (:block_number, :error, :timestamp)`,
+    {
       type: QueryTypes.INSERT,
       replacements: {
         block_number: 0,
         error: error.toString().replace(/'/g, "''"),
-        timestamp: new Date().getTime()
-      }
+        timestamp: new Date().getTime(),
+      },
     }
-  )  
-};
+  );
+}
 
-export async function saveCollection ({ collection, sequelize }) {  
+async function saveCollection({ collection, sequelize }) {
   const res = await sequelize.query(
-    'SELECT collection_id, name, description, offchain_schema, token_limit, owner FROM collections WHERE collection_id = :collection_id', {
+    "SELECT collection_id, name, description, offchain_schema, token_limit, owner FROM collections WHERE collection_id = :collection_id",
+    {
       type: QueryTypes.SELECT,
       plain: true,
       logging: false,
       replacements: {
-        collection_id: collection.collection_id
-      }
+        collection_id: collection.collection_id,
+      },
     }
   );
 
-  if (!res) {    
+  if (!res) {
     try {
-      await insertCollection(collection, sequelize)
+      await insertCollection(collection, sequelize);
     } catch (error) {
       await setExcaption(sequelize, error, collection.collection_id);
     }
-  } else {            
+  } else {
     await updateCollection({
-      ...res, 
-      collection, 
-      sequelize
-    });    
+      ...res,
+      collection,
+      sequelize,
+    });
   }
-};
-
-export async function deleteCollection (collectionId, sequelize) {
-
-  await sequelize.query(
-    'DELETE FROM tokens WHERE collection_id = :collection_id', {
-      type: QueryTypes.DELETE,
-      logging: false,
-      replacements: {
-        collection_id: collectionId
-      }
-    }
-  )
-
-  await sequelize.query(
-    'DELETE FROM collections WHERE collection_id = :collection_id', {
-      type: QueryTypes.DELETE,
-      logging: false,
-      replacements: {
-        collection_id: collectionId
-      }
-    }
-  )
 }
 
-export async function getCollectionCount (api) {
+async function deleteCollection(collectionId, sequelize) {
+  await sequelize.query(
+    "DELETE FROM tokens WHERE collection_id = :collection_id",
+    {
+      type: QueryTypes.DELETE,
+      logging: false,
+      replacements: {
+        collection_id: collectionId,
+      },
+    }
+  );
+
+  await sequelize.query(
+    "DELETE FROM collections WHERE collection_id = :collection_id",
+    {
+      type: QueryTypes.DELETE,
+      logging: false,
+      replacements: {
+        collection_id: collectionId,
+      },
+    }
+  );
+}
+
+async function getCollectionCount(api) {
   const createdCollectionCount = (
     await api.query.nft.createdCollectionCount()
-  ).toNumber();  
+  ).toNumber();
   return createdCollectionCount;
-};
-
-export async function start ({api, sequelize, config}) {  
-  const pollingTime = config.pollingTime || DEFAULT_POLLING_TIME_MS  
-  logger.info(loggerOptions, "Starting collection crawler..."); 
-  (async function run() {
-    const countCollection = await getCollectionCount(api);    
-    const collections = await getCollections(api, countCollection);    
-      for (const item of collections) {
-        await saveCollection({
-          collection: item,      
-          sequelize,
-        });
-      }
-      setTimeout(() => run(), pollingTime)    
-  })();  
 }
+
+async function start({ api, sequelize, config }) {
+  const pollingTime = config.pollingTime || DEFAULT_POLLING_TIME_MS;
+  logger.info(loggerOptions, "Starting collection crawler...");
+  (async function run() {
+    const countCollection = await getCollectionCount(api);
+    console.log(countCollection)
+    const collections = await getCollections(api, countCollection);
+    for (const item of collections) {
+      await saveCollection({
+        collection: item,
+        sequelize,
+      });
+    }
+    setTimeout(() => run(), pollingTime);
+  })();
+}
+
+module.exports = {
+  getCollection,
+  getCollections,
+  updateCollection,
+  insertCollection,
+  saveCollection,
+  deleteCollection,
+  start
+};

@@ -1,6 +1,6 @@
-import { getCollection, saveCollection } from './collectionListener.js'
-import { getToken, checkToken, saveToken, deleteToken, moveToken } from './tokenListener.js'
-import lodash from 'lodash'
+const { isNumber } = require('lodash')
+const { getCollection, saveCollection } = require('./collectionListener.js')
+const { getToken, checkToken, saveToken, deleteToken, moveToken } = require('./tokenListener.js')
 
 
 const TYPE_CREATE_COLLECTION = 'CollectionCreated'
@@ -8,9 +8,8 @@ const TYPE_CREATE_TOKEN = 'ItemCreated'
 const TYPE_ITEM_DESTROYED = 'ItemDestroyed'
 const TYPE_TRANSFARE = 'Transfer'
 
-const { isNumber } = lodash;
 
-export class EventFacade {
+class EventFacade {
   /**
    * 
    * @param {string} type event.method 
@@ -104,3 +103,5 @@ export class EventFacade {
     return { collectionId, tokenId };
   }
 }
+
+module.exports = { EventFacade }

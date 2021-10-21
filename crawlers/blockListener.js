@@ -1,21 +1,22 @@
-import Sequelize from "sequelize";
-import pino from "pino";
-import {
+const { QueryTypes } = require('sequelize');
+const pino = require('pino')
+
+const {
   shortHash,
   storeExtrinsics,
   getDisplayName,
   updateTotals,
-} from "../utils/utils.js";
-import { EventFacade } from "./eventFacade.js";
+} = require('../utils/utils.js')
+
+const { EventFacade } = require('./eventFacade.js')
 
 const logger = pino();
-const { QueryTypes } = Sequelize;
-
 const loggerOptions = {
   crawler: `blockListener`,
 };
 
-export async function start({api, sequelize, config}) {
+// TODO: Need refactoring!!
+async function start({api, sequelize, config}) {
   logger.info(loggerOptions, `Starting block listener...`);
   await api.rpc.chain.subscribeNewHeads(async (header) => {
     logger.info(`last block #${header.number} has hash ${header.hash}`);
@@ -234,3 +235,5 @@ export async function start({api, sequelize, config}) {
     updateTotals(sequelize, loggerOptions);
   });
 }
+
+module.exports = { start }

@@ -1,6 +1,6 @@
+const pino = require('pino');
 const { QueryTypes } = require('sequelize');
 
-import pino from 'pino'
 const logger = pino()
 
 const loggerOptions = {

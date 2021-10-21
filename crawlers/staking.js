@@ -1,6 +1,6 @@
 // @ts-check
 const { BigNumber } = require('bignumber.js');
-const { getDisplayName } = require('../utils.js');
+const { getDisplayName } = require('../utils/utils.js');
 const pino = require('pino');
 const logger = pino();
 

@@ -1,12 +1,12 @@
-import { wsProviderUrl, dbConnect, crawlers } from "./config/config.js";
-import { Sequelize } from "sequelize";
-import { readFile } from "fs/promises";
-import { Logger } from "./utils/logger.js";
-import { ApiPromise, WsProvider } from "@polkadot/api";
-import { BlockExplorer } from "./lib/blockexplorer.js";
+const { ApiPromise, WsProvider } = require('@polkadot/api');
+const { wsProviderUrl, dbConnect, crawlers } = require('./config/config.js')
+const { Sequelize } = require('sequelize');
+const { Logger } = require('./utils/logger.js');
+const { BlockExplorer } = require('./lib/blockexplorer.js')
+const rtt = require('./config/runtime_types.json');
 
 const log = new Logger();
-const rtt = "./config/runtime_types.json";
+
 
 async function getSequlize(sConnect) {
   const result = new Sequelize(sConnect);
@@ -18,15 +18,11 @@ async function getSequlize(sConnect) {
   }
 }
 
-async function getRtt(rtt) {
-  return JSON.parse(await readFile(new URL(rtt, import.meta.url)));
-}
 
 async function getPolkadotAPI(wsProviderUrl, rtt) {
   log.info(`Connecting to ${wsProviderUrl}`);
-  const provider = new WsProvider(wsProviderUrl);
-  const types = await getRtt(rtt);
-  const api = await ApiPromise.create({ provider, types });
+  const provider = new WsProvider(wsProviderUrl);  
+  const api = await ApiPromise.create({ provider, types: rtt });
 
   api.on("error", async (value) => {
     log.error(value);

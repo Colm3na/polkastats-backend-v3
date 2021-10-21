@@ -1,8 +1,7 @@
-import Sequelize from 'sequelize'
-import pino from 'pino'
+const { QueryTypes } = require('sequelize')
+const pino = require('pino')
 
 const logger = pino()
-const { QueryTypes } = Sequelize
 
 const loggerOptions = {
   crawler: `chain`
@@ -40,7 +39,7 @@ async function insertRow({sequelize, blockHeight, currentSessionIndex, totalIssu
   }  
 }
 
-export async function start({api, sequelize, config}) {
+async function start({api, sequelize, config}) {
   logger.info(loggerOptions, `Starting chain crawler`);
 
   let isRunning = false;
@@ -73,3 +72,4 @@ export async function start({api, sequelize, config}) {
 
   });
 }
+module.exports  = { start }

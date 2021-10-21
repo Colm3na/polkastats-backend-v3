@@ -1,9 +1,8 @@
-import Sequelize from 'sequelize'
-import pino from 'pino'
-import { genArrayRange, updateTotals } from '../utils/utils.js'
+const pino = require('pino')
+const { QueryTypes } = require('sequelize')
+const { genArrayRange, updateTotals } = require('../utils/utils.js');
 
 const logger = pino()
-const { QueryTypes } = Sequelize
 
 const loggerOptions = {
   crawler: "tokenListener",
@@ -172,4 +171,6 @@ async function start({api, sequelize, config}) {
 
 }
 
-export { start, getToken, checkToken, saveToken, deleteToken, moveToken }
+module.exports = {
+  start, getToken, checkToken, saveToken, deleteToken, moveToken
+}
