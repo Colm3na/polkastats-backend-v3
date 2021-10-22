@@ -1,9 +1,8 @@
-import Sequelize from 'sequelize'
-import pino from 'pino'
-import { genArrayRange, updateTotals } from '../utils/utils.js'
+const pino = require('pino')
+const { QueryTypes } = require('sequelize')
+const { genArrayRange, updateTotals } = require('../utils/utils.js');
 
 const logger = pino()
-const { QueryTypes } = Sequelize
 
 const loggerOptions = {
   crawler: "tokenListener",
@@ -64,7 +63,7 @@ async function checkToken(sequelize, {owner, collectionId, tokenId}) {
     logging: false,
     plain: true
   });  
-  if (res.length === 0) {
+  if (!res) {
     return 'insert';
   } else {            
     if (res.owner === owner) {
@@ -122,7 +121,7 @@ async function deleteToken({sequelize, tokenId, collectionId}) {
 }
 
 async function insertToken({ sequelize, owner, collectionId, tokenId }) {
-  await sequelize.query(`INSERT INTO tokens (collection_id, token_id, owner) VALUES(:collectionId, :tokenId, ':owner')`, {
+  await sequelize.query(`INSERT INTO tokens (collection_id, token_id, owner) VALUES(:collectionId, :tokenId, :owner)`, {
     type: QueryTypes.INSERT,
     replacements: {
       owner, collectionId, tokenId
@@ -156,6 +155,7 @@ async function start({api, sequelize, config}) {
   (async function run() {
     const ids = await getCollectionIds(sequelize)
     try {
+      // TODO: Need for refactoring 
       for await (const item of getCountEach(api, ids)) {
         if (item.count === 0) continue;
         for await (const token of getTokens(api, sequelize, item.collectionId, item.count)) {
@@ -171,4 +171,6 @@ async function start({api, sequelize, config}) {
 
 }
 
-export { start, getToken, checkToken, saveToken, deleteToken, moveToken }
+module.exports = {
+  start, getToken, checkToken, saveToken, deleteToken, moveToken
+}

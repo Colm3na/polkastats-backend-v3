@@ -1,6 +1,6 @@
-import { getCollection, saveCollection } from '/collectionListener.js'
-import { getToken, checkToken, saveToken, deleteToken, moveToken } from './tokenListener.js'
-import * as _ from 'lodash'
+const { isNumber } = require('lodash')
+const { getCollection, saveCollection } = require('./collectionListener.js')
+const { getToken, checkToken, saveToken, deleteToken, moveToken } = require('./tokenListener.js')
 
 
 const TYPE_CREATE_COLLECTION = 'CollectionCreated'
@@ -8,7 +8,8 @@ const TYPE_CREATE_TOKEN = 'ItemCreated'
 const TYPE_ITEM_DESTROYED = 'ItemDestroyed'
 const TYPE_TRANSFARE = 'Transfer'
 
-export class EventFacade {
+
+class EventFacade {
   /**
    * 
    * @param {string} type event.method 
@@ -23,9 +24,9 @@ export class EventFacade {
    * @param {Array} data event.data
    * @returns 
    */
-  async save(type, data) {    
+  async save(type, data) {
     switch (type) {
-      case TYPE_CREATE_COLLECTION: {                                
+      case TYPE_CREATE_COLLECTION: {
         return await this.saveCollection(data)
       }
 
@@ -53,7 +54,7 @@ export class EventFacade {
    */
   async saveCollection(data) {          
     const collectionId = data[0];        
-    if (_.isNumber(collectionId)) {
+    if (isNumber(collectionId)) {
       const collection = await getCollection(this.api, collectionId);      
       await saveCollection({
         collection,
@@ -72,7 +73,7 @@ export class EventFacade {
   }
 
   #checkNumber({collectionId, tokenId}) {
-    return _.isNumber(collectionId) && _.isNumber(tokenId);
+    return isNumber(collectionId) && isNumber(tokenId);
   }
 
   async delToken(data) {    
@@ -102,3 +103,5 @@ export class EventFacade {
     return { collectionId, tokenId };
   }
 }
+
+module.exports = { EventFacade }

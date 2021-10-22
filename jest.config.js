@@ -3,7 +3,7 @@
  * https://jestjs.io/docs/configuration
  */
 
-module.exports = {
+export default {
   // All imported modules in your tests should be mocked automatically
   // automock: false,
 
@@ -71,6 +71,9 @@ module.exports = {
   // ],
 
   // An array of file extensions your modules use
+  moduleFileExtensions: [
+    "js", "jsx", "json"
+  ],
   // moduleFileExtensions: [
   //   "js",
   //   "jsx",
@@ -144,7 +147,9 @@ module.exports = {
 
   // Adds a location field to test results
   // testLocationInResults: false,
-
+  testMatch: [
+    "**/?(*.)+(spec|test).[tj]s?(x)"
+  ],
   // The glob patterns Jest uses to detect test files
   // testMatch: [
   //   "**/__tests__/**/*.[jt]s?(x)",
@@ -172,7 +177,7 @@ module.exports = {
   // timers: "real",
 
   // A map from regular expressions to paths to transformers
-  // transform: undefined,
+  // transform: {},
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
   // transformIgnorePatterns: [

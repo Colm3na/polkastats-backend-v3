@@ -1,8 +1,7 @@
-import Sequelize from 'sequelize'
-import pino from 'pino'
+const pino = require('pino');
+const { QueryTypes } = require('sequelize');
 
 const logger = pino()
-const { QueryTypes } = Sequelize
 
 const loggerOptions = {
   crawler: `system`
@@ -14,7 +13,7 @@ const loggerOptions = {
  * @param {object} api             Polkadot API object
  * @param {object} sequelize            Postgres pool object
  */
-export async function start({api, sequelize, config}) {
+async function start({api, sequelize, config}) {
 
   logger.info(loggerOptions, `Starting system crawler`);
 
@@ -32,7 +31,7 @@ export async function start({api, sequelize, config}) {
     }  
   )
   
-  if (res.length > 0) {
+  if (res) {
     if (res.chain !== chain || res.node_name !== nodeName || res.node_version !== nodeVersion) {
       await insertRow(sequelize, blockHeight, chain, nodeName, nodeVersion);
     }
@@ -42,6 +41,7 @@ export async function start({api, sequelize, config}) {
 }
 
 async function insertRow(sequelize, blockHeight, chain, nodeName, nodeVersion) {
+  console.log(blockHeight.toString());
   await sequelize.query(
     `INSERT INTO system (block_height, chain, node_name, node_version, timestamp
     ) VALUES (:block_height, :chain, :node_name, :node_version, :timestamp)`,
@@ -49,7 +49,7 @@ async function insertRow(sequelize, blockHeight, chain, nodeName, nodeVersion) {
       type: QueryTypes.INSERT,
       plain: true,
       replacements: {
-        block_height: blockHeight,
+        block_height: blockHeight.toString(),
         chain,
         node_name: nodeName,
         node_version: nodeVersion,
@@ -58,3 +58,5 @@ async function insertRow(sequelize, blockHeight, chain, nodeName, nodeVersion) {
     }
   );    
 }
+
+module.exports = { start }

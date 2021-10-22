@@ -1,7 +1,4 @@
-import dotenv from 'dotenv'
-
-
-dotenv.config()
+require('dotenv').config()
 
 
 function getConnect() {
@@ -13,11 +10,11 @@ function getConnect() {
   return `postgres://${user}:${password}@${host}:${port}/${database}`;
 }
 
-export const substrateNetwork = process.env.SUBSTRATE_NETWORK || 'polkadot';
-export const wsProviderUrl = process.env.WS_PROVIDER_URL || 'wss://testnet2.uniquenetwork.io';
-export const dbConnect = getConnect();
+module.exports.substrateNetwork = process.env.SUBSTRATE_NETWORK || 'polkadot';
+module.exports.wsProviderUrl = process.env.WS_PROVIDER_URL || 'wss://testnet2.uniquenetwork.io';
+module.exports.dbConnect = getConnect();
 
-export const crawlers = [
+module.exports.crawlers = [
   {
     enabled: !process.env.CRAWLER_SYSTEM_DISABLE,    
     module: `${process.cwd()}/crawlers/system.js`,
@@ -25,7 +22,7 @@ export const crawlers = [
   
   {
     enabled: !process.env.CRAWLER_BLOCK_LISTENER_DISABLE,
-    module: '/lib/crawlers/blockListener.js',
+    module: `${process.cwd()}/crawlers/blockListener.js`,
   },
 
   {
@@ -43,7 +40,7 @@ export const crawlers = [
   },
   {
     enabled: !process.env.CRAWLER_ACTIVE_ACCOUNTS_DISABLE,
-    module:'/lib/crawlers/activeAccounts.js',
+    module: `${process.cwd()}/crawlers/activeAccounts.js`,
     config: {
       pollingTime:
         parseInt(process.env.CRAWLER_ACTIVE_ACCOUNTS_POLLING_TIME_MS) ||
@@ -52,7 +49,7 @@ export const crawlers = [
   },
   {
     enabled: !process.env.CRAWLER_CHAIN_DISABLE,
-    module: '/lib/crawlers/chain.js',
+    module: `${process.cwd()}/crawlers/chain.js`,
   },
 
   {

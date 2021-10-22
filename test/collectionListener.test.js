@@ -1,9 +1,10 @@
-const { getCollection, insertCollection, saveCollection } = require("../lib/crawlers/collectionListener");
+const { getCollection, insertCollection, saveCollection } = require('../crawlers/collectionListener.js')
 const { api } = require('./utils.js')
+
 
 const mockCollection = jest.fn()
 
-const pool = {
+const sequelize = {
     query: mockCollection       
 }     
 
@@ -11,11 +12,12 @@ const pool = {
 describe("Test class Collection Listener", () => {
 
   beforeEach(() => {
-    pool.query.mockReset()
+    sequelize.query.mockReset()
   })
 
   test("getCollection", async () => {
     const collection = await getCollection(api, 10);    
+    console.log(collection);
     expect(collection).toMatchObject({
       collection_id: expect.any(Number),
       owner: expect.any(String),
@@ -31,30 +33,29 @@ describe("Test class Collection Listener", () => {
     
     expect(collection).toMatchObject({ collection_id: 10 })
     
-    await insertCollection(collection, pool)
+    await insertCollection(collection, sequelize)
     
-    expect(pool.query.mock.calls.length).toBe(1)
+    expect(sequelize.query.mock.calls.length).toBe(1)
   })
 
   test("test function saveCollection on insert", async () => {     
      const collection = await getCollection(api, 10)
 
-     pool.query.mockReturnValueOnce({
-       rows: []
-     }).mockImplementation((query) => {
+     sequelize.query.mockReturnValueOnce(null)
+     .mockImplementation((query) => {
        console.log(query)
      })
 
      await saveCollection({
        collection, 
-       pool
+       sequelize
      })     
   })
 
   test("test function saveCollection on update", async () => {     
     const collection = await getCollection(api, 10)
     
-    pool.query.mockReturnValueOnce({
+    sequelize.query.mockReturnValueOnce({
       rows: [{
         ...collection,
         name: null
@@ -65,7 +66,7 @@ describe("Test class Collection Listener", () => {
 
     await saveCollection({
       collection, 
-      pool
+      sequelize
     })           
  })
 });
