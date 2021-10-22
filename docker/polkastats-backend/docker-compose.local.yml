@@ -24,7 +24,7 @@ services:
     restart: always
     volumes:
       - 'db-data:/var/lib/postgresql/data'
-      - './sql/polkastats.sql:/docker-entrypoint-initdb.d/polkastats.sql'
+      #- './sql/polkastats.sql:/docker-entrypoint-initdb.d/polkastats.sql'
     ports:
       - 5432:5432
     environment:

@@ -43,7 +43,7 @@ module.exports = {
     });
 
     await queryInterface.createTable("event", {
-      block_height: {
+      block_number: {
         type: Sequelize.DataTypes.BIGINT,
         allowNull: false,
         primaryKey: true,
@@ -60,7 +60,7 @@ module.exports = {
     });
 
     await queryInterface.createTable("extrinsic", {
-      block_height: {
+      block_number: {
         type: Sequelize.DataTypes.BIGINT,
         allowNull: false,
         primaryKey: true,
@@ -81,7 +81,7 @@ module.exports = {
     });
 
     await queryInterface.createTable("log", {
-      block_height: {
+      block_number: {
         type: Sequelize.DataTypes.BIGINT,
         allowNull: false,
         primaryKey: true,

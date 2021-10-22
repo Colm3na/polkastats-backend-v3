@@ -24,18 +24,16 @@ services:
     restart: always
     volumes:
       - 'db-data:/var/lib/postgresql/data'
-      - './sql/polkastats.sql:/docker-entrypoint-initdb.d/polkastats.sql'
     environment:
-      POSTGRES_USER: 'polkastats'
-      POSTGRES_PASSWORD: 'polkastats'
+      POSTGRES_DB: ${POSTGRES_DATABASE}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U polkastats']
       interval: 5s
       timeout: 5s
       retries: 5
-  #
-  # Hasura
-  # https://hasura.io/docs/latest/graphql/core/deployment/graphql-engine-flags/reference.html#command-flags
+
   graphql-engine:
     image: hasura/graphql-engine:latest
     ports:
@@ -68,7 +66,7 @@ services:
       - NODE_ENV=production
       - WS_PROVIDER_URL=wss://testnet2.uniquenetwork.io
       - SUBSTRATE_NETWORK=polkadot
-      - POSTGRES_HOST=postgres
+      - POSTGRES_HOST=${POSTGRES_HOST}
 volumes:
   db-data: {}
 #

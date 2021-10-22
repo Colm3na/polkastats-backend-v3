@@ -272,9 +272,3 @@ CREATE TABLE IF NOT EXISTS tokens (
   collection_id INT NOT NULL,
   owner TEXT NOT NULL  
 );
-
-ALTER TABLE IF EXISTS collection 
-  RENAME TO collections;
-
-UPDATE total SET name = 'tokens' WHERE name = 'token';
-UPDATE total SET name = 'collections' WHERE name = 'collection';
