@@ -25,19 +25,19 @@ module.exports.crawlers = [
     module: `${process.cwd()}/crawlers/blockListener.js`,
   },
 
-  {
-    enabled: !process.env.CRAWLER_BLOCK_HARVESTER_DISABLE,
-    module: '/lib/crawlers/blockHarvester.js',
-    config: {
-      pollingTime:
-        parseInt(process.env.CRAWLER_BLOCK_LISTENER_POLLING_TIME_MS) ||
-        1 * 60 * 1000,
-    },
-  },
-  {
-    enabled: !process.env.CRAWLER_STAKING_DISABLE,
-    module: '/lib/crawlers/staking.js',
-  },
+  // {
+  //   enabled: !process.env.CRAWLER_BLOCK_HARVESTER_DISABLE,
+  //   module: '/lib/crawlers/blockHarvester.js',
+  //   config: {
+  //     pollingTime:
+  //       parseInt(process.env.CRAWLER_BLOCK_LISTENER_POLLING_TIME_MS) ||
+  //       1 * 60 * 1000,
+  //   },
+  // },
+  // {
+  //   enabled: !process.env.CRAWLER_STAKING_DISABLE,
+  //   module: '/lib/crawlers/staking.js',
+  // },
   {
     enabled: !process.env.CRAWLER_ACTIVE_ACCOUNTS_DISABLE,
     module: `${process.cwd()}/crawlers/activeAccounts.js`,
@@ -52,30 +52,30 @@ module.exports.crawlers = [
     module: `${process.cwd()}/crawlers/chain.js`,
   },
 
-  {
-    enabled: !process.env.CRAWLER_ERA_LISTENER_DISABLE,
-    module: '/lib/crawlers/eraListener.js',
-  },
+  // {
+  //   enabled: !process.env.CRAWLER_ERA_LISTENER_DISABLE,
+  //   module: '/lib/crawlers/eraListener.js',
+  // },
 
-  {
-    enabled: !process.env.CRAWLER_ERA_HARVESTER_DISABLE,
-    module: '/lib/crawlers/eraHarvester.js',
-  },
+  // {
+  //   enabled: !process.env.CRAWLER_ERA_HARVESTER_DISABLE,
+  //   module: '/lib/crawlers/eraHarvester.js',
+  // },
 
-  {
-    enabled: !process.env.CRAWLER_PHRAGMEN_DISABLE,
-    module: '/lib/crawlers/phragmen.js',
-    config: {
-      substrateNetwork: process.env.SUBSTRATE_NETWORK || 'polkadot',
-      wsProviderUrl: process.env.WS_PROVIDER_URL || 'wss://testnet2.uniquenetwork.io',
-      pollingTime: parseInt(process.env.CRAWLER_PHRAGMEN_POLLING_TIME_MS),
-      phragmenOutputDir:
-        process.env.CRAWLER_PHRAGMEN_OUTPUT_DIR || '/tmp/phragmen',
-      offlinePhragmenPath:
-        process.env.CRAWLER_PHRAGMEN_BINARY_PATH ||
-        '/usr/app/polkastats-backend-v3/offline-election',
-    },
-  },
+  // {
+  //   enabled: !process.env.CRAWLER_PHRAGMEN_DISABLE,
+  //   module: '/lib/crawlers/phragmen.js',
+  //   config: {
+  //     substrateNetwork: process.env.SUBSTRATE_NETWORK || 'polkadot',
+  //     wsProviderUrl: process.env.WS_PROVIDER_URL || 'wss://testnet2.uniquenetwork.io',
+  //     pollingTime: parseInt(process.env.CRAWLER_PHRAGMEN_POLLING_TIME_MS),
+  //     phragmenOutputDir:
+  //       process.env.CRAWLER_PHRAGMEN_OUTPUT_DIR || '/tmp/phragmen',
+  //     offlinePhragmenPath:
+  //       process.env.CRAWLER_PHRAGMEN_BINARY_PATH ||
+  //       '/usr/app/polkastats-backend-v3/offline-election',
+  //   },
+  // },
   {      
       enabled: !process.env.CRAWLER_COLLECTION_DISABLE,
       module: `${process.cwd()}/crawlers/collectionListener.js`,
