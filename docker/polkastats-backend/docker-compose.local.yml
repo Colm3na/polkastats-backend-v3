@@ -44,10 +44,10 @@ services:
     ports:
       - '8080:8080'      
     depends_on:
-      - 'postgres'
+      - 'postgres'      
     restart: always
     environment:      
-      HASURA_GRAPHQL_DATABASE_URL: '${GRAPHQL_DATABASE_URL}'
+      HASURA_GRAPHQL_DATABASE_URL: '${GRAPHQL_DATABASE_URL}'      
       HASURA_GRAPHQL_ENABLE_CONSOLE: '${GRAPHQL_ENABLE_CONSOLE}' # set to "false" to disable console
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
       HASURA_GRAPHQL_DISABLE_CORS: '${GRAPHQL_DISABLE_CORS}'
@@ -76,4 +76,5 @@ services:
 #
 volumes:
   db-data: {}
+  meta-data: {}
   #substrate-data: {}
