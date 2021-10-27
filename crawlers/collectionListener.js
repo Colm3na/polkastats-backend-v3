@@ -36,7 +36,7 @@ async function getCollection(api, collectionId) {
 }
 
 async function getCollections(api, countCollection) {
-  const range = genArrayRange(1, countCollection);
+  const range = genArrayRange(1, (countCollection+1));
   const collections = [];
   for (const item of range) {
     const collection = await getCollection(api, item);
@@ -173,8 +173,7 @@ async function start({ api, sequelize, config }) {
   const pollingTime = config.pollingTime || DEFAULT_POLLING_TIME_MS;
   logger.info(loggerOptions, "Starting collection crawler...");
   (async function run() {
-    const countCollection = await getCollectionCount(api);
-    console.log(countCollection)
+    const countCollection = await getCollectionCount(api);    
     const collections = await getCollections(api, countCollection);
     for (const item of collections) {
       await saveCollection({

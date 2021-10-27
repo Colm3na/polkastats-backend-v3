@@ -1,6 +1,6 @@
 {
-  "name": "polkastats-backend-v3",
-  "version": "3.3.0",
+  "name": "polkastats-backend-uniquenetwork",
+  "version": "1.0.0",
   "description": "Block explorer UniqueNetwork",
   "main": "index.js",
   "types": "module",
