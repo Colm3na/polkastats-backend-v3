@@ -158,13 +158,14 @@ async function start({api, sequelize, config}) {
       // TODO: Need for refactoring 
       for await (const item of getCountEach(api, ids)) {
         if (item.count === 0) continue;
-        for await (const token of getTokens(api, sequelize, item.collectionId, item.count)) {
-          await saveToken(sequelize, token)
+        for await (const token of getTokens(api, sequelize, item.collectionId, (item.count+1))) {
+            await saveToken(sequelize, token)          
         }
       }
     } catch (error) {
       console.error(error)
     }
+    console.log('start tokens..');
     updateTotals(sequelize, loggerOptions)  
     setTimeout(() => run(), pollingTime)
   })()
