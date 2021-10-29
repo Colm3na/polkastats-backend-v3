@@ -85,18 +85,7 @@ async function updateCollection({
     //TODO: Refractoring!
     await sequelize.query(
       `UPDATE collections SET owner = :owner, 
-      name = :name, description = :description, token_limit = :token_limit, 
-      const_chain_schema = :const_chain_schema, 
-      variable_on_chain_schema = :variable_on_chain_schema,
-      limits_accout_ownership = :limits_accout_ownership, 
-      limits_sponsore_data_size = :limits_sponsore_data_size, 
-      limits_sponsore_data_rate = :limits_sponsore_data_rate,
-      owner_can_trasfer = :owner_can_trasfer,
-      owner_can_destroy = :owner_can_destroy,
-      sponsorship_confirmed = :sponsorship_confirmed,
-      schema_version = :schema_version,
-      token_prefix = :token_prefix,
-      mode = :mode
+      name = :name, description = :description, token_limit = :token_limit
        WHERE collection_id = :collection_id`,
       {
         type: QueryTypes.UPDATE,
@@ -106,18 +95,7 @@ async function updateCollection({
           name: collection.name,
           description: collection.description,
           token_limit: collection.token_limit,
-          collection_id: collection.collection_id,
-          const_chain_schema: collection.constChainSchema,
-          variable_on_chain_schema: collection.variableOnChainSchema,
-          limits_accout_ownership:  collection.limitsAccoutOwnership,
-          limits_sponsore_data_size: collection.limitsSponsoreDataSize, 
-          limits_sponsore_data_rate: collection.limitsSponsoreDataRate,
-          owner_can_trasfer: collection.ownerCanTrasfer,
-          owner_can_destroy: collection.ownerCanDestroy,
-          sponsorship_confirmed: collection.sponsorshipConfirmed,
-          schema_version: collection.schemaVersion,
-          token_prefix: collection.tokenPrefix,
-          mode: collection.mode
+          collection_id: collection.collection_id          
         },
       }
     );
@@ -127,30 +105,8 @@ async function updateCollection({
 async function insertCollection(collection, sequelize) {
   await sequelize.query(
     `INSERT INTO collections (collection_id, owner, name, description, offchain_schema, 
-      token_limit,
-      const_chain_schema,
-      variable_on_chain_schema,
-      limits_accout_ownership,
-      limits_sponsore_data_size,
-      limits_sponsore_data_rate,
-      owner_can_trasfer,
-      owner_can_destroy,
-      sponsorship_confirmed,
-      schema_version,
-      token_prefix,
-      mode
-    ) VALUES (:collection_id,:owner, :name, :description, :offchain_schema, :token_limit,
-      :const_chain_schema,
-      :variable_on_chain_schema,
-      :limits_accout_ownership,
-      :limits_sponsore_data_size,
-      :limits_sponsore_data_rate,
-      :owner_can_trasfer,
-      :owner_can_destroy,
-      :sponsorship_confirmed,
-      :schema_version,
-      :token_prefix,
-      :mode)`,
+      token_limit      
+    ) VALUES (:collection_id,:owner, :name, :description, :offchain_schema, :token_limit)`,
     {
       type: QueryTypes.INSERT,
       logging: false,
@@ -160,18 +116,7 @@ async function insertCollection(collection, sequelize) {
         name: collection.name,
         description: collection.description,
         offchain_schema: collection.offchain_schema,
-        token_limit: collection.token_limit,
-        const_chain_schema: collection.constChainSchema,
-        variable_on_chain_schema: collection.variableOnChainSchema,
-        limits_accout_ownership:  collection.limitsAccoutOwnership,
-        limits_sponsore_data_size: collection.limitsSponsoreDataSize, 
-        limits_sponsore_data_rate: collection.limitsSponsoreDataRate,
-        owner_can_trasfer: collection.ownerCanTrasfer,
-        owner_can_destroy: collection.ownerCanDestroy,
-        sponsorship_confirmed: collection.sponsorshipConfirmed,
-        schema_version: collection.schemaVersion,
-        token_prefix: collection.tokenPrefix,
-        mode: collection.mode
+        token_limit: collection.token_limit        
       },
     }
   );
