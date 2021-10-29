@@ -1,5 +1,6 @@
 const pino = require("pino");
 const { QueryTypes } = require("sequelize");
+const { bufferToJSON } = require("../lib/utils.js");
 const {
   parseHexToString,
   bufferToString,
@@ -14,6 +15,15 @@ const loggerOptions = {
 
 const DEFAULT_POLLING_TIME_MS = 60 * 60 * 1000;
 
+/**
+ * Get sponsorship
+ * @param {*} sponsorship 
+ * @returns {string | null}
+ */
+function getSponsorshipConfirmed(sponsorship) {  
+  return ('disabled' in sponsorship) ? null : sponsorship?.confirmed;
+}
+
 async function getCollection(api, collectionId) {
   let source = await api.query.nft.collectionById(collectionId);
   if (!("Owner" in source)) {
@@ -21,19 +31,32 @@ async function getCollection(api, collectionId) {
   }
   let collection = null;
 
-  if (source instanceof Object) {
-    const { Owner, Name, Description, OffchainSchema, Limits } = source;
+  if (source instanceof Object) {        
+    const limits = source?.Limits || {};
+
     collection = {
       collection_id: collectionId,
-      owner: Owner,
-      name: bufferToString(Name),
-      description: bufferToString(Description),
-      token_limit: Limits.TokenLimit,
-      offchain_schema: parseHexToString(OffchainSchema),
+      owner: source?.Owner,
+      name: bufferToString(source?.Name),
+      description: bufferToString(source?.Description) || null,
+      token_limit: source?.Limits.TokenLimit || 0,
+      offchain_schema: parseHexToString(source?.OffchainSchema) || null,
+      constChainSchema: bufferToJSON(source?.ConstOnChainSchema) || null,
+      variableOnChainSchema: bufferToJSON(source?.VariableOnChainSchema) || null,
+      limitsAccoutOwnership: limits.AccountTokenOwnershipLimit || 0,  
+      limitsSponsoreDataSize: limits.SponsoredDataSize,
+      limitsSponsoreDataRate: limits.SponsoredDataRateLimit,
+      ownerCanTrasfer: limits.OwnerCanTransfer,
+      ownerCanDestroy: limits.OwnerCanDestroy,
+      sponsorshipConfirmed: getSponsorshipConfirmed(source?.Sponsorship),
+      schemaVersion: source?.SchemaVersion,
+      tokenPrefix: parseHexToString(source?.TokenPrefix),
+      mode: JSON.stringify(source?.Mode)
     };
   }
   return collection;
 }
+
 
 async function getCollections(api, countCollection) {
   const range = genArrayRange(1, (countCollection+1));
@@ -57,10 +80,24 @@ async function updateCollection({
   if (
     name !== collection.name ||
     description !== collection.description ||
-    token_limit !== collection.token_limit
+    token_limit !== collection.token_limit    
   ) {
+    //TODO: Refractoring!
     await sequelize.query(
-      `UPDATE collections SET owner = :owner, name = :name, description = :description, token_limit = :token_limit WHERE collection_id = :collection_id`,
+      `UPDATE collections SET owner = :owner, 
+      name = :name, description = :description, token_limit = :token_limit, 
+      const_chain_schema = :const_chain_schema, 
+      variable_on_chain_schema = :variable_on_chain_schema,
+      limits_accout_ownership = :limits_accout_ownership, 
+      limits_sponsore_data_size = :limits_sponsore_data_size, 
+      limits_sponsore_data_rate = :limits_sponsore_data_rate,
+      owner_can_trasfer = :owner_can_trasfer,
+      owner_can_destroy = :owner_can_destroy,
+      sponsorship_confirmed = :sponsorship_confirmed,
+      schema_version = :schema_version,
+      token_prefix = :token_prefix,
+      mode = :mode
+       WHERE collection_id = :collection_id`,
       {
         type: QueryTypes.UPDATE,
         logging: false,
@@ -70,6 +107,17 @@ async function updateCollection({
           description: collection.description,
           token_limit: collection.token_limit,
           collection_id: collection.collection_id,
+          const_chain_schema: collection.constChainSchema,
+          variable_on_chain_schema: collection.variableOnChainSchema,
+          limits_accout_ownership:  collection.limitsAccoutOwnership,
+          limits_sponsore_data_size: collection.limitsSponsoreDataSize, 
+          limits_sponsore_data_rate: collection.limitsSponsoreDataRate,
+          owner_can_trasfer: collection.ownerCanTrasfer,
+          owner_can_destroy: collection.ownerCanDestroy,
+          sponsorship_confirmed: collection.sponsorshipConfirmed,
+          schema_version: collection.schemaVersion,
+          token_prefix: collection.tokenPrefix,
+          mode: collection.mode
         },
       }
     );
@@ -78,8 +126,31 @@ async function updateCollection({
 
 async function insertCollection(collection, sequelize) {
   await sequelize.query(
-    `INSERT INTO collections (collection_id, owner, name, description, offchain_schema, token_limit
-    ) VALUES (:collection_id,:owner, :name, :description, :offchain_schema, :token_limit)`,
+    `INSERT INTO collections (collection_id, owner, name, description, offchain_schema, 
+      token_limit,
+      const_chain_schema,
+      variable_on_chain_schema,
+      limits_accout_ownership,
+      limits_sponsore_data_size,
+      limits_sponsore_data_rate,
+      owner_can_trasfer,
+      owner_can_destroy,
+      sponsorship_confirmed,
+      schema_version,
+      token_prefix,
+      mode
+    ) VALUES (:collection_id,:owner, :name, :description, :offchain_schema, :token_limit,
+      :const_chain_schema,
+      :variable_on_chain_schema,
+      :limits_accout_ownership,
+      :limits_sponsore_data_size,
+      :limits_sponsore_data_rate,
+      :owner_can_trasfer,
+      :owner_can_destroy,
+      :sponsorship_confirmed,
+      :schema_version,
+      :token_prefix,
+      :mode)`,
     {
       type: QueryTypes.INSERT,
       logging: false,
@@ -90,6 +161,17 @@ async function insertCollection(collection, sequelize) {
         description: collection.description,
         offchain_schema: collection.offchain_schema,
         token_limit: collection.token_limit,
+        const_chain_schema: collection.constChainSchema,
+        variable_on_chain_schema: collection.variableOnChainSchema,
+        limits_accout_ownership:  collection.limitsAccoutOwnership,
+        limits_sponsore_data_size: collection.limitsSponsoreDataSize, 
+        limits_sponsore_data_rate: collection.limitsSponsoreDataRate,
+        owner_can_trasfer: collection.ownerCanTrasfer,
+        owner_can_destroy: collection.ownerCanDestroy,
+        sponsorship_confirmed: collection.sponsorshipConfirmed,
+        schema_version: collection.schemaVersion,
+        token_prefix: collection.tokenPrefix,
+        mode: collection.mode
       },
     }
   );
@@ -112,7 +194,13 @@ async function setExcaption(sequelize, error, collectionId) {
 
 async function saveCollection({ collection, sequelize }) {
   const res = await sequelize.query(
-    "SELECT collection_id, name, description, offchain_schema, token_limit, owner FROM collections WHERE collection_id = :collection_id",
+    `SELECT collection_id, name, description, 
+    offchain_schema, token_limit, owner,
+    const_chain_schema, variable_on_chain_schema, limits_accout_ownership,
+    limits_sponsore_data_size, limits_sponsore_data_rate, owner_can_trasfer,
+    owner_can_destroy, sponsorship_confirmed, schema_version,
+    token_prefix, mode
+    FROM collections WHERE collection_id = :collection_id`,
     {
       type: QueryTypes.SELECT,
       plain: true,

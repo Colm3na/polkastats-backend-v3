@@ -22,6 +22,15 @@ describe("Test class Collection Listener", () => {
       collection_id: expect.any(Number),
       owner: expect.any(String),
       name: expect.any(String),
+      constChainSchema: expect.any(Object),      
+      limitsAccoutOwnership: expect.any(Number),  
+      limitsSponsoreDataSize: expect.any(Number),      
+      ownerCanTrasfer: expect.any(Boolean),
+      ownerCanDestroy: expect.any(Boolean),
+      sponsorshipConfirmed: expect.any(String),
+      schemaVersion: expect.any(String),
+      tokenPrefix: expect.any(String),
+      mode: expect.any(String)
     });
 
     expect(collection).toMatchObject({ collection_id: 10 });
