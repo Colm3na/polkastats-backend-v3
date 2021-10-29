@@ -20,7 +20,7 @@ services:
   # SQL data base
   #  
   postgres:
-    image: postgres
+    image: postgres:14
     restart: always
     volumes:
       - 'db-data:/var/lib/postgresql/data'
