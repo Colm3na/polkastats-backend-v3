@@ -1,24 +1,6 @@
 version: '3.7'
 
 services:
-  #
-  # Blockchain archive node
-  #
-  # substrate-node:
-  #   image: substrate-client:kusama-latest
-  #   hostname: substrate-node
-  #   build: ./substrate-client
-  #   volumes:
-  #     - 'substrate-data:/data'
-  #   ports:
-  #     - '30333:30333'
-  #     - '9933:9933'
-  #     - '9944:9944'
-  #   command: -d /data --unsafe-ws-external --unsafe-rpc-external --rpc-cors all --pruning=archive --name 'Polkastats' --chain polkadot
-  #   restart: on-failure
-  #
-  # SQL data base
-  #  
   postgres:
     image: postgres:14
     restart: always
@@ -66,11 +48,12 @@ services:
     restart: on-failure
     environment:
       - NODE_ENV=production
-      - WS_PROVIDER_URL=wss://testnet2.uniquenetwork.io
-      - SUBSTRATE_NETWORK=polkadot
-      - POSTGRES_HOST=${POSTGRES_HOST}
+      - WS_PROVIDER_URL=${WS_PROVIDER_URL}      
+      - POSTGRES_HOST=${POSTGRES_HOST}      
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DATABASE=${POSTGRES_DATABASE}
 volumes:
-  db-data: {}
-  meta-data: {}
+  db-data: {}  
 #
 # Persisten volumes

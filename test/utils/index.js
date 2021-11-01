@@ -48,4 +48,22 @@ const api = {
   },
 };
 
+const stringToBuffer = (str) => Buffer.from(str, 'utf-8');
+const hexToBuffer = (hex) => Buffer.from(hex, 'hex');
+
+const bufferToUint8 = (buffer) =>
+  new Uint8Array(
+    buffer.buffer,
+    buffer.byteOffset,
+    buffer.length / Uint8Array.BYTES_PER_ELEMENT
+  );
+const stringToBufferUTF16 = (str) => {
+  let buf = [];
+  for (let i=0, strLen=str.length; i < strLen; i++) {
+    buf.push(str.charCodeAt(i));
+  }
+  return buf;
+};
+
+
 module.exports = { api }

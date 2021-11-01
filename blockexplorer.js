@@ -1,5 +1,5 @@
 
-const { Logger } = require('./../utils/logger.js');
+const { Logger } = require('./utils/logger.js');
 
 const log = new Logger();
 

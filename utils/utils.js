@@ -399,6 +399,25 @@ function genArrayRange(min, max) {
   );
 }
 
+/**
+ * Convert buffer to JSON object
+ * @param {string} value 
+ * @returns 
+ */
+ const bufferToJSON = function(value)  {
+  try {
+    const data = parseHexToString(value)
+    let result = null;
+    if (data === '')  {
+      return result;
+    } else {
+      return (typeof JSON.parse(data) === 'object') ? data : null
+    }    
+  } catch (err) {    
+    return null;
+  }
+}
+
 module.exports = {
   formatNumber,
   shortHash,
@@ -411,5 +430,6 @@ module.exports = {
   getDisplayName,
   storeLogs,
   storeExtrinsics,
-  getExtrinsicSuccess
+  getExtrinsicSuccess,
+  bufferToJSON
 };
