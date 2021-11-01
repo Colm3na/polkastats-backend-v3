@@ -2,7 +2,7 @@ const { ApiPromise, WsProvider } = require('@polkadot/api');
 const { wsProviderUrl, dbConnect, crawlers } = require('./config/config.js')
 const { Sequelize } = require('sequelize');
 const { Logger } = require('./utils/logger.js');
-const { BlockExplorer } = require('./lib/blockexplorer.js')
+const { BlockExplorer } = require('./blockexplorer.js')
 const rtt = require('./config/runtime_types.json');
 
 const log = new Logger();

@@ -1,30 +1,11 @@
 version: '3.7'
 
 services:
-  #
-  # Blockchain archive node
-  #
-  # substrate-node:
-  #   image: substrate-client:kusama-latest
-  #   hostname: substrate-node
-  #   build: ./substrate-client
-  #   volumes:
-  #     - 'substrate-data:/data'
-  #   ports:
-  #     - '30333:30333'
-  #     - '9933:9933'
-  #     - '9944:9944'
-  #   command: -d /data --unsafe-ws-external --unsafe-rpc-external --rpc-cors all --pruning=archive --name 'Polkastats' --chain polkadot
-  #   restart: on-failure
-  #
-  # SQL data base
-  #
   postgres:
     image: postgres
     restart: always
     volumes:
       - 'db-data:/var/lib/postgresql/data'
-      #- './sql/polkastats.sql:/docker-entrypoint-initdb.d/polkastats.sql'
     ports:
       - 5432:5432
     environment:
@@ -55,26 +36,6 @@ services:
       ## uncomment next line to set an admin secret
       HASURA_GRAPHQL_ADMIN_SECRET: '${GRAPHQL_ADMIN_SECRET}'
       HASURA_GRAPHQL_PG_CONNECTIONS: '${GRAPHQL_PG_CONNECTIONS}'
-  #
-  # Block crawler
-  #
-  # crawler:
-  #   image: polkastats-backend:latest
-  #   build:
-  #     context: ../../
-  #     dockerfile: ./docker/polkastats-backend/backend/Dockerfile
-  #   depends_on:
-  #     - 'postgres'
-  #     - 'substrate-node'
-  #   restart: on-failure
-  #   environment:
-  #     - NODE_ENV=develop
-  #     - WS_PROVIDER_URL=wss://testnet2.uniquenetwork.io
-  #     - SUBSTRATE_NETWORK=polkadot
-#
-# Persisten volumes
-#
+  
 volumes:
   db-data: {}
-  meta-data: {}
-  #substrate-data: {}

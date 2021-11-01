@@ -1,10 +1,10 @@
 const pino = require("pino");
 const { QueryTypes } = require("sequelize");
-const { bufferToJSON } = require("../lib/utils.js");
 const {
   parseHexToString,
   bufferToString,
   genArrayRange,
+  bufferToJSON,
 } = require("../utils/utils.js");
 
 const logger = pino();
@@ -20,8 +20,8 @@ const DEFAULT_POLLING_TIME_MS = 60 * 60 * 1000;
  * @param {*} sponsorship 
  * @returns {string | null}
  */
-function getSponsorshipConfirmed(sponsorship) {  
-  return ('disabled' in sponsorship) ? null : sponsorship?.confirmed;
+function getSponsorshipConfirmed(sponsorship) {    
+  return ('disabled' in sponsorship) ? null : JSON.stringify(sponsorship);
 }
 
 async function getCollection(api, collectionId) {
@@ -89,7 +89,7 @@ async function updateCollection({
        WHERE collection_id = :collection_id`,
       {
         type: QueryTypes.UPDATE,
-        logging: false,
+        // logging: false,
         replacements: {
           owner: collection.owner,
           name: collection.name,
@@ -109,7 +109,7 @@ async function insertCollection(collection, sequelize) {
     ) VALUES (:collection_id,:owner, :name, :description, :offchain_schema, :token_limit)`,
     {
       type: QueryTypes.INSERT,
-      logging: false,
+      logging: true,
       replacements: {
         collection_id: collection.collection_id,
         owner: collection.owner,

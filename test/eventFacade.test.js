@@ -1,5 +1,5 @@
 const EventFacade = require('../lib/crawlers/eventFacade.js')
-const { api } = require('./utils.js')
+const { api } = require('./utils/index.js')
 
 const mockCollection = jest.fn()
 
