@@ -89,7 +89,7 @@ async function updateCollection({
        WHERE collection_id = :collection_id`,
       {
         type: QueryTypes.UPDATE,
-        // logging: false,
+        logging: false,
         replacements: {
           owner: collection.owner,
           name: collection.name,
@@ -109,7 +109,7 @@ async function insertCollection(collection, sequelize) {
     ) VALUES (:collection_id,:owner, :name, :description, :offchain_schema, :token_limit)`,
     {
       type: QueryTypes.INSERT,
-      logging: true,
+      logging: false,
       replacements: {
         collection_id: collection.collection_id,
         owner: collection.owner,
