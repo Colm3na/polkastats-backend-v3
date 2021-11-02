@@ -1,6 +1,6 @@
 const pino = require('pino')
 const { QueryTypes } = require('sequelize')
-const { genArrayRange, updateTotals } = require('../utils/utils.js');
+const { genArrayRange, updateTotals, parseHexToString } = require('../utils/utils.js');
 
 const logger = pino()
 
@@ -23,11 +23,16 @@ async function getCountTokens(api, collectionId) {
   return count;
 }
 
-async function getToken({ api, collectionId, tokenId }) {
-  let result = await getSource({api, collectionId, tokenId});
+async function getToken({ 
+  api, collectionId, tokenId 
+}) {
+  let result = await getSource({
+    api, collectionId, tokenId
+  });
   if (result) {
     return {
       owner: result?.Owner || null,
+      constData: parseHexToString(result?.ConstData),
       collectionId,
       tokenId,
     };
@@ -173,5 +178,10 @@ async function start({api, sequelize, config}) {
 }
 
 module.exports = {
-  start, getToken, checkToken, saveToken, deleteToken, moveToken
+  start, 
+  getToken, 
+  checkToken, 
+  saveToken, 
+  deleteToken, 
+  moveToken
 }
