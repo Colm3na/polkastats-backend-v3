@@ -70,6 +70,27 @@ async function getCollections(api, countCollection) {
   return collections;
 }
 
+function parseCollection ( collection ) {
+  return {
+    owner: collection.owner,
+    name: collection.name,
+    description: collection.description,
+    token_limit: collection.token_limit,
+    collection_id: collection.collection_id,
+    const_chain_schema: collection.constChainSchema,
+    variable_on_chain_schema: collection.variableOnChainSchema,
+    limits_accout_ownership:  collection.limitsAccoutOwnership,
+    limits_sponsore_data_size: collection.limitsSponsoreDataSize, 
+    limits_sponsore_data_rate: collection.limitsSponsoreDataRate,
+    owner_can_trasfer: collection.ownerCanTrasfer,
+    owner_can_destroy: collection.ownerCanDestroy,
+    sponsorship_confirmed: collection.sponsorshipConfirmed,
+    schema_version: collection.schemaVersion,
+    token_prefix: collection.tokenPrefix,
+    mode: collection.mode
+  }
+}
+
 async function updateCollection({
   name,
   description,
@@ -102,22 +123,7 @@ async function updateCollection({
         type: QueryTypes.UPDATE,
         logging: false,
         replacements: {
-          owner: collection.owner,
-          name: collection.name,
-          description: collection.description,
-          token_limit: collection.token_limit,
-          collection_id: collection.collection_id,
-          const_chain_schema: collection.constChainSchema,
-          variable_on_chain_schema: collection.variableOnChainSchema,
-          limits_accout_ownership:  collection.limitsAccoutOwnership,
-          limits_sponsore_data_size: collection.limitsSponsoreDataSize, 
-          limits_sponsore_data_rate: collection.limitsSponsoreDataRate,
-          owner_can_trasfer: collection.ownerCanTrasfer,
-          owner_can_destroy: collection.ownerCanDestroy,
-          sponsorship_confirmed: collection.sponsorshipConfirmed,
-          schema_version: collection.schemaVersion,
-          token_prefix: collection.tokenPrefix,
-          mode: collection.mode
+          ...parseCollection(collection)
         },
       }
     );
@@ -157,22 +163,7 @@ async function insertCollection(collection, sequelize) {
       logging: false,
       replacements: {
         collection_id: collection.collection_id,
-        owner: collection.owner,
-        name: collection.name,
-        description: collection.description,
-        offchain_schema: collection.offchain_schema,
-        token_limit: collection.token_limit,
-        const_chain_schema: collection.constChainSchema,
-        variable_on_chain_schema: collection.variableOnChainSchema,
-        limits_accout_ownership:  collection.limitsAccoutOwnership,
-        limits_sponsore_data_size: collection.limitsSponsoreDataSize, 
-        limits_sponsore_data_rate: collection.limitsSponsoreDataRate,
-        owner_can_trasfer: collection.ownerCanTrasfer,
-        owner_can_destroy: collection.ownerCanDestroy,
-        sponsorship_confirmed: collection.sponsorshipConfirmed,
-        schema_version: collection.schemaVersion,
-        token_prefix: collection.tokenPrefix,
-        mode: collection.mode
+        ...parseCollection(collection)
       },
     }
   );
