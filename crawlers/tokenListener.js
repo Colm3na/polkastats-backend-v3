@@ -41,6 +41,7 @@ async function getToken({
 }
 
 async function getSource({api, collectionId, tokenId}) {
+  
   let result = await api.query.nft.nftItemList(collectionId, tokenId);
   if (!('Owner' in result)) {
     result = result.toJSON();
@@ -78,7 +79,7 @@ async function checkToken(sequelize, {owner, collectionId, tokenId}) {
     }
   }
 }
-// TODO: Подвергнуть рефракторингу
+// NEED_REFACTORING: 
 async function* getTokens(api, sequelize, collectionId, count) {
   const range = genArrayRange(1, count);
   for (const item of range) {
@@ -160,7 +161,7 @@ async function start({api, sequelize, config}) {
   (async function run() {
     const ids = await getCollectionIds(sequelize)
     try {
-      // TODO: Need for refactoring 
+      // NEED_REFACTORING:
       for await (const item of getCountEach(api, ids)) {
         if (item.count === 0) continue;
         for await (const token of getTokens(api, sequelize, item.collectionId, (item.count+1))) {
@@ -169,8 +170,7 @@ async function start({api, sequelize, config}) {
       }
     } catch (error) {
       console.error(error)
-    }
-    console.log('start tokens..');
+    }    
     updateTotals(sequelize, loggerOptions)  
     setTimeout(() => run(), pollingTime)
   })()

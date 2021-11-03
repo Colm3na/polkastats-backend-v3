@@ -3,6 +3,8 @@ const protobuf = require('../utils/protobuf.js')
 
 describe("Test protobuf", () => {
 
+  const schema = "{\"nested\": {\"onChainMetaData\": {\"nested\": {\"NFTMeta\": {\"fields\": {\"name\": {\"id\": 1, \"rule\": \"required\", \"type\": \"string\"}}}}}}}";
+
   describe("getProtoBufRoot", () => {
 
     test("Checkin for the empty schema", () => {
@@ -30,18 +32,24 @@ describe("Test protobuf", () => {
 
     test("Checking for the right schema", () => {
       expect(
-        protobuf.getProtoBufRoot(
-          "{\"nested\": {\"onChainMetaData\": {\"nested\": {\"NFTMeta\": {\"fields\": {\"name\": {\"id\": 1, \"rule\": \"required\", \"type\": \"string\"}}}}}}}"
-        )
+        protobuf.getProtoBufRoot( schema )
       ).toEqual(
         expect.any(Object)
       )
     })
   })
   
-  describe("deserializeNFT", () => {
-    test("Checking for parse token", () => {
+  describe("deserializeNFT", () => {  
+    test("Checking for parse token", () => {      
+      const root = protobuf.getProtoBufRoot(schema);      
+      const statementData = {
+        buffer: Buffer.from('0a1863617365792d686f726e65722d534c73586a467034594741', 'hex'),
+        locale: 'en',
+        root        
+      };
       
+      const deserialize = protobuf.deserializeNFT(statementData)
+      expect(deserialize).toEqual(expect.any(Object))      
     })
   })
 

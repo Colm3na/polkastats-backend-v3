@@ -20,7 +20,7 @@ describe("Test tokenListener", () => {
         collectionId: 1,
         tokenId: 1
       });
-      
+
       expect(token).toMatchObject({
         owner: expect.any(String),
         constData: expect.any(String),
@@ -28,7 +28,6 @@ describe("Test tokenListener", () => {
         tokenId: expect.any(Number)
       })
     })
-
     
   })
 })
