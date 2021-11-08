@@ -1,6 +1,9 @@
-const pino = require('pino')
-const { QueryTypes } = require('sequelize')
+const pino = require('pino');
+const { QueryTypes } = require('sequelize');
 const { genArrayRange, updateTotals, parseHexToString } = require('../utils/utils.js');
+const protobuf = require('../utils/protobuf.js');
+
+const utilsCollection = require('../lib/collections.js');
 
 const logger = pino()
 
@@ -10,52 +13,109 @@ const loggerOptions = {
 
 const DEFAULT_POLLING_TIME_MS = 60 * 60 * 1000;
 
-async function getCollectionIds (sequelize) {  
-  const res = await sequelize.query('SELECT collection_id FROM collections', {
-    type: QueryTypes.SELECT,
-    logging: false,
-  })  
-  return res.map(item => item.collection_id)
+
+async function getCollections (sequelize) {
+  const res = await utilsCollection.get({
+    selectList: ['collection_id', 'const_chain_schema'],
+    sequelize
+  });    
+  return res.map(enrichCollection)  
 }
 
-async function getCountTokens(api, collectionId) {
-  const count = await api.query.nft.itemListIndex(collectionId);
-  return count;
+function enrichCollection(item) {
+  const results = {};
+  results.collectionId = item.collection_id;
+  results.schema = protobuf.getProtoBufRoot(item.const_chain_schema);
+  return results;
 }
 
-async function getToken({ 
-  api, collectionId, tokenId 
-}) {
-  let result = await getSource({
-    api, collectionId, tokenId
-  });
-  if (result) {
-    return {
-      owner: result?.Owner || null,
-      constData: parseHexToString(result?.ConstData),
-      collectionId,
-      tokenId,
+async function* addRange(api, sequelize) {
+
+  const collections = await getCollections(sequelize);    
+  
+  for (const collection of collections) {
+    const tokenCount  = await api.query.nft.itemListIndex(collection.collectionId);    
+    if (tokenCount !== 0) {
+      const result = Object.assign({}, collection);
+      result.range = genArrayRange(1, (tokenCount + 1));
+      yield result;
+    }    
+  }   
+}
+
+function constData(data, schema) {
+  const source = parseHexToString(data);  
+  if (source && schema !== null) {
+    const statement = {
+      buffer: Buffer.from(source, 'hex'),
+      locale: 'en',
+      root: schema
     };
+    return protobuf.deserializeNFT(statement)
   }
-  return null;
+  return {
+    hex: source      
+  }
 }
 
-async function getSource({api, collectionId, tokenId}) {
-  let result = await api.query.nft.nftItemList(collectionId, tokenId);
-  if (!('Owner' in result)) {
-    result = result.toJSON();
+async function _getToken({
+  api, collection, tokenId 
+}) {  
+  let source = await api.query.nft.nftItemList(
+    collection.collectionId, 
+    tokenId
+  );
+  
+  return checkSource(source);
+  
+  function checkSource(source) {
+    if (!source) {
+      return null;
+    }
+    if (!('Owner' in source)) {
+      source = source.toJSON();
+    }
+    return setTokenData(source);
   }
-  return result;
+
+  function setTokenData(source) {    
+    const result = {}
+    result.owner = source?.Owner || null;
+    result.constData = constData(source?.ConstData, collection.schema);
+    result.collectionId = collection.collectionId;
+    result.tokenId = tokenId;    
+    return result;
+  }
 }
 
-async function* getCountEach(api, collectionIds) {    
-  for (const collectionId of collectionIds) {
-    const count = await getCountTokens(api, collectionId);
-    yield {
-     collectionId,
-     count: count.toNumber()
-   }   
-}
+async function getToken({
+  api, collectionId, tokenId 
+}) {  
+  let source = await api.query.nft.nftItemList(
+    collectionId, 
+    tokenId
+  );
+  
+  return checkSource(source);
+  
+  function checkSource(source) {
+    if (!source) {
+      return null;
+    }
+    if (!('Owner' in source)) {
+      source = source.toJSON();
+    }
+    return setTokenData(source);
+  }
+
+  function setTokenData(source) {    
+    const result = {}
+    result.owner = source?.Owner || null;
+    result.constData = null; //constData(source?.ConstData, collection.schema);
+    result.collectionId = collectionId;
+    result.tokenId = tokenId;    
+    return result;
+  }
 }
 
 async function checkToken(sequelize, {owner, collectionId, tokenId}) {
@@ -78,11 +138,15 @@ async function checkToken(sequelize, {owner, collectionId, tokenId}) {
     }
   }
 }
-// TODO: Подвергнуть рефракторингу
-async function* getTokens(api, sequelize, collectionId, count) {
-  const range = genArrayRange(1, count);
-  for (const item of range) {
-    const token = await getToken({api, collectionId, tokenId: item}); 
+// NEED_REFACTORING: 
+async function* getTokens(api, sequelize, collection) {  
+  for (const item of collection.range) {
+    const statement = {
+      api,
+      collection,
+      tokenId: item
+    }
+    const token = await _getToken(statement); 
 
     if (token) {
       const check = await checkToken(sequelize, {
@@ -126,7 +190,7 @@ async function deleteToken({sequelize, tokenId, collectionId}) {
 }
 
 async function insertToken({ sequelize, owner, collectionId, tokenId }) {
-  await sequelize.query(`INSERT INTO tokens (collection_id, token_id, owner) VALUES(:collectionId, :tokenId, :owner)`, {
+  await sequelize.query(`INSERT INTO tokens (collection_id, token_id, owner, data) VALUES(:collectionId, :tokenId, :owner, :data)`, {
     type: QueryTypes.INSERT,
     replacements: {
       owner, collectionId, tokenId
@@ -157,20 +221,19 @@ async function start({api, sequelize, config}) {
   const pollingTime = config.pollingTime || DEFAULT_POLLING_TIME_MS
   logger.info(loggerOptions, "Starting token crawler...");
 
-  (async function run() {
-    const ids = await getCollectionIds(sequelize)
+  (async function run() {    
     try {
-      // TODO: Need for refactoring 
-      for await (const item of getCountEach(api, ids)) {
-        if (item.count === 0) continue;
-        for await (const token of getTokens(api, sequelize, item.collectionId, (item.count+1))) {
-            await saveToken(sequelize, token)          
+
+      const collections = await addRange(api, sequelize);
+      // NEED_REFACTORING:
+      for await (const collection of collections) {
+        for await (const token of getTokens(api, sequelize, collection)) {
+          await saveToken(sequelize, token);
         }
-      }
+      }      
     } catch (error) {
       console.error(error)
-    }
-    console.log('start tokens..');
+    }    
     updateTotals(sequelize, loggerOptions)  
     setTimeout(() => run(), pollingTime)
   })()
@@ -183,5 +246,7 @@ module.exports = {
   checkToken, 
   saveToken, 
   deleteToken, 
-  moveToken
+  moveToken,
+  getCollections,
+  addRange
 }
