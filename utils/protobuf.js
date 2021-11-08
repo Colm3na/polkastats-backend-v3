@@ -22,9 +22,12 @@ function convertEnumToString (
 
 function getProtoBufRoot ( schema ) {
   let result = null;
+  let source = schema;
   try {
     if ( schema ) {      
-      const source = JSON.parse(schema);
+      if (typeof schema === 'string') {
+        source = JSON.parse(schema)
+      }      
       if ( typeof source === 'object' ) {
         if ( 'onChainMetaData' in source?.nested) {
           result = protobuf.Root.fromJSON( source );          

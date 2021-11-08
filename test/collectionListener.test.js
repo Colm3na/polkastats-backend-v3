@@ -22,7 +22,7 @@ describe("Test class Collection Listener", () => {
       collection_id: expect.any(Number),
       owner: expect.any(String),
       name: expect.any(String),
-      constChainSchema: expect.any(Object),      
+      constChainSchema: expect.any(String),
       limitsAccoutOwnership: expect.any(Number),  
       limitsSponsoreDataSize: expect.any(Number),      
       ownerCanTrasfer: expect.any(Boolean),

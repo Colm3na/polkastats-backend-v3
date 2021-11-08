@@ -1,5 +1,7 @@
+const { result } = require("lodash");
 const pino = require("pino");
 const { QueryTypes } = require("sequelize");
+const utilsCollection = require('../lib/collections.js');
 const {
   parseHexToString,
   bufferToString,
@@ -39,8 +41,8 @@ async function getCollection(api, collectionId) {
       owner: source?.Owner,
       name: bufferToString(source?.Name),
       description: bufferToString(source?.Description),
-      token_limit: source?.Limits.TokenLimit || 0,
-      offchain_schema: parseHexToString(source?.OffchainSchema),
+      tokenLimit: source?.Limits.TokenLimit || 0,
+      offchainSchema: parseHexToString(source?.OffchainSchema),
       constChainSchema: bufferToJSON(source?.ConstOnChainSchema),
       variableOnChainSchema: bufferToJSON(source?.VariableOnChainSchema),
       limitsAccoutOwnership: limits.AccountTokenOwnershipLimit || 0,  
@@ -75,8 +77,9 @@ function parseCollection ( collection ) {
     owner: collection.owner,
     name: collection.name,
     description: collection.description,
-    token_limit: collection.token_limit,
+    token_limit: collection.tokenLimit,
     collection_id: collection.collection_id,
+    offchain_schema: collection.offchainSchema,
     const_chain_schema: collection.constChainSchema,
     variable_on_chain_schema: collection.variableOnChainSchema,
     limits_accout_ownership:  collection.limitsAccoutOwnership,
@@ -101,12 +104,14 @@ async function updateCollection({
   if (
     name !== collection.name ||
     description !== collection.description ||
-    token_limit !== collection.token_limit    
+    token_limit !== collection.tokenLimit ||
+    token_prefix !== collection.tokenPrefix
   ) {
     //TODO: Refractoring!
     await sequelize.query(
       `UPDATE collections SET owner = :owner, 
       name = :name, description = :description, token_limit = :token_limit, 
+      offchain_schema = :offchain_schema,
       const_chain_schema = :const_chain_schema, 
       variable_on_chain_schema = :variable_on_chain_schema,
       limits_accout_ownership = :limits_accout_ownership, 
@@ -130,8 +135,7 @@ async function updateCollection({
   }
 }
 
-async function insertCollection(collection, sequelize) {
-  //TODO: Refractoring!
+async function insertCollection(collection, sequelize) {  
   await sequelize.query(
     `INSERT INTO collections (collection_id, owner, name, description, offchain_schema, 
       token_limit,
@@ -185,23 +189,10 @@ async function setExcaption(sequelize, error, collectionId) {
 }
 
 async function saveCollection({ collection, sequelize }) {
-  const res = await sequelize.query(
-    `SELECT collection_id, name, description, 
-    offchain_schema, token_limit, owner,
-    const_chain_schema, variable_on_chain_schema, limits_accout_ownership,
-    limits_sponsore_data_size, limits_sponsore_data_rate, owner_can_trasfer,
-    owner_can_destroy, sponsorship_confirmed, schema_version,
-    token_prefix, mode
-    FROM collections WHERE collection_id = :collection_id`,
-    {
-      type: QueryTypes.SELECT,
-      plain: true,
-      logging: false,
-      replacements: {
-        collection_id: collection.collection_id,
-      },
-    }
-  );
+  const res = await utilsCollection.get({
+    collectionId: collection.collection_id,
+    sequelize
+  });
 
   if (!res) {
     try {
@@ -215,7 +206,8 @@ async function saveCollection({ collection, sequelize }) {
       collection,
       sequelize,
     });
-  }
+  }  
+  return result;
 }
 
 async function deleteCollection(collectionId, sequelize) {

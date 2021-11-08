@@ -161,8 +161,7 @@ async function start({api, sequelize, config}) {
             era_length: 0,
             era_progress: 0,
             is_epoch: false,
-            is_election:
-              eraElectionStatus?.toString() === `Close` ? false : true,
+            is_election: eraElectionStatus?.toString() === `Close` ? false : true,
             session_length: (api.consts?.babe?.epochDuration || 0).toString(),
             session_per_era: 0,
             session_progress: 0,
