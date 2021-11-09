@@ -1,7 +1,7 @@
 const { result } = require("lodash");
 const pino = require("pino");
 const { QueryTypes } = require("sequelize");
-const utilsCollection = require('../lib/collections.js');
+const collectionDB = require('../lib/collectionDB.js');
 const {
   parseHexToString,
   bufferToString,
@@ -189,7 +189,7 @@ async function setExcaption(sequelize, error, collectionId) {
 }
 
 async function saveCollection({ collection, sequelize }) {
-  const res = await utilsCollection.get({
+  const res = await collectionDB.get({
     collectionId: collection.collection_id,
     sequelize
   });
