@@ -44,22 +44,6 @@ async function* addRange(api, sequelize) {
   }   
 }
 
-async function getToken({
-  api, collection, tokenId 
-}) {  
-  let token = await api.query.nft.nftItemList(
-    collection.collectionId, 
-    tokenId
-  );  
-  return tokenData.get(
-    Object.assign(tokenData.toObject(token), { 
-      collectionId: collection.collectionId,
-      tokenId,
-      schema: collection.schema
-    })
-  );
-}
-
 async function* getTokens(api, collection) {  
   for (const item of collection.range) {
     const statement = {
@@ -67,7 +51,7 @@ async function* getTokens(api, collection) {
       collection,
       tokenId: item
     }
-    const token = await getToken(statement); 
+    const token = await tokenData.get(statement);
 
     if (token) {      
       yield token;
@@ -97,8 +81,7 @@ async function start({api, sequelize, config}) {
 }
 
 module.exports = {
-  start, 
-  getToken,  
+  start,   
   getCollections,
   addRange
 }

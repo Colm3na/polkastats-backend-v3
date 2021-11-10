@@ -1,16 +1,16 @@
-const EventFacade = require('../lib/crawlers/eventFacade.js')
-const { api } = require('./utils/index.js')
+const EventFacade = require('../crawlers/eventFacade.js');
+const { api } = require('./utils/index.js');
 
 const mockCollection = jest.fn()
 
-const pool = {
+const sequelize = {
     query: mockCollection       
 }  
 
 describe('Test class EventFaced', () => {
 
   beforeEach(() => {
-    pool.query.mockReset()
+    sequelize.query.mockReset()
   })
   
   test('Test on create collection', async () => {     
@@ -19,8 +19,8 @@ describe('Test class EventFaced', () => {
       "method": "CollectionCreated",      
       "data": "[165,1,\"5CJV7Qqdwx5XSG4xSKAix84c32XaYAfamcX8mtAbp4ZSVUXm\"]"
     };   
-    const eventFacade = new EventFacade(api, pool);
-    pool.query.mockReturnValueOnce({
+    const eventFacade = new EventFacade(api, sequelize);
+    sequelize.query.mockReturnValueOnce({
       rows: []
     }).mockImplementation((query) => {
       console.log(query)
@@ -38,10 +38,10 @@ describe('Test class EventFaced', () => {
       "phase": "{\"applyExtrinsic\":1}",
       "data": "[112,14,\"5DACuDR8CXXmQS3tpGyrHZXoJ6ds7bjdRb4wVqqSt2CMfAoG\",\"5F9uj74cgfo3FX4UbMzivGSnNzDvjuFgCYGhhAcYo3mjk1zT\",0]"
     };
-    pool.query.mockImplementation((query) => {
+    sequelize.query.mockImplementation((query) => {
       console.log(query)
     })
-    const eventFacade = new EventFacade(api, pool);
+    const eventFacade = new EventFacade(api, sequelize);
     await eventFacade.transferToken(JSON.parse(event.data));
   })  
   
@@ -52,13 +52,13 @@ describe('Test class EventFaced', () => {
       "data": "[191,1,\"5HYwn1rHFsv4bfsxhGKNTSWvu2kup8Fo5q73a9eKm3pFzwbD\"]"
     };
     
-    pool.query.mockReturnValueOnce({
+    sequelize.query.mockReturnValueOnce({
       rows: []
     }).mockImplementation((query) => {
       console.log(query)
     })
 
-    const eventFacade = new EventFacade(api, pool);
+    const eventFacade = new EventFacade(api, sequelize);
     await eventFacade.insertToken(JSON.parse(event.data));
   })
   
@@ -72,11 +72,11 @@ describe('Test class EventFaced', () => {
       "data": "[191,1]"
     }
 
-    pool.query.mockImplementation((query) => {
+    sequelize.query.mockImplementation((query) => {
       console.log(query)
     })
     
-    const eventFacade = new EventFacade(api, pool);
+    const eventFacade = new EventFacade(api, sequelize);
     await eventFacade.delToken(JSON.parse(event.data));       
   })
 
