@@ -1,6 +1,9 @@
 const { isNumber } = require('lodash')
-const { getCollection, saveCollection } = require('./collectionListener.js')
-const { getToken, checkToken, saveToken, deleteToken, moveToken } = require('./tokenListener.js')
+const { getCollection, saveCollection } = require('./collectionListener.js');
+
+const { save } = require('../lib/tokenDB.js');
+const { getToken } = require('./tokenListener.js');
+
 
 
 const TYPE_CREATE_COLLECTION = 'CollectionCreated'
@@ -65,11 +68,11 @@ class EventFacade {
   }
 
   async insertToken(data) {    
-    if (this.#checkNumber(this.#parseData(data))) {
+    /*if (this.#checkNumber(this.#parseData(data))) {
       const token = await getToken({api:this.api, ...this.#parseData(data)});
       const check = await checkToken(this.sequelize, token);      
       await saveToken(this.sequelize,{...token, check});              
-    }
+    }*/
   }
 
   #checkNumber({collectionId, tokenId}) {
@@ -78,18 +81,18 @@ class EventFacade {
 
   async delToken(data) {    
     if (this.#checkNumber(this.#parseData(data))) {
-      await deleteToken({sequelize: this.sequelize, ...this.#parseData(data)})
+    //  await deleteToken({sequelize: this.sequelize, ...this.#parseData(data)})
     }
   }
 
   async transferToken(data) {    
-    if (this.#checkNumber(this.#parseData(data))) {
+    /*if (this.#checkNumber(this.#parseData(data))) {
       await moveToken({
         sequelize: this.sequelize,
         ...this.#parseData(data),
         ...this.#parseOwners(data)
       });
-    }
+    }*/
   }
 
   #parseOwners(data) {    

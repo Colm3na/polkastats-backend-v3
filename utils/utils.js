@@ -369,10 +369,14 @@ async function updateTotals(sequelize) {
   );
 }
 
+function getBuffer(aValue) {
+  return Buffer.from(aValue, "hex").toString("utf-8");
+}
+
 function parseHexToString(value) {
   try {
     const source = value.toString().replace("0x", "");
-    return Buffer.from(source, "hex").toString("utf-8");
+    return getBuffer(source);
   } catch (error) {
     return "";
   }
@@ -386,7 +390,7 @@ function bufferToString(value) {
     if (value.join("").includes("123")) {
       return "";
     }
-    return Buffer.from(value, "hex").toString("utf-8");
+    return getBuffer(value);
   } catch (error) {
     return "";
   }
