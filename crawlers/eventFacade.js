@@ -15,13 +15,18 @@ class EventFacade {
    * @returns 
    */
   async save(type, data) {
-    const event = new EventFactory({
-      api: this.api,
-      sequelize: this.sequelize,
-      data,
-      type
-    });
-    await event.save();
+    try {
+      const event = new EventFactory({
+        api: this.api,
+        sequelize: this.sequelize,
+        data,
+        type
+      });
+      await event.save();
+    } catch (error) {
+      console.error(error);
+      return null;
+    }    
   }
 }
 
