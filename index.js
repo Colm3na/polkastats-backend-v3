@@ -3,7 +3,7 @@ const { Sequelize } = require('sequelize');
 const { Logger } = require('./utils/logger.js');
 const { BlockExplorer } = require('./blockexplorer.js')
 const rtt = require('./config/runtime_types.json');
-const { ProvierFactory } = require('./lib/providerAPI.js');
+const { ProvierFactory } = require('./lib/providerAPI/providerAPI.js');
 
 const log = new Logger();
 
@@ -23,6 +23,7 @@ async function getPolkadotAPI(wsProviderUrl, rtt) {
   log.info(`Connecting to ${wsProviderUrl}`);
   const provider = new  ProvierFactory(wsProviderUrl, typeProvider);  
   const api = await provider.getApi(rtt);
+
 
   api.on("error", async (value) => {
     log.error(value);
