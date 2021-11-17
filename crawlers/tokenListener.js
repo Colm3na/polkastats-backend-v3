@@ -7,6 +7,7 @@ const protobuf = require('../utils/protobuf.js');
 const collectionDB = require('../lib/collectionDB.js');
 const tokenData = require('../lib/tokenData.js');
 const tokenDB = require('../lib/tokenDB.js');
+const { BridgeAPI } = require('../lib/providerAPI/bridgeApi.js');
 
 const loggerOptions = {
   crawler: "tokenListener",
@@ -30,12 +31,16 @@ function enrichCollection(item) {
   return results;
 }
 
-async function* addRange(api, sequelize) {
+async function* addRange(bridgeAPI, sequelize) {
 
   const collections = await getCollections(sequelize);    
   
   for (const collection of collections) {
-    const tokenCount  = await api.query.nft.itemListIndex(collection.collectionId);    
+    const tokenCount  = await bridgeAPI.api
+      .query
+      .nft
+      .itemListIndex(collection.collectionId);    
+
     if (tokenCount !== 0) {
       const result = Object.assign({}, collection);
       result.range = genArrayRange(1, (tokenCount + 1));
@@ -44,10 +49,10 @@ async function* addRange(api, sequelize) {
   }   
 }
 
-async function* getTokens(api, collection) {  
+async function* getTokens(bridgeAPI, collection) {  
   for (const item of collection.range) {
     const statement = {
-      api,
+      bridgeAPI,
       collection,
       tokenId: item
     }
@@ -62,13 +67,16 @@ async function* getTokens(api, collection) {
 async function start({api, sequelize, config}) {
   
   const pollingTime = config.pollingTime || DEFAULT_POLLING_TIME_MS
+
+  const bridgeAPI = (new BridgeAPI(api)).bridgeAPI;
+
   logger.info(loggerOptions, "Starting token crawler...");
 
   (async function run() {    
     try {
-      const collections = await addRange(api, sequelize);      
-      for await (const collection of collections) {                
-        for await (const token of getTokens(api, collection)) {          
+      const collections = await addRange(bridgeAPI, sequelize);
+      for await (const collection of collections) {
+        for await (const token of getTokens(bridgeAPI, collection)) {
           await tokenDB.save(token, sequelize);
         }
       }
