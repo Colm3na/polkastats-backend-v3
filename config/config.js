@@ -11,8 +11,8 @@ function getConnect() {
 }
 
 module.exports.substrateNetwork = process.env.SUBSTRATE_NETWORK || 'polkadot';
-module.exports.wsProviderUrl = process.env.WS_PROVIDER_URL || 'wss://westend-opal.unique.network';
-module.exports.typeProvider = process.env.TYPE_PROVIDER || 'westend';
+module.exports.wsProviderUrl = process.env.WS_PROVIDER_URL || 'wss://testnet2.uniquenetwork.io';
+module.exports.typeProvider = process.env.TYPE_PROVIDER || 'testnet2';
 module.exports.dbConnect = getConnect();
 
 module.exports.crawlers = [
