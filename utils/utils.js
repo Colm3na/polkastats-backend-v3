@@ -1,6 +1,8 @@
 const pino = require("pino");
 const { BigNumber } = require("bignumber.js");
 const { QueryTypes } = require("sequelize");
+const extrinsicDB = require('../lib/extrinsicDB.js');
+const extrinsicData = require('../lib/extrinsicData.js');
 
 const logger = pino();
 
@@ -47,40 +49,22 @@ async function storeExtrinsics(
   // Start execution
   const startTime = new Date().getTime();
   extrinsics.forEach(async (extrinsic, index) => {
-    const isSigned = extrinsic.isSigned;
-    await sequelize.query(
-      `INSERT INTO extrinsic (
-      block_number,
-      extrinsic_index,
-      is_signed,
-      signer,
-      section,
-      method,
-      args,
-      hash,
-      doc,
-      success
-    ) VALUES (:block_number, :extrinsic_index,
-      :is_signed, :signer, :section, :method, :args, :hash, :doc, :success
-    )
-    ON CONFLICT ON CONSTRAINT extrinsic_pkey DO NOTHING;`,
-      {
-        type: QueryTypes.INSERT,
-        logging: false,
-        replacements: {
-          block_number: blockNumber,
-          extrinsic_index: index,
-          is_signed: isSigned,
-          signer: isSigned ? extrinsic.signer.toString() : "",
-          section: extrinsic.toHuman().method.section,
-          method: extrinsic.toHuman().method.method,
-          args: JSON.stringify(extrinsic.args),
-          hash: extrinsic.hash.toHex(),
-          doc: extrinsic.meta.docs.toString().replace(/'/g, "''"),
-          success: getExtrinsicSuccess(index, blockEvents),
-        },
-      }
-    );
+    
+    const item = extrinsicData.get({
+      blockNumber, 
+      extrinsic, 
+      index, 
+      success: 
+      getExtrinsicSuccess(index, blockEvents)
+    });
+    
+    if (['setValidationData'].includes(item.method)) {
+      item.args = '[]';
+    }          
+      await extrinsicDB.add({
+        extrinsic: item,
+        sequelize
+      });        
   });
 
   // Log execution time
@@ -91,7 +75,7 @@ async function storeExtrinsics(
       (endTime - startTime) /
       1000
     ).toFixed(3)}s`
-  );
+  );  
 }
 
 async function storeLogs(sequelize, blockNumber, logs, loggerOptions) {
