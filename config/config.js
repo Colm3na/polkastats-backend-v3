@@ -94,5 +94,9 @@ module.exports.crawlers = [
         parseInt(process.env.CRAWLER_TOKEN_POLLING_TIME_MS) ||
         60 * 60 * 1000,
     },      
+  },
+  {
+    enabled: !process.env.CRAWLER_OLD_BLOCK_LISTENER_DISABLE,
+    module: `${process.cwd()}/crawlers/oldBlockListener.js`    
   }
 ]

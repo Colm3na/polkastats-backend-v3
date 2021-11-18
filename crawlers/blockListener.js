@@ -1,5 +1,6 @@
 const { QueryTypes } = require('sequelize');
 const pino = require('pino')
+const blockDB = require('../lib/blockDB.js');
 
 const {
   shortHash,
@@ -54,16 +55,8 @@ async function start({api, sequelize, config}) {
     // Get epoch duration
     const epochDuration = api.consts?.babe?.epochDuration || 0;
 
-    let res = await sequelize.query(
-      "SELECT block_number FROM block WHERE block_number = :blockNumber",
-      {
-        type: QueryTypes.SELECT,
-        logging: false,
-        replacements: {
-          blockNumber,
-        },
-      }
-    );
+    let res = blockDB.get({blockNumber, sequelize});
+    
     // Handle chain reorganizations
 
     if (res.length > 0) {
