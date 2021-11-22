@@ -1,11 +1,13 @@
 const { BridgeAPI } = require("../lib/providerAPI/bridgeApi");
 const { Logger } = require("../utils/logger");
 const blockDB = require('../lib/blockDB.js');
+const blockData = require('../lib/blockData.js');
+const eventsData = require('../lib/eventsData.js');
+const { shortHash } = require('../utils/utils.js');
 
 const loggerOptions = {
   crawler: `oldBlockListenr`,
 };
-
 
 async function start({api, sequelize, config}) {
 
@@ -15,68 +17,40 @@ async function start({api, sequelize, config}) {
   logger.start(`Startinf block listner for old blocks...`);
 
   const bridgeAPI = new BridgeAPI(api).bridgeAPI;
-
-  const blockHash = await bridgeAPI.getBlockHash(blockNumber);
-
-  const blockInfo = await getDataBlock(blockHash);
-
+  
+  const blockInfo = await blockData.get({
+    blockNumber,
+    bridgeAPI,
+  })
+    
   const getBlockDB = blockDB.get({
     blockNumber,
     sequelize
   });
 
   if (getBlockDB.length > 0) {
+    logger.default(
+      `Detected chain reorganizaition at block #${blockNumber},
+      updating authot, author name, hash ans state root`
+    );
+    await blockDB.modify({ blockNumber, blockInfo, sequelize });
+  } else {    
+    logger.info(
+      `Adding block #${blockNumber} (${shortHash(blockInfo.blockHash.toString())})`
+    );
 
-  } else {
+    const events = await eventsData.get({ bridgeAPI, blockHash: blockInfo.blockHash });
+    const timestampMs = await bridgeAPI.api.query.timestamp.now.at(blockInfo.blockHash);
 
-  }
-  
-  console.log(blockInfo);
+    console.log(events);
 
-  
+    await  blockDB.add({
+      blockNumber,
+      block: Object.assign(blockInfo, events, { timestampMs }),
+      sequelize
+    })
 
-  async function getDataBlock ( blockHash ) {
-    const [
-      { block },
-      blockNumberFinalized,          
-      totalIssuance,
-    ] = await Promise.all([
-      bridgeAPI.api.rpc.chain.getBlock(blockHash),
-      bridgeAPI.api.derive.chain.bestNumberFinalized(),            
-      bridgeAPI.api.query.balances.totalIssuance.at(blockHash),
-    ]);
-
-    const result = {};  
-    result.blockHash = blockHash;
-    result.extrinsics = block.extrinsics;
-    result.blockNumberFinalized = blockNumberFinalized.toString();    
-    result.totalIssuance = totalIssuance.toString();    
-
-    const blockAuthor = await getBlockAuthor(blockHash);
-    const runtimeVersion = await getRuntimeVersion(blockHash);
-
-    return Object.assign(result, blockAuthor, runtimeVersion);
-  }
-
-  async function getBlockAuthor (blockHash) {
-    const extendedHeader = await bridgeAPI.api.derive.chain.getHeader(blockHash);
-    const result = {};
-    result.blockAuthor = extendedHeader.author || null;
-
-    const blockAuthorIdentity = await bridgeAPI.api.derive.accounts.info(result.blockAuthor);
-    result.blockAuthorIdentity = blockAuthorIdentity;
-
-    return result;
-  }
-
-  async function getRuntimeVersion(blockHash) {
-    const runtimeVersion = await bridgeAPI.api.rpc.state.getRuntimeVersion(blockHash);
-    const result = {};
-    result.specName = runtimeVersion.specName.toString();
-    result.specVersion = runtimeVersion.specVersion.toString();
-
-    return result;
-  }
+  }  
 }
 
 module.exports = { start };

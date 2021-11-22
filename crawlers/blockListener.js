@@ -46,7 +46,7 @@ async function start({api, sequelize, config}) {
     // Get block state root
 
     // Get block author
-    const blockAuthor = extendedHeader.author || null;
+    const blockAuthor = extendedHeader.author || null    
 
     // Get block author identity display name
     const blockAuthorIdentity = await api.derive.accounts.info(blockAuthor);
