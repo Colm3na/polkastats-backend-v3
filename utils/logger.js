@@ -17,7 +17,11 @@ class Logger {
 
   info(msg) {
     log(chalk.blue(`${msg}`))
-  }  
+  }
+  
+  start(msg) {
+    log(chalk.greenBright(`${msg}`));
+  }
 
   green(msg) {
     log(chalk.green(`${msg}`))
