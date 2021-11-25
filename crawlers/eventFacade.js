@@ -5,8 +5,8 @@ class EventFacade {
    * @param {string} type event.method 
    * @param {ApiPromise} api
    */
-  constructor(api, sequelize) {    
-    this.api = api
+  constructor(bridgeAPI, sequelize) {    
+    this.bridgeAPI = bridgeAPI
     this.sequelize = sequelize
   }  
   /**
@@ -17,7 +17,7 @@ class EventFacade {
   async save(type, data) {
     try {
       const event = new EventFactory({
-        api: this.api,
+        bridgeAPI: this.bridgeAPI,
         sequelize: this.sequelize,
         data,
         type

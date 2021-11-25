@@ -83,7 +83,7 @@ async function start({ api, sequelize, config }) {
         loggerOptions
       );
 
-      const eventFacade = new EventFacade(api, sequelize);
+      const eventFacade = new EventFacade(bridgeAPI, sequelize);
       // Loop through the Vec<EventRecord>
       await eventsData.events(events.blockEvents, async (record, index) => {
         const { event, phase } = record;
