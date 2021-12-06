@@ -85,12 +85,6 @@ async function saveCollection({ collection, sequelize }) {
   return result;
 }
 
-async function getCollectionCount(bridgeAPI) {
-  const createdCollectionCount = (
-    await bridgeAPI.api.query.nft.createdCollectionCount()
-  ).toNumber();
-  return createdCollectionCount;
-}
 
 async function start({ api, sequelize, config }) {
 
@@ -101,7 +95,7 @@ async function start({ api, sequelize, config }) {
   logger.info(loggerOptions, "Starting collection crawler...");  
 
   (async function run() {
-    const countCollection = await getCollectionCount(bridgeAPI);    
+    const countCollection = await bridgeAPI.getCollectionCount();
     const collections = await getCollections(bridgeAPI, countCollection);
     for (const item of collections) {      
       await saveCollection({

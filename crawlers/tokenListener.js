@@ -36,11 +36,7 @@ async function* addRange(bridgeAPI, sequelize) {
   const collections = await getCollections(sequelize);    
   
   for (const collection of collections) {
-    const tokenCount  = await bridgeAPI.api
-      .query
-      .nft
-      .itemListIndex(collection.collectionId);    
-
+    const tokenCount  = await bridgeAPI.getTokenCount(collection.collectionId);
     if (tokenCount !== 0) {
       const result = Object.assign({}, collection);
       result.range = genArrayRange(1, (tokenCount + 1));
