@@ -20,13 +20,19 @@ const DEFAULT_POLLING_TIME_MS = 60 * 60 * 1000;
 async function getCollections(bridgeAPI, countCollection) {
   const range = genArrayRange(1, (countCollection+1));
   const collections = [];
+  const dropCollections = [];
   for (const item of range) {
     const collection = await collectionData.get(item, bridgeAPI);
     if (Object.keys(collection).length !== 0) {      
         collections.push({ ...collection });      
+    } else {
+      dropCollections.push(item);
     }
   }
-  return collections;
+  return Object.freeze({
+    collections,
+    dropCollections
+  });
 }
 
 async function updateCollection({
@@ -85,6 +91,21 @@ async function saveCollection({ collection, sequelize }) {
   return result;
 }
 
+async function saveCollecitons(collections, sequelize) {
+  for (const collection of collections) {
+    await saveCollection({
+      collection,
+      sequelize
+    });
+  }
+}
+
+async function dropCollections(collection, sequelize) {
+  for (const item of collection) {
+    await collectionDB.del(item, sequelize);
+  }
+}
+
 
 async function start({ api, sequelize, config }) {
 
@@ -96,13 +117,12 @@ async function start({ api, sequelize, config }) {
 
   (async function run() {
     const countCollection = await bridgeAPI.getCollectionCount();
-    const collections = await getCollections(bridgeAPI, countCollection);
-    for (const item of collections) {      
-      await saveCollection({
-        collection: item,
-        sequelize,
-      });
-    }
+    const listCollection = await getCollections(bridgeAPI, countCollection);
+    
+    await saveCollecitons(listCollection.collections, sequelize);
+
+    await dropCollections(listCollection.dropCollections, sequelize);
+
     setTimeout(() => run(), pollingTime);
   })();
 }
