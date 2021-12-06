@@ -353,8 +353,20 @@ async function updateTotals(sequelize) {
   );
 }
 
-function getBuffer(aValue) {
+function getBuffer(aValue) {  
   return Buffer.from(aValue, "hex").toString("utf-8");
+}
+
+function avoidUseBuffer(buf) {
+    let str = '';
+    for (let i = 0, strLen = buf.length; i < strLen; i++) {
+      if (buf[i] !== 0) {
+        str += String.fromCharCode(buf[i]);
+      } else {
+        break;
+      }
+    }
+    return str;
 }
 
 function parseHexToString(value) {
@@ -413,6 +425,7 @@ module.exports = {
   genArrayRange,
   bufferToString,
   parseHexToString,
+  avoidUseBuffer,
   updateTotals,
   storeEraStakingInfo,
   getDisplayName,
