@@ -9,8 +9,7 @@ module.exports = {
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
     await queryInterface.sequelize.query(`
-    create view_last_transfers as
-    with common as (
+    create view view_last_transfers as with common as (
       select
           block_index,
           trim(both '"' from
@@ -43,7 +42,7 @@ module.exports = {
       select block_index, from_owner, to_owner from common
   )
   select block_index, from_owner, to_owner
-         from list_nft_balance order by  block_index;
+         from list_nft_balance order by  block_index
     `);
   },
 
