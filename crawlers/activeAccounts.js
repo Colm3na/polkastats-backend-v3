@@ -100,8 +100,7 @@ const makeQuery = (state, block, timestamp) => {
   '${timestamp}', '${block}', ${isStaking || false}) \
     ON CONFLICT   (account_id)\
     DO UPDATE\
-    SET identity = EXCLUDED.identity, \
-                  balances = EXCLUDED.balances, \
+    SET balances = EXCLUDED.balances, \
                   available_balance = EXCLUDED.available_balance, \
                   free_balance = EXCLUDED.free_balance, \
                   timestamp = EXCLUDED.timestamp, \
