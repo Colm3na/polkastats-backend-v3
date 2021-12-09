@@ -54,11 +54,6 @@ module.exports = {
         transaction
       })
 
-      await queryInterface.changeColumn("account", "nonce", {
-        type: Sequelize.DataTypes.TEXT
-      }, {
-        transaction
-      })
 
       await queryInterface.changeColumn("account", "nonce", {
         type: Sequelize.DataTypes.TEXT

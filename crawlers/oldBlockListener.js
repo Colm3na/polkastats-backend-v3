@@ -133,7 +133,7 @@ async function start({ api, sequelize, config }) {
   const blockNumber = await blockDB.firstBlock(sequelize);
   
   await getOldBlock({
-    firstBlock: 1,
+    firstBlock: 0,
     lastBlock: blockNumber,
     api,
     sequelize,

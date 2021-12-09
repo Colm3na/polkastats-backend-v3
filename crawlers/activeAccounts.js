@@ -90,16 +90,13 @@ const makeState = prepareState('account', buildAccount);
  * @param {Number} timestamp   Timestamp attached to the entry
  */
 const makeQuery = (state, block, timestamp) => {
-  const { id, identity, balances, isStaking } = state.account;
-  const availableBalance = balances.availableBalance.toString();
-  const freeBalance = balances.freeBalance.toString();
-  const lockedBalance = balances.lockedBalance.toString();
-  const identityDisplay = identity.display ? identity.display.toString() : ``;
-  const identityDisplayParent = identity.displayParent ? identity.displayParent.toString() : ``;
-  const JSONIdentity = identity.display ? JSON.stringify(identity) : ``;
+  const { id, balances, isStaking } = state.account;
+  const availableBalance = (balances.availableBalance.toString()/10000000000);
+  const freeBalance = (balances.freeBalance.toString()/10000000000);
+  const lockedBalance = balances.lockedBalance.toString();  
   const JSONbalances = JSON.stringify(balances);
   const nonce = balances.accountNonce.toString();
-  const query = `INSERT INTO account (account_id, identity, identity_display, identity_display_parent, balances, available_balance, free_balance, locked_balance, nonce, timestamp, block_height, is_staking) VALUES('${id}', '${JSONIdentity}', '${identityDisplay}', '${identityDisplayParent}', '${JSONbalances}', '${availableBalance}', '${freeBalance}', '${lockedBalance}', '${nonce}', 
+  const query = `INSERT INTO account (account_id, balances, available_balance, free_balance, locked_balance, nonce, timestamp, block_height, is_staking) VALUES('${id}', '${JSONbalances}', '${availableBalance}', '${freeBalance}', '${lockedBalance}', '${nonce}', 
   '${timestamp}', '${block}', ${isStaking || false}) \
     ON CONFLICT   (account_id)\
     DO UPDATE\
