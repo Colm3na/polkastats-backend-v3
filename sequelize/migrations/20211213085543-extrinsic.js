@@ -11,7 +11,7 @@ module.exports = {
      const transaction = await queryInterface.sequelize.transaction()
      try {
       await queryInterface.changeColumn('event', 'timestamp', {
-        type: Sequelize.DataTypes.BIGINT, allowNull: false,
+        type: Sequelize.DataTypes.BIGINT
       }, {
         transaction
       });
