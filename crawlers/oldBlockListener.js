@@ -71,8 +71,9 @@ async function getBlock({
       loggerOptions
     );
 
-    await eventsData.events(events.blockEvents, async (record, index) => {
+    await eventsData.events(events.blockEvents, async (record, index) => {      
       const { event, phase } = record;
+      console.log('event->', event);
       const res = await eventsDB.get({
         blockNumber,
         index,
@@ -85,8 +86,8 @@ async function getBlock({
         event.method !== 'ExtrinsicSuccess'
       ) {
         await sequelize.query(
-          `INSERT INTO event (block_number,event_index, section, method, phase, data)
-          VALUES (:block_number,:event_index, :section, :method, :phase, :data);`,
+          `INSERT INTO event (block_number,event_index, section, method, phase, data, timestamp)
+          VALUES (:block_number,:event_index, :section, :method, :phase, :data, :timestamp)`,
           {
             type: QueryTypes.INSERT,
             logging: false,
@@ -97,6 +98,7 @@ async function getBlock({
               method: event.method,
               phase: phase.toString(),
               data: JSON.stringify(event.data),
+              timestamp: Math.floor(timestampMs / 1000),
             },
           }
         );      

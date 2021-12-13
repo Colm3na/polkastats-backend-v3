@@ -62,8 +62,7 @@ module.exports = {
       })
 
       await queryInterface.addColumn("event", "timestamp", {
-        type: Sequelize.DataTypes.DATE,
-        defaultValue: Sequelize.NOW
+        type: Sequelize.DataTypes.BIGINT, allowNull: false,
       }, {
         transaction
       })

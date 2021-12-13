@@ -98,12 +98,18 @@ async function start({ api, sequelize, config }) {
           event.section !== 'system' &&
           event.method !== 'ExtrinsicSuccess'
         ) {
+          if (event.section === 'balances' && event.method === 'Transfer') {
+            console.log(event.data);
+            console.log(event.data[1]);
+            console.log(event.data[2]);
+            console.log(event.registry.chainTokens);
+          }
           await sequelize.query(
-            `INSERT INTO event (block_number,event_index, section, method, phase, data)
-            VALUES (:block_number,:event_index, :section, :method, :phase, :data);`,
+            `INSERT INTO event (block_number,event_index, section, method, phase, data, timestamp)
+            VALUES (:block_number,:event_index, :section, :method, :phase, :data, :timestamp)`,
             {
               type: QueryTypes.INSERT,
-              logging: false,
+              logging: true,
               replacements: {
                 block_number: blockNumber,
                 event_index: index,
@@ -111,6 +117,7 @@ async function start({ api, sequelize, config }) {
                 method: event.method,
                 phase: phase.toString(),
                 data: JSON.stringify(event.data),
+                timestamp: Math.floor(timestampMs / 1000),
               },
             }
           ); 
