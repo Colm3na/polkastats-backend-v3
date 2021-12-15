@@ -19,17 +19,18 @@ module.exports = {
        await queryInterface.addColumn('extrinsic', 'timestamp', {
         type: Sequelize.DataTypes.BIGINT
        }, { transaction });
-
-       await queryInterface.removeColumn('event', 'amount', 
-       {
-         transaction
-       });
-      
+             
        await queryInterface.removeColumn('extrinsic', 'doc', { transaction });
 
        await queryInterface.addColumn('extrinsic', 'amount', {
         type: Sequelize.DataTypes.BIGINT,
         defaultValue: 0
+       }, { transaction });
+
+       await queryInterface.addColumn('event', 'amount', 
+       {
+        type: Sequelize.DataTypes.BIGINT,
+        defaultValue: 0,        
        }, { transaction });
 
        await queryInterface.addColumn('extrinsic', 'fee', {
