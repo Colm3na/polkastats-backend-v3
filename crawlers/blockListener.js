@@ -93,23 +93,22 @@ async function start({ api, sequelize, config }) {
           sequelize,
         });
 
+        let amount = 0;
+
         if (
           !res &&
           event.section !== 'system' &&
           event.method !== 'ExtrinsicSuccess'
         ) {
-          if (event.section === 'balances' && event.method === 'Transfer') {            
-            /*console.log(event.data[0].toString());
-            console.log(event.data[1].toString());
-            console.log(event.data[2].toString());
-            console.log(event.registry.chainTokens);*/
+          if (event.section === 'balances' && event.method === 'Transfer') {
+            amount = Number(event.data[2].toString().replace('000000000000000000',''));
           }
           await sequelize.query(
-            `INSERT INTO event (block_number,event_index, section, method, phase, data, timestamp)
-            VALUES (:block_number,:event_index, :section, :method, :phase, :data, :timestamp)`,
+            `INSERT INTO event (block_number,event_index, section, method, phase, data, timestamp, amount)
+            VALUES (:block_number,:event_index, :section, :method, :phase, :data, :timestamp, :amount)`,
             {
               type: QueryTypes.INSERT,
-              logging: true,
+              logging: false,
               replacements: {
                 block_number: blockNumber,
                 event_index: index,
@@ -118,14 +117,19 @@ async function start({ api, sequelize, config }) {
                 phase: phase.toString(),
                 data: JSON.stringify(event.data),
                 timestamp: Math.floor(timestampMs / 1000),
+                amount
               },
             }
-          ); 
+          );
 
           logger.info(
             `Added event #${blockNumber}-${index} ${event.section} ➡ ${event.method}`
           );
-          eventFacade.save(event.method, event.data.toJSON());
+
+          if (event.section !== 'balances') {
+            eventFacade.save(event.method, event.data.toJSON());
+          }
+
         }
       });
     }

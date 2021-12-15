@@ -91,8 +91,8 @@ const makeState = prepareState('account', buildAccount);
  */
 const makeQuery = (state, block, timestamp) => {
   const { id, balances, isStaking } = state.account;
-  const availableBalance = (balances.availableBalance.toString()/10000000000);
-  const freeBalance = (balances.freeBalance.toString()/10000000000);
+  const availableBalance = (balances.availableBalance.toString()/1000000000000);
+  const freeBalance = (balances.freeBalance.toString()/1000000000000);
   const lockedBalance = balances.lockedBalance.toString();  
   const JSONbalances = JSON.stringify(balances);
   const nonce = balances.accountNonce.toString();
