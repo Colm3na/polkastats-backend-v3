@@ -60,7 +60,7 @@ async function storeExtrinsics(
     
     if (['setValidationData'].includes(item.method)) {
       item.args = '[]';
-    }          
+    }    
       await extrinsicDB.add({
         extrinsic: item,
         sequelize
