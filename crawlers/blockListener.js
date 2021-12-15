@@ -98,11 +98,11 @@ async function start({ api, sequelize, config }) {
           event.section !== 'system' &&
           event.method !== 'ExtrinsicSuccess'
         ) {
-          if (event.section === 'balances' && event.method === 'Transfer') {
-            console.log(event.data);
-            console.log(event.data[1]);
-            console.log(event.data[2]);
-            console.log(event.registry.chainTokens);
+          if (event.section === 'balances' && event.method === 'Transfer') {            
+            /*console.log(event.data[0].toString());
+            console.log(event.data[1].toString());
+            console.log(event.data[2].toString());
+            console.log(event.registry.chainTokens);*/
           }
           await sequelize.query(
             `INSERT INTO event (block_number,event_index, section, method, phase, data, timestamp)

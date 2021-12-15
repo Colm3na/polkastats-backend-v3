@@ -72,8 +72,7 @@ async function getBlock({
     );
 
     await eventsData.events(events.blockEvents, async (record, index) => {      
-      const { event, phase } = record;
-      console.log('event->', event);
+      const { event, phase } = record;      
       const res = await eventsDB.get({
         blockNumber,
         index,
@@ -128,12 +127,19 @@ async function getOldBlock({
    }
 }
 
+async function getLastBlock(api) {
+  const bridgeAPI = new BridgeAPI(api).bridgeAPI;
+  const result = await blockData.last(bridgeAPI);  
+  return result;
+}
+
 async function start({ api, sequelize, config }) {
   const logger = new Logger();
 
   logger.start(`Startinf block listner for old blocks...`);
-  const blockNumber = await blockDB.firstBlock(sequelize);
   
+  const blockNumber = await getLastBlock(api);
+    
   await getOldBlock({
     firstBlock: 0,
     lastBlock: blockNumber,
