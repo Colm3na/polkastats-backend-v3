@@ -79,14 +79,21 @@ async function getBlock({
         sequelize,
       });    
 
+      let amount = 0;
+
       if (
         !res &&
         event.section !== 'system' &&
         event.method !== 'ExtrinsicSuccess'
       ) {
+        
+        if (event.section === 'balances' && event.method === 'Transfer') {
+          amount = Number(event.data[2].toString().replace('000000000000000000',''));
+        }
+
         await sequelize.query(
-          `INSERT INTO event (block_number,event_index, section, method, phase, data, timestamp)
-          VALUES (:block_number,:event_index, :section, :method, :phase, :data, :timestamp)`,
+          `INSERT INTO event (block_number,event_index, section, method, phase, data, timestamp, amount)
+          VALUES (:block_number,:event_index, :section, :method, :phase, :data, :timestamp, :amount)`,
           {
             type: QueryTypes.INSERT,
             logging: false,
@@ -98,6 +105,7 @@ async function getBlock({
               phase: phase.toString(),
               data: JSON.stringify(event.data),
               timestamp: Math.floor(timestampMs / 1000),
+              amount
             },
           }
         );      
