@@ -68,6 +68,7 @@ async function getBlock({
       blockNumber,
       blockInfo.extrinsics,
       events.blockEvents,
+      timestampMs,
       loggerOptions
     );
 

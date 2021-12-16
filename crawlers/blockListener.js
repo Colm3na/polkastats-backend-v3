@@ -80,7 +80,8 @@ async function start({ api, sequelize, config }) {
         blockNumber,
         blockInfo.extrinsics,
         events.blockEvents,
-        loggerOptions
+        timestampMs,
+        loggerOptions,
       );
 
       const eventFacade = new EventFacade(bridgeAPI, sequelize);

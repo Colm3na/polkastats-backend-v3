@@ -43,8 +43,9 @@ async function storeExtrinsics(
   sequelize,
   blockNumber,
   extrinsics,
-  blockEvents,
-  loggerOptions
+  blockEvents,  
+  timestampMs,
+  loggerOptions,
 ) {
   // Start execution
   const startTime = new Date().getTime();
@@ -54,8 +55,8 @@ async function storeExtrinsics(
       blockNumber, 
       extrinsic, 
       index, 
-      success: 
-      getExtrinsicSuccess(index, blockEvents)
+      success: getExtrinsicSuccess(index, blockEvents),
+      timestamp: timestampMs
     });
     
     if (['setValidationData'].includes(item.method)) {
