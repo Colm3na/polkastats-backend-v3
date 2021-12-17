@@ -10,12 +10,6 @@ module.exports = {
      */
      const transaction = await queryInterface.sequelize.transaction()
      try {
-       await queryInterface.removeColumn('account', 'identity', { transaction });
-
-       await queryInterface.removeColumn('account', 'identity_display', { transaction });
-       
-       await queryInterface.removeColumn('account', 'identity_display_parent', { transaction });
-       
        await queryInterface.addColumn('extrinsic', 'timestamp', {
         type: Sequelize.DataTypes.BIGINT
        }, { transaction });
