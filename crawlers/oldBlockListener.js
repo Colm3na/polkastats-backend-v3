@@ -89,7 +89,7 @@ async function getBlock({
       ) {
         
         if (event.section === 'balances' && event.method === 'Transfer') {
-          amount = Number(event.data[2].toString().replace('000000000000000000',''));
+          amount = event.data[2].toString().replace('000000000000000000','');
         }
 
         await sequelize.query(

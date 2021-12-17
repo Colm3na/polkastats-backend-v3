@@ -102,7 +102,7 @@ async function start({ api, sequelize, config }) {
           event.method !== 'ExtrinsicSuccess'
         ) {
           if (event.section === 'balances' && event.method === 'Transfer') {
-            amount = Number(event.data[2].toString().replace('000000000000000000',''));
+            amount = event.data[2].toString().replace('000000000000000000','');
           }
           await sequelize.query(
             `INSERT INTO event (block_number,event_index, section, method, phase, data, timestamp, amount)
