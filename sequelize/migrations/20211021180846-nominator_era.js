@@ -28,12 +28,6 @@ module.exports = {
         allowNull: false,
         primaryKey: true,
       },
-      identity: { type: Sequelize.DataTypes.TEXT, allowNull: false },
-      identity_display: { type: Sequelize.DataTypes.TEXT, allowNull: false },
-      identity_display_parent: {
-        type: Sequelize.DataTypes.TEXT,
-        allowNull: false,
-      },
       balances: { type: Sequelize.DataTypes.TEXT, allowNull: false },
       available_balance: { type: Sequelize.DataTypes.BIGINT, allowNull: false },
       free_balance: { type: Sequelize.DataTypes.TEXT, allowNull: false },
