@@ -16,18 +16,20 @@ module.exports = {
 
       await queryInterface.sequelize.query(`
       create view view_extrinsic as 
-        select 
-        concat(block_number,'-', extrinsic_index) as block_index,
-        block_number,
-        signer as from_owner,
-        (cast(args as json)::json->0)::json->>'id' as to_owner,
-        hash,
-        success,
-        timestamp,
-        fee,
-        amount from extrinsic
-      where 
-      method in ('transfer', 'transferAll', 'transferKeepAlive', 'vestedTransfer')`, {
+      select
+      concat(block_number,'-', extrinsic_index) as block_index,
+      block_number,
+      signer as from_owner,
+      coalesce((cast(args as json)::json->0)::json->>'id', (cast(args as json)::json->0)::json->>'substrate') as to_owner,
+      hash,
+      success,
+      timestamp,
+      fee,
+      method,
+      section,
+      amount from extrinsic
+    where
+    method in ('transfer', 'transferAll', 'transferKeepAlive')`, {
         transaction
       });
       await transaction.commit();
