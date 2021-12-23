@@ -6,7 +6,7 @@ const {
 } = require('../utils/utils.js');
 
 const { EventFacade } = require('./eventFacade.js');
-const { QueryTypes } = require("sequelize");
+const { QueryTypes } = require('sequelize');
 const eventsData = require('../lib/eventsData.js');
 const eventsDB = require('../lib/eventsDB.js');
 const blockDB = require('../lib/blockDB.js');
@@ -40,12 +40,20 @@ async function start({ api, sequelize, config }) {
 
     if (res.length > 0) {
       // Chain reorganization detected! We need to update block_author, block_hash and state_root
-      logger.info(
-        loggerOptions,
-        `Detected chain reorganization at block #${blockNumber}, updating author, author name, hash and state root`
-      );
+      const block = res[0];
+      const check = blockData.check({
+        sourceBlock: block,
+        blockNumber,
+        blockInfo
+      });
 
-      await blockDB.modify({ blockNumber, blockInfo, sequelize });
+      if (!check) {
+        logger.info(
+          loggerOptions,
+          `Detected chain reorganization at block #${blockNumber}, updating author, author name, hash and state root`
+        );
+        await blockDB.modify({ blockNumber, blockInfo, sequelize });
+      }
     } else {
       // Get block events
       const events = await eventsData.get({
@@ -81,56 +89,36 @@ async function start({ api, sequelize, config }) {
         blockInfo.extrinsics,
         events.blockEvents,
         timestampMs,
-        loggerOptions,
+        loggerOptions
       );
 
       const eventFacade = new EventFacade(bridgeAPI, sequelize);
       // Loop through the Vec<EventRecord>
       await eventsData.events(events.blockEvents, async (record, index) => {
-        const { event, phase } = record;
         const res = await eventsDB.get({
           blockNumber,
           index,
           sequelize,
         });
 
-        let amount = 0;
-
-        if (
-          !res &&
-          event.section !== 'system' &&
-          event.method !== 'ExtrinsicSuccess'
-        ) {
-          if (event.section === 'balances' && event.method === 'Transfer') {
-            amount = event.data[2].toString().replace('000000000000000000','');
-          }
-          await sequelize.query(
-            `INSERT INTO event (block_number,event_index, section, method, phase, data, timestamp, amount)
-            VALUES (:block_number,:event_index, :section, :method, :phase, :data, :timestamp, :amount)`,
-            {
-              type: QueryTypes.INSERT,
-              logging: false,
-              replacements: {
-                block_number: blockNumber,
-                event_index: index,
-                section: event.section,
-                method: event.method,
-                phase: phase.toString(),
-                data: JSON.stringify(event.data),
-                timestamp: Math.floor(timestampMs / 1000),
-                amount
-              },
-            }
-          );
+        const preEvent = Object.assign(
+          {
+            block_number: blockNumber,
+            event_index: index,
+            timestamp: Math.floor(timestampMs / 1000),
+          },
+          eventsData.parseRecord(record)
+        );
+        if (!res) {
+          await eventsDB.add({ event: preEvent, sequelize });
 
           logger.info(
-            `Added event #${blockNumber}-${index} ${event.section} ➡ ${event.method}`
+            `Added event #${blockNumber}-${index} ${preEvent.section} ➡ ${preEvent.method}`
           );
 
-          if (event.section !== 'balances') {
-            eventFacade.save(event.method, event.data.toJSON());
+          if (preEvent.section !== 'balances') {
+            eventFacade.save(preEvent.method, preEvent._event.data.toJSON());
           }
-
         }
       });
     }

@@ -7,10 +7,10 @@ const {
   shortHash,
   storeExtrinsics,
   updateTotals,
-  genArrayRange
+  genArrayRange,
 } = require('../utils/utils.js');
 const eventsDB = require('../lib/eventsDB.js');
-const { QueryTypes } = require("sequelize");
+const { QueryTypes } = require('sequelize');
 
 const loggerOptions = {
   crawler: `oldBlockListenr`,
@@ -35,9 +35,23 @@ async function getBlock({
     sequelize,
   });
 
+
   if (getBlockDB.length > 0) {
-    logger.default(`Detected chain reorganizaition at block #${blockNumber}, updating authot, author name, hash ans state root`);
-    await blockDB.modify({ blockNumber, blockInfo, sequelize });
+
+    const block = getBlockDB[0];
+    const check = blockData.check({
+      sourceBlock: block,
+      blockNumber,
+      blockInfo
+    });
+
+    if (!check) {
+      logger.default(
+        `Detected chain reorganizaition at block #${blockNumber}, updating authot, author name, hash ans state root`
+      );
+      await blockDB.modify({ blockNumber, blockInfo, sequelize });
+    }
+
   } else {
     logger.info(
       `Adding block #${blockNumber} (${shortHash(
@@ -72,73 +86,58 @@ async function getBlock({
       loggerOptions
     );
 
-    await eventsData.events(events.blockEvents, async (record, index) => {      
-      const { event, phase } = record;      
+    await eventsData.events(events.blockEvents, async (record, index) => {
       const res = await eventsDB.get({
         blockNumber,
         index,
         sequelize,
-      });    
+      });
 
-      let amount = 0;
+      const preEvent = Object.assign(
+        {
+          block_number: blockNumber,
+          event_index: index,
+          timestamp: Math.floor(timestampMs / 1000),
+        },
+        eventsData.parseRecord(record)
+      );
 
-      if (
-        !res &&
-        event.section !== 'system' &&
-        event.method !== 'ExtrinsicSuccess'
-      ) {
-        
-        if (event.section === 'balances' && event.method === 'Transfer') {
-          amount = event.data[2].toString().replace('000000000000000000','');
-        }
+      if (!res) {
+        await eventsDB.add({ event: preEvent, sequelize });
 
-        await sequelize.query(
-          `INSERT INTO event (block_number,event_index, section, method, phase, data, timestamp, amount)
-          VALUES (:block_number,:event_index, :section, :method, :phase, :data, :timestamp, :amount)`,
-          {
-            type: QueryTypes.INSERT,
-            logging: false,
-            replacements: {
-              block_number: blockNumber,
-              event_index: index,
-              section: event.section,
-              method: event.method,
-              phase: phase.toString(),
-              data: JSON.stringify(event.data),
-              timestamp: Math.floor(timestampMs / 1000),
-              amount
-            },
-          }
-        );      
         logger.info(
-          `Added event #${blockNumber}-${index} ${event.section} ➡ ${event.method}`
+          `Added event #${blockNumber}-${index} ${preEvent.section} ➡ ${preEvent.method}`
         );
       }
     });
+    updateTotals(sequelize, loggerOptions);
   }
-  updateTotals(sequelize, loggerOptions);
 }
 
 async function getOldBlock({
-  firstBlock, lastBlock, api, sequelize, logger, loggerOptions
+  firstBlock,
+  lastBlock,
+  api,
+  sequelize,
+  logger,
+  loggerOptions,
 }) {
-
-  const range = genArrayRange(firstBlock, lastBlock);  
+  const range = genArrayRange(firstBlock, lastBlock);
 
   for (const item of range) {
     await getBlock({
-       api,
-       sequelize,
-       blockNumber: item,
-       loggerOptions,
-       logger,
-     });
-   }
+      api,
+      sequelize,
+      blockNumber: item,
+      loggerOptions,
+      logger,
+    });
+  }
 }
 
 async function getLastBlock(api) {
   const bridgeAPI = new BridgeAPI(api).bridgeAPI;
-  const result = await blockData.last(bridgeAPI);  
+  const result = await blockData.last(bridgeAPI);
   return result;
 }
 
@@ -146,17 +145,17 @@ async function start({ api, sequelize, config }) {
   const logger = new Logger();
 
   logger.start(`Startinf block listner for old blocks...`);
-  
+
   const blockNumber = await getLastBlock(api);
-    
+
   await getOldBlock({
     firstBlock: 0,
     lastBlock: blockNumber,
     api,
     sequelize,
     logger,
-    loggerOptions
-  });  
+    loggerOptions,
+  });
 }
 
 module.exports = { start };
