@@ -14,6 +14,20 @@ module.exports = {
         transaction
       });
 
+      await queryInterface.changeColumn('event', 'amount', 
+      {
+       type: Sequelize.DataTypes.TEXT,       
+      }, { transaction });
+
+      await queryInterface.changeColumn('extrinsic', 'fee', {
+        type: Sequelize.DataTypes.TEXT      
+      }, { transaction });
+
+      await queryInterface.changeColumn('extrinsic', 'amount', {
+        type: Sequelize.DataTypes.TEXT        
+      }, { transaction });
+
+      
       await queryInterface.sequelize.query(`
       create view view_extrinsic as 
       select
