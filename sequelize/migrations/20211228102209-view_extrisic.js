@@ -13,20 +13,6 @@ module.exports = {
       await queryInterface.sequelize.query('drop view view_extrinsic', {
         transaction
       });
-
-      await queryInterface.changeColumn('event', 'amount', 
-      {
-       type: Sequelize.DataTypes.TEXT,       
-      }, { transaction });
-
-      await queryInterface.changeColumn('extrinsic', 'fee', {
-        type: Sequelize.DataTypes.TEXT      
-      }, { transaction });
-
-      await queryInterface.changeColumn('extrinsic', 'amount', {
-        type: Sequelize.DataTypes.TEXT        
-      }, { transaction });
-
       
       await queryInterface.sequelize.query(`
       create view view_extrinsic as 
@@ -51,7 +37,6 @@ module.exports = {
       await transaction.rollback();
       throw err;
      }
-    //
   },
 
   down: async (queryInterface, Sequelize) => {
@@ -61,5 +46,5 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-  },
+  }
 };
