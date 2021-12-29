@@ -1,8 +1,9 @@
 // @ts-check
-const { BigNumber } = require('bignumber.js');
-const { shortHash, storeExtrinsics, storeLogs, getDisplayName, updateTotals } = require('../utils/utils.js');
+const { shortHash, storeLogs, getDisplayName } = require('../utils/utils.js');
 const pino = require('pino');
 const logger = pino();
+
+const extrinsic = require('../lib/extrinsics.js');
 
 const loggerOptions = {
   crawler: `blockHarvester`
@@ -47,7 +48,7 @@ module.exports = {
         await module.exports.harvestBlocks(api, pool, parseInt(res.rows[i].gap_start), parseInt(res.rows[i].gap_end));
       }
     }
-  
+
     // Log execution time
     const endTime = new Date().getTime();
     logger.info(loggerOptions, `Added ${addedBlocks} blocks in ${((endTime - startTime) / 1000).toFixed(0)}s`);
@@ -99,11 +100,11 @@ module.exports = {
 
         // Store block logs
         await storeLogs(pool, endBlock, blockHeader.digest.logs, loggerOptions);
-    
+
         // Get block number finalized
         // TODO: Get finalized from finalitytracker/final_hint extrinsic
         const blockNumberFinalized = 0;
-    
+
         // Get election status
         const isElection = eraElectionStatus.toString() === `Close` ? false : true
 
@@ -113,7 +114,7 @@ module.exports = {
           blockEvents = await api.query.system.events.at(blockHash);
           blockEvents.forEach( async (record, index) => {
             const { event, phase } = record;
-            const sql = 
+            const sql =
               `INSERT INTO event (
                 block_number,
                 event_index,
@@ -129,7 +130,7 @@ module.exports = {
                 '${phase.toString()}',
                 '${JSON.stringify(event.data)}'
               )
-              ON CONFLICT ON CONSTRAINT event_pkey 
+              ON CONFLICT ON CONSTRAINT event_pkey
               DO NOTHING
               ;`;
             try {
@@ -152,13 +153,18 @@ module.exports = {
             logger.error(loggerOptions, `Error inserting error for block #${endBlock} in harvester_error table :-/ : ${error}`);
           }
         }
-        
+
         // Get block extrinsics, this may fail if api is not able to understand metadata!!!
         let extrinsics = [];
         try {
           const { block } = await api.rpc.chain.getBlock(blockHash);
           extrinsics = block.extrinsics;
-          await storeExtrinsics(pool, endBlock, extrinsics, blockEvents, loggerOptions);
+          await extrinsic.save(
+            pool, 
+            endBlock,
+            extrinsics,
+            blockEvents, 
+            loggerOptions);
         } catch (error) {
           logger.error(loggerOptions, `Error getting extrinsics for block ${endBlock} (${blockHash}): ${error}`);
           try {
@@ -172,7 +178,7 @@ module.exports = {
             logger.error(loggerOptions, `Error inserting error for block #${endBlock} in harvester_error table :-/ : ${error}`);
           }
         }
-    
+
         const currentIndex = new BigNumber(ChainCurrentIndex);
         const currentSlot = new BigNumber(ChainCurrentSlot);
         const epochIndex = new BigNumber(ChainEpochIndex);
@@ -182,10 +188,10 @@ module.exports = {
         const eraLength = epochDuration.multipliedBy(sessionsPerEra);
         const epochStartSlot = epochIndex.multipliedBy(epochDuration).plus(genesisSlot);
         const sessionProgress = currentSlot.minus(epochStartSlot);
-    
+
         // We don't calculate eraProgress for harvested blocks
         const eraProgress = 0;
-              
+
         // Total events
         const totalEvents = blockEvents.length;
 
@@ -194,7 +200,7 @@ module.exports = {
           extrinsics
             .filter(({ method }) => (method.section.toString() === `balances` && method.method.toString() === `transfer`))
             .length;
-        
+
         // Find number of new accounts in this block
         const newAccounts =
           extrinsics
@@ -255,7 +261,7 @@ module.exports = {
             '${totalIssuance}',
             '${timestamp}'
           )
-          ON CONFLICT ON CONSTRAINT block_pkey 
+          ON CONFLICT ON CONSTRAINT block_pkey
           DO NOTHING
           ;`;
         try {
