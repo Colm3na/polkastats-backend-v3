@@ -5,12 +5,11 @@ const blockData = require('../lib/blockData.js');
 const eventsData = require('../lib/eventsData.js');
 const {
   shortHash,
-  storeExtrinsics,
   updateTotals,
   genArrayRange,
 } = require('../utils/utils.js');
 const eventsDB = require('../lib/eventsDB.js');
-const { QueryTypes } = require('sequelize');
+const extrinsic  = require('../lib/extrinsics.js');
 
 const loggerOptions = {
   crawler: `oldBlockListenr`,
@@ -77,15 +76,14 @@ async function getBlock({
       sequelize,
     });
 
-    await storeExtrinsics(
-      sequelize,
+    await extrinsic.save(sequelize,
       blockNumber,
       blockInfo.extrinsics,
       events.blockEvents,
       timestampMs,
       loggerOptions
     );
-
+    
     await eventsData.events(events.blockEvents, async (record, index) => {
       const res = await eventsDB.get({
         blockNumber,

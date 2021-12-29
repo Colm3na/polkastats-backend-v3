@@ -1,18 +1,19 @@
 const pino = require('pino');
 const {
   shortHash,
-  storeExtrinsics,
   updateTotals,
 } = require('../utils/utils.js');
 
 const { EventFacade } = require('./eventFacade.js');
-const { QueryTypes } = require('sequelize');
+const { BridgeAPI } = require('../lib/providerAPI/bridgeApi.js');
+
+const extrinsic = require('../lib/extrinsics.js');
 const eventsData = require('../lib/eventsData.js');
 const eventsDB = require('../lib/eventsDB.js');
 const blockDB = require('../lib/blockDB.js');
 const blockData = require('../lib/blockData.js');
 
-const { BridgeAPI } = require('../lib/providerAPI/bridgeApi.js');
+
 
 const logger = pino();
 const loggerOptions = {
@@ -83,7 +84,7 @@ async function start({ api, sequelize, config }) {
       });
 
       // Store block extrinsics
-      await storeExtrinsics(
+      await extrinsic.save(      
         sequelize,
         blockNumber,
         blockInfo.extrinsics,

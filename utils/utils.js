@@ -1,10 +1,9 @@
 const pino = require("pino");
-const { BigNumber } = require("bignumber.js");
+const BigNumber = require("bignumber.js");
 const { QueryTypes } = require("sequelize");
-const extrinsicDB = require('../lib/extrinsicDB.js');
-const extrinsicData = require('../lib/extrinsicData.js');
 
 const logger = pino();
+
 
 function formatNumber(num) {
   return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
@@ -39,45 +38,45 @@ function getExtrinsicSuccess(index, blockEvents) {
   return extrinsicSuccess;
 }
 
-async function storeExtrinsics(
-  sequelize,
-  blockNumber,
-  extrinsics,
-  blockEvents,  
-  timestampMs,
-  loggerOptions,
-) {
-  // Start execution
-  const startTime = new Date().getTime();
-  extrinsics.forEach(async (extrinsic, index) => {
+// async function storeExtrinsics(
+//   sequelize,
+//   blockNumber,
+//   extrinsics,
+//   blockEvents,  
+//   timestampMs,
+//   loggerOptions,
+// ) {
+//   // Start execution
+//   const startTime = new Date().getTime();
+//   extrinsics.forEach(async (extrinsic, index) => {
     
-    const item = extrinsicData.get({
-      blockNumber, 
-      extrinsic, 
-      index, 
-      success: getExtrinsicSuccess(index, blockEvents),
-      timestamp: timestampMs
-    });
+//     const item = extrinsicData.get({
+//       blockNumber, 
+//       extrinsic, 
+//       index, 
+//       success: getExtrinsicSuccess(index, blockEvents),
+//       timestamp: timestampMs
+//     });
     
-    if (['setValidationData'].includes(item.method)) {
-      item.args = '[]';
-    }    
-      await extrinsicDB.add({
-        extrinsic: item,
-        sequelize
-      });        
-  });
+//     if (['setValidationData'].includes(item.method)) {
+//       item.args = '[]';
+//     }    
+//       await extrinsicDB.add({
+//         extrinsic: item,
+//         sequelize
+//       });        
+//   });
 
-  // Log execution time
-  const endTime = new Date().getTime();
-  logger.info(
-    loggerOptions,
-    `Added ${extrinsics.length} extrinsics in ${(
-      (endTime - startTime) /
-      1000
-    ).toFixed(3)}s`
-  );  
-}
+//   // Log execution time
+//   const endTime = new Date().getTime();
+//   logger.info(
+//     loggerOptions,
+//     `Added ${extrinsics.length} extrinsics in ${(
+//       (endTime - startTime) /
+//       1000
+//     ).toFixed(3)}s`
+//   );  
+// }
 
 async function storeLogs(sequelize, blockNumber, logs, loggerOptions) {
   const startTime = new Date().getTime();
@@ -419,6 +418,17 @@ function genArrayRange(min, max) {
   }
 }
 
+function getAmount(strNum) {
+  
+  BigNumber.config({
+    EXPONENTIAL_AT: [-30, 30]
+  });
+
+  let result = BigNumber(strNum);
+  let dividedBy = result.dividedBy('1000000000000000000').toString();
+  return dividedBy;
+}
+
 module.exports = {
   formatNumber,
   shortHash,
@@ -431,7 +441,7 @@ module.exports = {
   storeEraStakingInfo,
   getDisplayName,
   storeLogs,
-  storeExtrinsics,
   getExtrinsicSuccess,
-  bufferToJSON
+  bufferToJSON,
+  getAmount,
 };
