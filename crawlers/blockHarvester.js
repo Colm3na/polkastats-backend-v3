@@ -1,3 +1,4 @@
+const BigNumber = require('bignumber.js');
 // @ts-check
 const { shortHash, storeLogs, getDisplayName } = require('../utils/utils.js');
 const pino = require('pino');

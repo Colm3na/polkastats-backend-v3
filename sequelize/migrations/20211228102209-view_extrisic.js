@@ -20,7 +20,11 @@ module.exports = {
       concat(block_number,'-', extrinsic_index) as block_index,
       block_number,
       signer as from_owner,
-      coalesce((cast(args as json)::json->0)::json->>'id', (cast(args as json)::json->0)::json->>'substrate') as to_owner,
+      coalesce(
+        (cast(args as json)::json->0)::json->>'id', 
+        (cast(args as json)::json->0)::json->>'substrate',
+        (cast(args as json)::json->0)::json->>'ethereum'        
+      ) as to_owner,
       hash,
       success,
       timestamp,
