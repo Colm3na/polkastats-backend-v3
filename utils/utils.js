@@ -429,6 +429,7 @@ function getAmount(strNum) {
   return dividedBy;
 }
 
+
 module.exports = {
   formatNumber,
   shortHash,

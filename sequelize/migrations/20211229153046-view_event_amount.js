@@ -23,7 +23,7 @@ module.exports = {
                   block_number,
                   amount
             from event
-            where section = 'balances'
+            where phase != 'Initialization' and section = 'balances'
               and method in ('Transfer', 'Deposit')
             order by  block_number
         ), list_event_fee as (

@@ -10,6 +10,7 @@ const {
 } = require('../utils/utils.js');
 const eventsDB = require('../lib/eventsDB.js');
 const extrinsic  = require('../lib/extrinsics.js');
+const { firstBlock } = require('./../config/config');
 
 const loggerOptions = {
   crawler: `oldBlockListenr`,
@@ -38,11 +39,12 @@ async function getBlock({
   if (getBlockDB.length > 0) {
 
     const block = getBlockDB[0];
+    
     const check = blockData.check({
       sourceBlock: block,
       blockNumber,
       blockInfo
-    });
+    });    
 
     if (!check) {
       logger.default(
@@ -147,7 +149,7 @@ async function start({ api, sequelize, config }) {
   const blockNumber = await getLastBlock(api);
 
   await getOldBlock({
-    firstBlock: 0,
+    firstBlock,
     lastBlock: blockNumber,
     api,
     sequelize,
