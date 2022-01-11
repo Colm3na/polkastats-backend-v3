@@ -15,6 +15,8 @@ module.exports.wsProviderUrl = process.env.WS_PROVIDER_URL || 'wss://testnet2.un
 module.exports.typeProvider = process.env.TYPE_PROVIDER || 'testnet2';
 module.exports.dbConnect = getConnect();
 
+module.exports.firstBlock = process.env.FIRST_BLOCK || 0;
+
 module.exports.crawlers = [
   {
     enabled: !process.env.CRAWLER_SYSTEM_DISABLE,    
