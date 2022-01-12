@@ -146,16 +146,35 @@ async function start({ api, sequelize, config }) {
 
   logger.start(`Startinf block listner for old blocks...`);
 
-  const blockNumber = await getLastBlock(api);
+  const blocksGaps = await blockDB.getBlocksGaps({ sequelize });
 
-  await getOldBlock({
-    firstBlock,
-    lastBlock: blockNumber,
-    api,
-    sequelize,
-    logger,
-    loggerOptions,
-  });
+  if (blocksGaps.length === 0) {
+    const blockNumber = await getLastBlock(api);
+    await getOldBlock({
+      firstBlock,
+      lastBlock: blockNumber,
+      api,
+      sequelize,
+      logger,
+      loggerOptions,
+    });
+  }
+
+  for (const item of blocksGaps) {
+    const gapStart = Number(item.gapStart);
+    const gapEnd = Number(item.gapEnd);
+
+    console.log(gapStart, gapEnd);
+    
+    await getOldBlock({
+      firstBlock: gapStart,
+      lastBlock: gapEnd,
+      api,
+      sequelize,
+      logger,
+      loggerOptions,
+    });
+  }
 }
 
 module.exports = { start };
