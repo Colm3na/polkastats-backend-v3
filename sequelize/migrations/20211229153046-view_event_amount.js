@@ -99,10 +99,7 @@ module.exports = {
      *
      * Example:
      * await queryInterface.dropTable('users');
-     */
-     const transaction = await queryInterface.sequelize.transaction()
-     await queryInterface.sequelize.query('drop view view_event_amount', {
-      transaction
-    });
+     */     
+     await queryInterface.sequelize.query('drop view view_event_amount');
   }
 };
