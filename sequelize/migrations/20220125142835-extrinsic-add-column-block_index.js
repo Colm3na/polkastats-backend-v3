@@ -7,7 +7,8 @@ module.exports = {
     });
 
     await queryInterface.addIndex('extrinsic', ['block_index'], {
-      name: 'extrinsic_block_index_idx'
+      name: 'extrinsic_block_index_idx',
+      unique: true,
     });
   },
 
