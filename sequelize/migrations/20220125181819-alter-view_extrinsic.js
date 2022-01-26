@@ -39,9 +39,11 @@ module.exports = {
       `, { transaction });
 
 
+    await queryInterface.sequelize.query(`DROP VIEW public.view_extrinsic;`);
+
     await queryInterface.sequelize.query(`
       --beginsql
-      CREATE OR REPLACE VIEW public.view_events AS 
+      CREATE OR REPLACE VIEW public.view_extrinsic AS 
       select 
         extrinsic.block_index,
         extrinsic.block_number,
@@ -70,9 +72,10 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
+    await queryInterface.sequelize.query(`DROP VIEW public.view_extrinsic;`);
     await queryInterface.sequelize.query(`
       --beginsql
-      create view view_extrinsic as 
+      create or replace view view_extrinsic as 
         with view_extrinsic as (
         select
               concat(block_number,'-', extrinsic_index) as block_index,
