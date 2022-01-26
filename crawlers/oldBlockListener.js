@@ -99,7 +99,7 @@ async function getBlock({
           event_index: index,
           timestamp: Math.floor(timestampMs / 1000),
         },
-        eventsData.parseRecord(record)
+        eventsData.parseRecord({ ...record, blockNumber })
       );
 
       if (!res) {
