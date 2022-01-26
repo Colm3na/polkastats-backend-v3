@@ -108,7 +108,7 @@ async function start({ api, sequelize, config }) {
             event_index: index,
             timestamp: Math.floor(timestampMs / 1000),
           },
-          eventsData.parseRecord(record)
+          eventsData.parseRecord({ ...record, blockNumber })
         );
         if (!res) {
           await eventsDB.add({ event: preEvent, sequelize });
