@@ -12,6 +12,7 @@ const eventsData = require('../lib/eventsData.js');
 const eventsDB = require('../lib/eventsDB.js');
 const blockDB = require('../lib/blockDB.js');
 const blockData = require('../lib/blockData.js');
+const collectionStatsDB = require('../lib/collectionsStatsDB');
 
 
 
@@ -112,7 +113,7 @@ async function start({ api, sequelize, config }) {
         );
         if (!res) {
           await eventsDB.add({ event: preEvent, sequelize });
-
+          await collectionStatsDB.increaseActionsCount(sequelize, preEvent);
           logger.info(
             `Added event #${blockNumber}-${index} ${preEvent.section} ➡ ${preEvent.method}`
           );
