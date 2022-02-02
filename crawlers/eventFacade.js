@@ -14,13 +14,14 @@ class EventFacade {
    * @param {Array} data event.data
    * @returns 
    */
-  async save(type, data) {
+  async save(type, data, timestamp) {
     try {
       const event = new EventFactory({
         bridgeAPI: this.bridgeAPI,
         sequelize: this.sequelize,
         data,
-        type
+        type,
+        timestamp,
       });
       await event.save();
     } catch (error) {
