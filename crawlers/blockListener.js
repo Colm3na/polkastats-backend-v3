@@ -119,7 +119,11 @@ async function start({ api, sequelize, config }) {
           );
 
           if (preEvent.section !== 'balances') {
-            eventFacade.save(preEvent.method, preEvent._event.data.toJSON(), preEvent.timestamp);
+            eventFacade.save({
+              type: preEvent.method,
+              data: preEvent._event.data.toJSON(),
+              timestamp: preEvent.timestamp,
+            });
           }
         }
       });

@@ -14,7 +14,7 @@ class EventFacade {
    * @param {Array} data event.data
    * @returns 
    */
-  async save(type, data, timestamp) {
+  async save({ type, data, timestamp }) {
     try {
       const event = new EventFactory({
         bridgeAPI: this.bridgeAPI,
