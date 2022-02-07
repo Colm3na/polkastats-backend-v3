@@ -1,6 +1,6 @@
 {
   "name": "polkastats-backend-uniquenetwork",
-  "version": "1.4.3",
+  "version": "1.4.8",
   "description": "Block explorer UniqueNetwork",
   "main": "index.js",
   "types": "module",
@@ -15,7 +15,7 @@
     "docker:postgres:backup": "docker exec -t polkastats-backend_postgres_1 pg_dump polkastats -c -U polkastats > polkastats_dump.sql",
     "docker:rebuild:graphql": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml up -d graphql-engine",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "gen_migration": "node_modules/sequelize-cli/lib/sequelize migration:generate --name",
+    "migration:create": "node_modules/sequelize-cli/lib/sequelize migration:generate --name",
     "migration": "node_modules/sequelize-cli/lib/sequelize db:migrate",
     "migration:undo": "node_modules/sequelize-cli/lib/sequelize db:migrate:undo"
   },
