@@ -1,6 +1,15 @@
 version: '3.7'
 
 services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
   postgres:
     image: postgres:14
     restart: always
@@ -40,6 +49,8 @@ services:
   #
   crawler:
     image: polkastats-backend:latest
+    ports:
+      - '9003:9003'
     build:
       context: ../../
       dockerfile: ./docker/polkastats-backend/backend/Dockerfile
@@ -49,11 +60,14 @@ services:
     restart: on-failure
     environment:
       - NODE_ENV=production
-      - WS_PROVIDER_URL=${WS_PROVIDER_URL}      
+      - WS_PROVIDER_URL=wss://ws-opal.unique.network
+      - TYPE_PROVIDER=opal
       - POSTGRES_HOST=${POSTGRES_HOST}      
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DATABASE=${POSTGRES_DATABASE}
+      - PROMETHEUS_PORT=9003
+      - HOST_CRAWLER=0.0.0.0
 volumes:
   db-data: {}  
 #
