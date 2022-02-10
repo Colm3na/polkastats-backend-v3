@@ -11,4 +11,6 @@ COPY . /usr/app/polkastats-backend-v3
 
 RUN npm install 
 
+EXPOSE 9003
 CMD ["npm", "start"]
+

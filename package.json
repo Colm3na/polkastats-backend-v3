@@ -44,6 +44,7 @@
     "lodash": "^4.17.21",
     "pg": "^8.4.2",
     "pino": "^6.7.0",
+    "prom-client": "^14.0.1",
     "protobufjs": "^6.11.2",
     "sequelize": "^6.7.0",
     "sequelize-cli": "^6.2.0"

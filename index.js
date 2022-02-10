@@ -1,9 +1,11 @@
-const { wsProviderUrl, typeProvider,  dbConnect, crawlers } = require('./config/config.js')
+const { wsProviderUrl, typeProvider,  dbConnect, crawlers } = require('./config/config')
 const { Sequelize } = require('sequelize');
-const { Logger } = require('./utils/logger.js');
-const { BlockExplorer } = require('./blockexplorer.js')
+const { Logger } = require('./utils/logger');
+const { BlockExplorer } = require('./blockexplorer')
 const rtt = require('./config/runtime_types.json');
-const { ProvierFactory } = require('./lib/providerAPI/providerAPI.js');
+const { ProvierFactory } = require('./lib/providerAPI/providerAPI');
+const { startServer } = require('./prometheus');
+
 
 const log = new Logger();
 
@@ -64,17 +66,19 @@ async function getPolkadotAPI(wsProviderUrl, rtt) {
   }
   return false;
 }
-/*const BackendV3 = require('./lib/BackendV3.js');*/
-
-// 'postgres://user:pass@example.com:5432/dbname
 
 async function main() {
   const sequelize = await getSequlize(dbConnect);
   const api = await getPolkadotAPI(wsProviderUrl, rtt);    
   const blockExplorer = new BlockExplorer({
     api, sequelize, crawlers
+  });  
+  await blockExplorer.run()
+  
+  startServer(() => {
+    log.info('Server running...')
   });
-  await blockExplorer.run()  
+  
 }
 
 main().catch((error) => {
