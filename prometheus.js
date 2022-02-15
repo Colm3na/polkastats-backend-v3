@@ -1,6 +1,5 @@
 const {
-  prometheusPort,
-  hostCrawler
+  prometheusPort  
 } = require('./config/config');
 
 const http = require('http');

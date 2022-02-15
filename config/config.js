@@ -16,7 +16,6 @@ module.exports.typeProvider = process.env.TYPE_PROVIDER || 'testnet2';
 module.exports.dbConnect = getConnect();
 
 exports.prometheusPort = process.env.PROMETHEUS_PORT || 9003;
-exports.hostCrawler = process.env.HOST_CRAWLER || '127.0.0.1';
 
 module.exports.firstBlock = process.env.FIRST_BLOCK || 0;
 
