@@ -1,6 +1,5 @@
 const {
-  prometheusPort,
-  hostCrawler
+  prometheusPort  
 } = require('./config/config');
 
 const http = require('http');
@@ -33,7 +32,7 @@ const server = http.createServer(async (req, res) => {
 })
 
 function startServer(callback) {
-  server.listen(prometheusPort, hostCrawler, callback);
+  server.listen(prometheusPort, callback);
 }
 
 module.exports = {
