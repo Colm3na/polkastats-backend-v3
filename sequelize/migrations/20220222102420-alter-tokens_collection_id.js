@@ -4,9 +4,9 @@ module.exports = {
   up: async (queryInterface, Sequelize) => {
     const transaction = await queryInterface.sequelize.transaction();
     try {
-      await queryInterface.sequelize.query('DROP VIEW IF EXISTS view_tokens;', transaction);
-      await queryInterface.sequelize.query('DROP VIEW IF EXISTS view_holders;', transaction);
-      await queryInterface.sequelize.query('ALTER TABLE "tokens" ALTER COLUMN "collection_id" TYPE bigint', transaction);
+      await queryInterface.sequelize.query('DROP VIEW IF EXISTS view_tokens;', { transaction });
+      await queryInterface.sequelize.query('DROP VIEW IF EXISTS view_holders;', { transaction });
+      await queryInterface.sequelize.query('ALTER TABLE "tokens" ALTER COLUMN "collection_id" TYPE bigint', { transaction });
       await queryInterface.sequelize.query(`
         --beginsql
         CREATE OR REPLACE VIEW public.view_tokens as
@@ -48,9 +48,9 @@ module.exports = {
   down: async (queryInterface, Sequelize) => {
     const transaction = await queryInterface.sequelize.transaction();
     try {
-      await queryInterface.sequelize.query('DROP VIEW IF EXISTS view_tokens;', transaction);
-      await queryInterface.sequelize.query('DROP VIEW IF EXISTS view_holders;', transaction);
-      await queryInterface.sequelize.query('ALTER TABLE "tokens" ALTER COLUMN "collection_id" TYPE integer', transaction);
+      await queryInterface.sequelize.query('DROP VIEW IF EXISTS view_tokens;', { transaction });
+      await queryInterface.sequelize.query('DROP VIEW IF EXISTS view_holders;', { transaction });
+      await queryInterface.sequelize.query('ALTER TABLE "tokens" ALTER COLUMN "collection_id" TYPE integer', { transaction });
       await queryInterface.sequelize.query(`
         --beginsql
         CREATE OR REPLACE VIEW public.view_tokens as
