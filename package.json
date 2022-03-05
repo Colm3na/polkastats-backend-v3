@@ -6,6 +6,7 @@
   "types": "module",
   "scripts": {
     "start": "npm run migration && node -r dotenv/config index.js",
+    "debug": "npm run migration && node inspect -r dotenv/config index.js",
     "docker": "docker-compose --env-file .env -f docker/polkastats-backend/docker-compose.yml up -d",
     "docker:polkadot": "docker-compose -f docker/polkastats-backend/docker-compose.yml up",
     "docker:local": "docker-compose --env-file .env -f docker/polkastats-backend/docker-compose.local.yml up",
