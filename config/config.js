@@ -24,6 +24,10 @@ module.exports.crawlers = [
     enabled: !process.env.CRAWLER_SYSTEM_DISABLE,    
     module: `${process.cwd()}/crawlers/system.js`,
   },
+  {
+    enabled: !process.env.CRAWLER_REPAIR_DATA_FROM_BLOCKS_DISABLE,    
+    module: `${process.cwd()}/crawlers/repairDataFromBlocks.js`,
+  },
   
   {
     enabled: !process.env.CRAWLER_BLOCK_LISTENER_DISABLE,
