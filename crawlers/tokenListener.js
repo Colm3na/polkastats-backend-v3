@@ -13,9 +13,6 @@ const loggerOptions = {
   crawler: "tokenListener",
 };
 
-const DEFAULT_POLLING_TIME_MS = 60 * 60 * 1000;
-
-
 async function getCollections (sequelize) {
   const res = await collectionDB.get({
     selectList: ['collection_id', 'const_chain_schema'],
@@ -62,7 +59,7 @@ async function* getTokens(bridgeAPI, collection) {
 
 async function start({api, sequelize, config}) {
   
-  const pollingTime = config.pollingTime || DEFAULT_POLLING_TIME_MS
+  const pollingTime = config.pollingTime;
 
   const bridgeAPI = (new BridgeAPI(api)).bridgeAPI;
 
