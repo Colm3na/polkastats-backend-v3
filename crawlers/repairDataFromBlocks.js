@@ -32,14 +32,18 @@ async function restoreTokensTimestamp(sequelize, bridgeAPI) {
   });
 }
 
-async function start({ api, sequelize }) {
-  const bridgeAPI = new BridgeAPI(api).bridgeAPI;
-
+async function startCheckAndRepair(bridgeAPI, sequelize) {
   const hasTokenWithoutTimestamp = await tokenDB.hasTokenWithoutTimestamp(sequelize);
   if (hasTokenWithoutTimestamp) {
     console.log('Tokens without timestamp was found.');
     await restoreTokensTimestamp(sequelize, bridgeAPI);
   }
+}
+
+async function start({ api, sequelize, config }) {
+  const bridgeAPI = new BridgeAPI(api).bridgeAPI;
+
+  setTimeout(() => startCheckAndRepair(bridgeAPI, sequelize), config.pollingTime);
 }
 
 module.exports = { start };

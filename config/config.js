@@ -19,6 +19,8 @@ exports.prometheusPort = process.env.PROMETHEUS_PORT || 9003;
 
 module.exports.firstBlock = process.env.FIRST_BLOCK || 0;
 
+const DEFAULT_POLLING_TIME_MS = 60 * 60 * 1000;
+
 module.exports.crawlers = [
   {
     enabled: !process.env.CRAWLER_SYSTEM_DISABLE,    
@@ -27,6 +29,11 @@ module.exports.crawlers = [
   {
     enabled: !process.env.CRAWLER_REPAIR_DATA_FROM_BLOCKS_DISABLE,    
     module: `${process.cwd()}/crawlers/repairDataFromBlocks.js`,
+    config: {
+      pollingTime:
+        parseInt(process.env.CRAWLER_REPAIR_DATA_FROM_BLOCKS_POLLING_TIME_MS) ||
+        DEFAULT_POLLING_TIME_MS,
+    },      
   },
   
   {
@@ -53,7 +60,7 @@ module.exports.crawlers = [
     config: {
       pollingTime:
         parseInt(process.env.CRAWLER_ACTIVE_ACCOUNTS_POLLING_TIME_MS) ||
-        60 * 60 * 1000,
+        DEFAULT_POLLING_TIME_MS,
     },
   },
   {
@@ -91,7 +98,7 @@ module.exports.crawlers = [
       config: {
         pollingTime:
           parseInt(process.env.CRAWLER_COLLECTION_POLLING_TIME_MS) ||
-          60 * 60 * 1000,
+          DEFAULT_POLLING_TIME_MS,
       },      
   },
   {      
@@ -100,7 +107,7 @@ module.exports.crawlers = [
     config: {
       pollingTime:
         parseInt(process.env.CRAWLER_TOKEN_POLLING_TIME_MS) ||
-        60 * 60 * 1000,
+        DEFAULT_POLLING_TIME_MS,
     },      
   },
   {
