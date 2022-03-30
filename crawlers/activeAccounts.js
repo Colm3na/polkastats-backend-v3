@@ -1,7 +1,7 @@
 const { zip } = require('lodash')
 const { QueryTypes } = require('sequelize')
 const pino = require('pino');
-const { getAmount, normalizeSubstrateAddress } = require('../utils/utils.js');
+const { getAmount } = require('../utils/utils.js');
 
 const logger = pino();
 
@@ -96,19 +96,17 @@ const makeQuery = (state, block, timestamp) => {
   const lockedBalance = balances.lockedBalance.toString();
   const JSONbalances = JSON.stringify(balances);
   const nonce = balances.accountNonce.toString();
-  const query = `
-    INSERT INTO account (account_id, balances, available_balance, free_balance, locked_balance, nonce, timestamp, block_height, is_staking)
-    VALUES('${normalizeSubstrateAddress(id)}', '${JSONbalances}', '${availableBalance}', '${freeBalance}', '${lockedBalance}', '${nonce}',
-    '${timestamp}', '${block}', ${isStaking || false}) \
-      ON CONFLICT   (account_id)\
-      DO UPDATE\
-      SET balances = EXCLUDED.balances, \
-                    available_balance = EXCLUDED.available_balance, \
-                    free_balance = EXCLUDED.free_balance, \
-                    timestamp = EXCLUDED.timestamp, \
-                    is_staking = EXCLUDED.is_staking, \
-                    block_height = EXCLUDED.block_height; \
-  `;
+  const query = `INSERT INTO account (account_id, balances, available_balance, free_balance, locked_balance, nonce, timestamp, block_height, is_staking) VALUES('${id}', '${JSONbalances}', '${availableBalance}', '${freeBalance}', '${lockedBalance}', '${nonce}',
+  '${timestamp}', '${block}', ${isStaking || false}) \
+    ON CONFLICT   (account_id)\
+    DO UPDATE\
+    SET balances = EXCLUDED.balances, \
+                  available_balance = EXCLUDED.available_balance, \
+                  free_balance = EXCLUDED.free_balance, \
+                  timestamp = EXCLUDED.timestamp, \
+                  is_staking = EXCLUDED.is_staking, \
+                  block_height = EXCLUDED.block_height; \
+`;
   return { ...state, query };
 };
 
