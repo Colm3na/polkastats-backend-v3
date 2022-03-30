@@ -1,9 +1,11 @@
 const pino = require("pino");
 const BigNumber = require("bignumber.js");
 const { QueryTypes } = require("sequelize");
+const { encodeAddress, decodeAddress } = require('@polkadot/util-crypto');
 
 const logger = pino();
 
+const ETHEREUM_ADDRESS_MAX_LENGTH = 42;
 
 function formatNumber(num) {
   return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
@@ -429,6 +431,14 @@ function getAmount(strNum) {
   return dividedBy;
 }
 
+function normalizeSubstrateAddress(address) {
+  if (address?.length <= ETHEREUM_ADDRESS_MAX_LENGTH) {
+    return address;
+  }
+
+  return encodeAddress(decodeAddress(address));
+}
+
 
 module.exports = {
   formatNumber,
@@ -445,4 +455,5 @@ module.exports = {
   getExtrinsicSuccess,
   bufferToJSON,
   getAmount,
+  normalizeSubstrateAddress,
 };
