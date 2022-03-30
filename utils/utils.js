@@ -1,6 +1,7 @@
 const pino = require("pino");
 const BigNumber = require("bignumber.js");
 const { QueryTypes } = require("sequelize");
+const { encodeAddress, decodeAddress } = require('@polkadot/util-crypto');
 
 const logger = pino();
 
@@ -429,6 +430,10 @@ function getAmount(strNum) {
   return dividedBy;
 }
 
+function normalizeSubstrateAddress(address) {
+  return encodeAddress(decodeAddress(address));
+}
+
 
 module.exports = {
   formatNumber,
@@ -445,4 +450,5 @@ module.exports = {
   getExtrinsicSuccess,
   bufferToJSON,
   getAmount,
+  normalizeSubstrateAddress,
 };
