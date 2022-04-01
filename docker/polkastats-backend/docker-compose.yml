@@ -1,72 +1,74 @@
 version: '3.7'
 
 services:
-  #
-  # Blockchain archive node
-  #
-  substrate-node:
-    image: substrate-client:kusama-latest
-    hostname: substrate-node
-    build: ./substrate-client
-    volumes:
-      - 'substrate-data:/data'
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
     ports:
-      - '30333:30333'
-      - '9933:9933'
-      - '9944:9944'
-    command: -d /data --unsafe-ws-external --rpc-cors all --pruning=archive --name 'Polkastats 🤖 v3' --chain kusama
-    restart: on-failure
-  #
-  # SQL data base
-  #
+      - 9090:9090
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
   postgres:
-    image: postgres
+    image: postgres:14
     restart: always
     volumes:
       - 'db-data:/var/lib/postgresql/data'
-      - './sql/polkastats.sql:/docker-entrypoint-initdb.d/polkastats.sql'
     environment:
-      POSTGRES_USER: 'polkastats'
-      POSTGRES_PASSWORD: 'polkastats'
+      POSTGRES_DB: ${POSTGRES_DATABASE}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U polkastats']
       interval: 5s
       timeout: 5s
       retries: 5
-  #
-  # Hasura
-  #
+   
+
   graphql-engine:
-    image: hasura/graphql-engine:v1.1.0
+    image: hasura/graphql-engine:v2.2.0
     ports:
-      - '8082:8080'
+      - '8080:80'      
     depends_on:
       - 'postgres'
     restart: always
     environment:
-      HASURA_GRAPHQL_DATABASE_URL: postgres://polkastats:polkastats@postgres:5432/polkastats
-      HASURA_GRAPHQL_ENABLE_CONSOLE: 'true' # set to "false" to disable console
+      HASURA_GRAPHQL_DATABASE_URL: '${GRAPHQL_DATABASE_URL}'      
+      HASURA_GRAPHQL_ENABLE_CONSOLE: '${GRAPHQL_ENABLE_CONSOLE}' # set to "false" to disable console
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      HASURA_GRAPHQL_DISABLE_CORS: '${GRAPHQL_DISABLE_CORS}'
+      HASURA_GRAPHQL_JWT_SECRET: '${GRAPHQL_JWT_SECRET}'
+      HASURA_GRAPHQL_SCHEMA_SYNC_POLL_INTERVAL: 1
+      HASURA_GRAPHQL_UNAUTHORIZED_ROLE: 'anonymous'
       ## uncomment next line to set an admin secret
-      # HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
+      HASURA_GRAPHQL_ADMIN_SECRET: '${GRAPHQL_ADMIN_SECRET}'
+      HASURA_GRAPHQL_PG_CONNECTIONS: '${GRAPHQL_PG_CONNECTIONS}'
   #
   # Block crawler
   #
   crawler:
     image: polkastats-backend:latest
+    ports:
+      - '9003:9003'
     build:
       context: ../../
       dockerfile: ./docker/polkastats-backend/backend/Dockerfile
     depends_on:
       - 'postgres'
-      - 'substrate-node'
+      #- 'substrate-node'
     restart: on-failure
     environment:
       - NODE_ENV=production
-      - WS_PROVIDER_URL=ws://substrate-node:9944
+      - WS_PROVIDER_URL=wss://ws-opal.unique.network
+      - TYPE_PROVIDER=opal
+      - POSTGRES_HOST=${POSTGRES_HOST}      
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DATABASE=${POSTGRES_DATABASE}
+      - PROMETHEUS_PORT=9003
+      - HOST_CRAWLER=0.0.0.0
+volumes:
+  db-data: {}  
 #
 # Persisten volumes
-#
-volumes:
-  db-data: {}
-  substrate-data: {}

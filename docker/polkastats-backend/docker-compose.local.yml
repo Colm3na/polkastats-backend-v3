@@ -1,0 +1,51 @@
+version: '3.7'
+
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  postgres:
+    image: postgres
+    restart: always
+    volumes:
+      - 'db-data:/var/lib/postgresql/data'
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: ${POSTGRES_DATABASE}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U polkastats']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  #
+  # Hasura
+  #
+  graphql-engine:
+    image: hasura/graphql-engine:v2.2.0
+    ports:
+      - '8080:8080'      
+    depends_on:
+      - 'postgres'      
+    restart: always
+    environment:      
+      HASURA_GRAPHQL_DATABASE_URL: '${GRAPHQL_DATABASE_URL}'      
+      HASURA_GRAPHQL_ENABLE_CONSOLE: '${GRAPHQL_ENABLE_CONSOLE}' # set to "false" to disable console
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      HASURA_GRAPHQL_DISABLE_CORS: '${GRAPHQL_DISABLE_CORS}'
+      HASURA_GRAPHQL_UNAUTHORIZED_ROLE: 'anonymous'
+      HASURA_GRAPHQL_JWT_SECRET: '${GRAPHQL_JWT_SECRET}'
+      ## uncomment next line to set an admin secret
+      HASURA_GRAPHQL_ADMIN_SECRET: '${GRAPHQL_ADMIN_SECRET}'
+      HASURA_GRAPHQL_PG_CONNECTIONS: '${GRAPHQL_PG_CONNECTIONS}'
+  
+volumes:
+  db-data: {}

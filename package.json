@@ -1,42 +1,57 @@
 {
-  "name": "polkastats-backend-v3",
-  "version": "3.0.0-milestone3",
-  "description": "PolkaStats backend v3",
+  "name": "polkastats-backend-uniquenetwork",
+  "version": "1.4.8",
+  "description": "Block explorer UniqueNetwork",
   "main": "index.js",
+  "types": "module",
   "scripts": {
-    "start": "node index.js",
-    "docker": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d",
+    "start": "npm run migration && node -r dotenv/config index.js",
+    "debug": "node inspect -r dotenv/config index.js",
+    "docker": "docker-compose --env-file .env -f docker/polkastats-backend/docker-compose.yml up -d",
+    "docker:polkadot": "docker-compose -f docker/polkastats-backend/docker-compose.yml up",
+    "docker:local": "docker-compose --env-file .env -f docker/polkastats-backend/docker-compose.local.yml up",
     "docker:build": "docker-compose -f docker/polkastats-backend/docker-compose.yml build",
     "docker:clean": "bash docker/polkastats-backend/clean-polkastats-dockers",
     "docker:stop": "docker stop polkastats-backend_crawler_1 polkastats-backend_graphql-engine_1 polkastats-backend_postgres_1 polkastats-backend_substrate-node_1 polkastats-backend_phragmen_1",
-    "docker:node": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d substrate-node",
-    "docker:postgres": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d postgres",
-    "docker:graphql": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d graphql-engine",
-    "docker:crawler": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d crawler",
-    "docker:phragmen": "docker-compose -f docker/polkastats-backend/docker-compose.yml up -d phragmen"
+    "docker:postgres:backup": "docker exec -t polkastats-backend_postgres_1 pg_dump polkastats -c -U polkastats > polkastats_dump.sql",
+    "docker:rebuild:graphql": "docker-compose -f docker/polkastats-backend/docker-compose-polkadot.yml up -d graphql-engine",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "migration:create": "node_modules/sequelize-cli/lib/sequelize migration:generate --name",
+    "migration": "node_modules/sequelize-cli/lib/sequelize db:migrate",
+    "migration:undo": "node_modules/sequelize-cli/lib/sequelize db:migrate:undo"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Colm3na/polkastats-backend-v3.git"
+    "url": "git+https://github.com/UniqueNetwork/polkastats-backend-v3.git"
   },
   "keywords": [
     "blockchain",
+    "block explorer",
     "polkadot",
-    "kusama"
+    "substrate"
   ],
   "author": "PolkaStats Team",
   "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/Colm3na/polkastats-backend-v3/issues"
-  },
-  "homepage": "https://github.com/Colm3na/polkastats-backend-v3#readme",
+  "homepage": "https://github.com/UniqueNetwork/polkastats-backend-v3#readme",
   "dependencies": {
-    "@polkadot/api": "^1.18.1",
-    "axios": "^0.19.2",
-    "bignumber.js": "^9.0.0",
-    "dotenv": "^8.2.0",
-    "lodash": "^4.17.15",
-    "pg": "^7.18.1",
-    "pino": "^6.2.0"
+    "@polkadot/api": "^6.10.2",
+    "@polkadot/keyring": "^8.1.2",
+    "@polkadot/types": "^6.10.2",
+    "@polkadot/util": "^8.0.4",
+    "@unique-nft/types": "^0.2.0",
+    "bignumber.js": "^9.0.2",
+    "chalk": "^4.1.2",
+    "dotenv": "^10.0.0",
+    "lodash": "^4.17.21",
+    "pg": "^8.4.2",
+    "pino": "^6.7.0",
+    "prom-client": "^14.0.1",
+    "protobufjs": "^6.11.2",
+    "sequelize": "^6.7.0",
+    "sequelize-cli": "^6.2.0"
+  },
+  "devDependencies": {
+    "@polkadot/dev": "^0.62.67",
+    "jest": "^27.2.1"
   }
 }
