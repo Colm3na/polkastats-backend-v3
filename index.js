@@ -11,7 +11,18 @@ const log = new Logger();
 
 
 async function getSequlize(sConnect) {
-  const result = new Sequelize(sConnect);
+  const result = new Sequelize(
+    sConnect,
+    {
+      logging: false,
+      pool: {
+        max: 30,
+        min: 0,
+        acquire: 120000,
+        idle: 10000
+      },
+    },
+  );
   try {
     await result.authenticate();
     return result;
