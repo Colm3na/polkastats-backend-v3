@@ -43,6 +43,7 @@ async function startCheckAndRepair(bridgeAPI, sequelize) {
 async function start({ api, sequelize, config }) {
   console.log('Repair from block data was started.');
   const bridgeAPI = new BridgeAPI(api).bridgeAPI;
+  await startCheckAndRepair(bridgeAPI, sequelize);
   setInterval(() => startCheckAndRepair(bridgeAPI, sequelize), config.pollingTime);
 }
 
