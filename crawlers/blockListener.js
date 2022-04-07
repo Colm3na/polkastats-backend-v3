@@ -1,7 +1,6 @@
 const pino = require('pino');
 const {
   shortHash,
-  updateTotals,
 } = require('../utils/utils.js');
 
 const { EventFacade } = require('./eventFacade.js');
@@ -128,7 +127,6 @@ async function start({ api, sequelize, config }) {
         }
       });
     }
-    updateTotals(sequelize, loggerOptions);
   });
 }
 

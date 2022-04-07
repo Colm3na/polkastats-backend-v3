@@ -323,38 +323,6 @@ async function storeEraStakingInfo(
   return true;
 }
 
-async function updateTotals(sequelize) {
-  await sequelize.query(
-    `UPDATE total SET count = (SELECT count(*) FROM block) WHERE name = 'blocks'`,
-    { type: QueryTypes.UPDATE, logging: false }
-  );
-
-  await sequelize.query(
-    `UPDATE total SET count = (SELECT count(*) FROM extrinsic) WHERE name = 'extrinsics'`,
-    { type: QueryTypes.UPDATE, logging: false }
-  );
-
-  await sequelize.query(
-    `UPDATE total SET count = (SELECT count(*) FROM extrinsic WHERE section = 'balances' and method = 'transfer' ) WHERE name = 'transfers'`,
-    { type: QueryTypes.UPDATE, logging: false }
-  );
-
-  await sequelize.query(
-    `UPDATE total SET count = (SELECT count(*) FROM event) WHERE name = 'events'`,
-    { type: QueryTypes.UPDATE, logging: false }
-  );
-
-  await sequelize.query(
-    `UPDATE total SET count = (SELECT count(*) FROM collections) WHERE name ='collections'`,
-    { type: QueryTypes.UPDATE, logging: false }
-  );
-
-  await sequelize.query(
-    `UPDATE total SET count = (SELECT count(*) FROM tokens) WHERE name ='tokens'`,
-    { type: QueryTypes.UPDATE, logging: false }
-  );
-}
-
 function getBuffer(aValue) {  
   return Buffer.from(aValue, "hex").toString("utf-8");
 }
@@ -448,7 +416,6 @@ module.exports = {
   bufferToString,
   parseHexToString,
   avoidUseBuffer,
-  updateTotals,
   storeEraStakingInfo,
   getDisplayName,
   storeLogs,

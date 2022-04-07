@@ -1,7 +1,7 @@
 const pino = require('pino');
 const logger = pino();
 
-const { genArrayRange, updateTotals } = require('../utils/utils.js');
+const { genArrayRange } = require('../utils/utils.js');
 const protobuf = require('../utils/protobuf.js');
 
 const collectionDB = require('../lib/collectionDB.js');
@@ -76,7 +76,6 @@ async function start({api, sequelize, config}) {
     } catch (error) {
       console.error(error)
     }    
-    updateTotals(sequelize, loggerOptions)  
     setTimeout(() => run(), pollingTime)
   })()
 }
