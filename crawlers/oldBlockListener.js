@@ -5,7 +5,6 @@ const blockData = require('../lib/blockData.js');
 const eventsData = require('../lib/eventsData.js');
 const {
   shortHash,
-  updateTotals,
   genArrayRange,
 } = require('../utils/utils.js');
 const eventsDB = require('../lib/eventsDB.js');
@@ -110,7 +109,6 @@ async function getBlock({
         );
       }
     });
-    updateTotals(sequelize, loggerOptions);
   }
 }
 
