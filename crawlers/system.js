@@ -24,18 +24,31 @@ async function start({api, sequelize, config}) {
     api.rpc.system.version()
   ]);
 
-  const res = await sequelize.query('SELECT chain, node_name, node_version FROM system ORDER by block_height DESC LIMIT 1', {
-    type: QueryTypes.SELECT,
-    logging: false,
-    plain: true,
-    }  
-  )
-  
-  if (res) {
-    if (res.chain !== chain || res.node_name !== nodeName || res.node_version !== nodeVersion) {
-      await insertRow(sequelize, blockHeight, chain, nodeName, nodeVersion);
-    }
-  } else {
+  const isSameNodeAndState = await sequelize.query(
+    `
+    select * from (
+      SELECT chain, node_name, node_version, block_height FROM system ORDER by block_height DESC LIMIT 1
+    ) as lastSystemRun
+    where 
+      chain = :chain and 
+      node_name = :node_name and
+      node_version = :node_version and
+      block_height = :block_height
+    `,
+    {
+      type: QueryTypes.SELECT,
+      logging: false,
+      plain: true,
+      replacements: {
+        block_height: blockHeight.toString(),
+        chain,
+        node_name: nodeName,
+        node_version: nodeVersion,
+      }
+    },
+  );
+
+  if (!isSameNodeAndState) {
     await insertRow(sequelize, blockHeight, chain, nodeName, nodeVersion);
   }
 }
