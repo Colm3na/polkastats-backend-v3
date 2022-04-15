@@ -102,10 +102,6 @@ module.exports = {
         // Store block logs
         await storeLogs(pool, endBlock, blockHeader.digest.logs, loggerOptions);
 
-        // Get block number finalized
-        // TODO: Get finalized from finalitytracker/final_hint extrinsic
-        const blockNumberFinalized = 0;
-
         // Get election status
         const isElection = eraElectionStatus.toString() === `Close` ? false : true
 
@@ -211,7 +207,6 @@ module.exports = {
         const sqlInsert =
           `INSERT INTO block (
             block_number,
-            block_number_finalized,
             block_author,
             block_author_name,
             block_hash,
@@ -237,7 +232,6 @@ module.exports = {
             timestamp
           ) VALUES (
             '${endBlock}',
-            '${blockNumberFinalized}',
             '${blockHeader.author}',
             '${blockAuthorName}',
             '${blockHash}',
