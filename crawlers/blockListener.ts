@@ -1,28 +1,32 @@
-const pino = require('pino');
-const {
-  shortHash,
-} = require('../utils/utils.js');
+import { shortHash } from '../utils/utils';
+import { Logger, pino } from 'pino';
+import { EventFacade } from './eventFacade';
+import { BridgeAPI } from '../lib/providerAPI/bridgeApi';
 
-const { EventFacade } = require('./eventFacade.js');
-const { BridgeAPI } = require('../lib/providerAPI/bridgeApi.js');
-
-const extrinsic = require('../lib/extrinsics.js');
-const eventsData = require('../lib/eventsData.js');
-const eventsDB = require('../lib/eventsDB.js');
-const blockDB = require('../lib/blockDB.js');
-const blockData = require('../lib/blockData.js');
-const collectionStatsDB = require('../lib/collectionsStatsDB');
-
-
+import extrinsic from '../lib/extrinsics';
+import eventsData from '../lib/eventsData.js';
+import eventsDB from '../lib/eventsDB.js';
+import blockDB from '../lib/blockDB.js';
+import blockData from '../lib/blockData.js';
+import collectionStatsDB from '../lib/collectionsStatsDB';
+import { ICrawlerModuleConstructorArgs } from 'config/config';
 
 const logger = pino();
 const loggerOptions = {
   crawler: `blockListener`,
 };
 
-async function start({ api, sequelize, config }) {
-  logger.info(loggerOptions, `Starting block listener...`);
+export class BlockListener {
+  private logger: Logger;
 
+  constructor() {
+    this.logger = pino({ name: this.constructor.name });
+  }
+
+}
+
+export async function start({ api, sequelize, config }: ICrawlerModuleConstructorArgs) {
+  logger.info(loggerOptions, `Starting block listener...`);
   const bridgeAPI = new BridgeAPI(api).bridgeAPI;
 
   await bridgeAPI.api.rpc.chain.subscribeNewHeads(async (header) => {
@@ -62,9 +66,9 @@ async function start({ api, sequelize, config }) {
         blockHash: blockInfo.blockHash,
       });
 
-      const timestampMs = await bridgeAPI.api.query.timestamp.now.at(
+      const timestampMs = Number(await bridgeAPI.api.query.timestamp.now.at(
         blockInfo.blockHash
-      );
+      ));
       const sessionLength = (
         bridgeAPI.api.consts?.babe?.epochDuration || 0
       ).toString();
@@ -129,5 +133,3 @@ async function start({ api, sequelize, config }) {
     }
   });
 }
-
-module.exports = { start };

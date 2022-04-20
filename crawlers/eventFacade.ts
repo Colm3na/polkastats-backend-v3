@@ -1,19 +1,13 @@
 const { EventFactory } = require('../lib/eventFactory.js');
-class EventFacade {
-  /**
-   * 
-   * @param {string} type event.method 
-   * @param {ApiPromise} api
-   */
+export class EventFacade {
+  bridgeAPI;
+  sequelize;
+
   constructor(bridgeAPI, sequelize) {    
     this.bridgeAPI = bridgeAPI
     this.sequelize = sequelize
   }  
-  /**
-   * 
-   * @param {Array} data event.data
-   * @returns 
-   */
+
   async save({ type, data, timestamp }) {
     try {
       const event = new EventFactory({
@@ -30,5 +24,3 @@ class EventFacade {
     }    
   }
 }
-
-module.exports = { EventFacade }

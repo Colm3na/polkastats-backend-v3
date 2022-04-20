@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
+    "baseUrl": ".",
     "outDir": "./dist",
     "allowJs": true,
     "target": "ES2017",
@@ -9,6 +9,13 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "sourceMap": true,
-    "removeComments": true
-  }
+    "removeComments": true,
+    "incremental": true,
+    "skipLibCheck": true
+  },
+  "exclude": [
+    "dist",
+    "./sequelize/migrations/",
+    "node_modules"
+  ]
 }

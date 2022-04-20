@@ -1,7 +1,7 @@
-class AbstractAPI {      
-  constructor (impl) {
-    this.impl = impl;
-  }  
+import { ImplementorAPI } from '../implement/implementorAPI';
+
+export class AbstractAPI {      
+  constructor (public impl: ImplementorAPI) {}  
   
   get api() {
     return this.impl._api;
@@ -27,5 +27,3 @@ class AbstractAPI {
     return await this.impl.impGetBlockHash(blockNumber);
   }
 }
-
-module.exports = { AbstractAPI };

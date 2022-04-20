@@ -7,7 +7,7 @@ const protobuf = require('../utils/protobuf.js');
 const collectionDB = require('../lib/collectionDB.js');
 const tokenData = require('../lib/tokenData.js');
 const tokenDB = require('../lib/tokenDB.js');
-const { BridgeAPI } = require('../lib/providerAPI/bridgeApi.js');
+const { BridgeAPI } = require('../lib/providerAPI/bridgeApi');
 
 const loggerOptions = {
   crawler: "tokenListener",

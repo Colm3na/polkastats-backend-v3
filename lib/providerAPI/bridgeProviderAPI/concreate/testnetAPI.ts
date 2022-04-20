@@ -1,8 +1,8 @@
-const { AbstractAPI } = require("./abstractAPI.js");
+import { AbstractAPI } from './abstractAPI';
 
-class TestnetAPI extends AbstractAPI {  
+export class TestnetAPI extends AbstractAPI {
   async getCollection(id) {
-    const collection = await this.impl.impGetCollection(id);    
+    const collection = await this.impl.impGetCollection(id);
     return collection;
   }
 
@@ -11,7 +11,7 @@ class TestnetAPI extends AbstractAPI {
     return token;
   }
 
-  async getCollectionCount() {  
+  async getCollectionCount() {
     const count = await this.impl.impGetCollectionCount();
     return count;
   }
@@ -20,5 +20,3 @@ class TestnetAPI extends AbstractAPI {
     return await this.impl.impGetTokenCount(collectionId);
   }
 }
-
-module.exports = { TestnetAPI };

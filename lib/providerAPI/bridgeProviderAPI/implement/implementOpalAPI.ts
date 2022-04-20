@@ -1,6 +1,6 @@
-const { ImplementorAPI } = require('./implementorAPI.js');
+import { ImplementorAPI } from './implementorAPI';
 
-class ImplementOpalAPI extends ImplementorAPI {
+export class ImplementOpalAPI extends ImplementorAPI {
   async impGetCollection(collectionId) {
     const collection = await this._api.rpc.unique.collectionById(collectionId);
     return this.toObject(collection);
@@ -12,9 +12,8 @@ class ImplementOpalAPI extends ImplementorAPI {
   }
 
   async impGetToken(collectionId, tokenId) {
-    
-    let tokenData = await this._api.query.nonfungible.tokenData(collectionId, tokenId);
-    let data = tokenData.toJSON();
+    const tokenData = await this._api.query.nonfungible.tokenData(collectionId, tokenId);
+    const data = tokenData.toJSON();
 
     let constData = await this._api.rpc.unique.constMetadata(
       collectionId,
@@ -24,10 +23,8 @@ class ImplementOpalAPI extends ImplementorAPI {
       collectionId,
       tokenId
     );
-    
-    const owner  = data?.owner;
-    
-    //console.log(owner);
+
+    const owner: string = data && data['owner'];
 
     return {
       owner,
@@ -43,5 +40,3 @@ class ImplementOpalAPI extends ImplementorAPI {
     return count;
   }
 }
-
-module.exports = { ImplementOpalAPI };

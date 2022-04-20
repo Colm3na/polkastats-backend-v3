@@ -1,6 +1,6 @@
-const { AbstractAPI } = require("./abstractAPI.js");
+import { AbstractAPI } from './abstractAPI';
 
-class OpalAPI extends AbstractAPI {  
+export class OpalAPI extends AbstractAPI {  
   async getCollection(id) {
     let collecton = await this.impl.impGetCollection(id);
     if (collecton) {
@@ -47,5 +47,3 @@ class OpalAPI extends AbstractAPI {
     return await this.impl.impGetTokenCount(collectionId);
   }
 }
-
-module.exports = { OpalAPI };

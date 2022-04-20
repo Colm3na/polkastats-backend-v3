@@ -1,11 +1,10 @@
 import { wait } from './utils/utils';
 import { Sequelize } from 'sequelize';
-
-import { wsProviderUrl, typeProvider,  dbConnect, crawlers } from './config/config';
+import { wsProviderUrl, typeProvider, dbConnect, crawlers } from './config/config';
 import { Logger } from './utils/logger';
 import { BlockExplorer } from './blockexplorer';
 import rtt from './config/runtime_types.json';
-import { ProvierFactory } from './lib/providerAPI/providerAPI';
+import { ProviderFactory } from './lib/providerAPI/providerAPI';
 import { startServer } from './prometheus';
 
 const log = new Logger();
@@ -34,7 +33,7 @@ async function getSequlize(sConnect) {
 
 async function getPolkadotAPI(wsProviderUrl, rtt) {
   log.info(`Connecting to ${wsProviderUrl}`);
-  const provider = new  ProvierFactory(wsProviderUrl, typeProvider);  
+  const provider = new ProviderFactory(wsProviderUrl, typeProvider);
   const api = await provider.getApi(rtt);
 
 
@@ -62,31 +61,29 @@ async function getPolkadotAPI(wsProviderUrl, rtt) {
     });
     api.disconnect();
     await wait(10000);
-    return false;
+    throw e;
   }
 
   log.info(`Node: ${JSON.stringify(node)}`);
 
   if (node && node.isSyncing.eq(false)) {
     // Node is synced!
-    log.info("Node is synced!");    
+    log.info("Node is synced!");
     return api;
   } else {
     log.default("Node is not synced! Waiting 10s...");
     api.disconnect();
     await wait(10000);
   }
-  return false;
+  return api;
 }
 
 async function main() {
   const sequelize = await getSequlize(dbConnect);
-  const api = await getPolkadotAPI(wsProviderUrl, rtt);    
-  const blockExplorer = new BlockExplorer({
-    api, sequelize, crawlers
-  });  
+  const api = await getPolkadotAPI(wsProviderUrl, rtt);
+  const blockExplorer = new BlockExplorer(api, sequelize, crawlers);
   await blockExplorer.run()
-  
+
   startServer(() => {
     log.info('Server running...')
   });

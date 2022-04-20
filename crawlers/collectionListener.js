@@ -1,6 +1,6 @@
 const { result } = require("lodash");
 const pino = require("pino");
-const { BridgeAPI } = require('../lib/providerAPI/bridgeApi.js');
+const { BridgeAPI } = require('../lib/providerAPI/bridgeApi');
 
 const { QueryTypes } = require("sequelize");
 

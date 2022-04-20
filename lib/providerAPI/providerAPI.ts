@@ -1,16 +1,17 @@
-const { ApiPromise } = require("@polkadot/api");
-const { WsProvider } = require("@polkadot/rpc-provider");
-const { unique } = require('@unique-nft/types/definitions');
-const TypeProvider = require('./type/provider.js');
+/// <reference types="@unique-nft/types/augment-api-rpc" />
+import { ApiPromise } from '@polkadot/api';
+import { WsProvider } from '@polkadot/rpc-provider';
+import { unique } from '@unique-nft/types/definitions';
+import { TypeProvider } from './type/provider';
 
 class ProviderAPI {
+  protected provider: WsProvider;
 
-  constructor (url) {
-    this.url = url;    
+  constructor(private url) {
     this.provider = new WsProvider(url);
   }
 
-  async getApi() {
+  async getApi(types?: any): Promise<ApiPromise> {
     return await ApiPromise.create({
       provider: this.provider
     });
@@ -20,29 +21,32 @@ class ProviderAPI {
 class WestendOpalApi extends ProviderAPI { };
 
 class OpalApi extends ProviderAPI {
-  async getApi() {
+  async getApi(): Promise<ApiPromise> {
     return await ApiPromise.create({
       provider: this.provider,
-      rpc:  {
+      rpc: {
         unique: unique.rpc
       }
-    })
+    });
   }
 };
 
-class Tensnet2Api extends ProviderAPI {  
-  async getApi(types) {
-    return await ApiPromise.create({
+class Testnet2Api extends ProviderAPI {
+  getApi(types) {
+    return ApiPromise.create({
       provider: this.provider,
       types
-    })
+    });
   }
 }
 
-class ProvierFactory { 
-  constructor(url, type = null) {
-    this.url = url;
-    this.type = type;    
+export class ProviderFactory {
+  provider: ProviderAPI;
+
+  constructor(
+    private url,
+    private type = null,
+  ) {
     this.provider = this.getProvider();
   }
 
@@ -54,17 +58,12 @@ class ProvierFactory {
       case TypeProvider.QUARTZ:
         return new OpalApi(this.url);
       case TypeProvider.TESTNET2:
-        return new Tensnet2Api(this.url);
+        return new Testnet2Api(this.url);
     }
   }
 
   async getApi(rtt) {
     const api = await this.provider.getApi(rtt);
-    return Object.assign(api, {typeProvider: this.type});
+    return api;
   }
 }
-
-
-module.exports = {  
-  ProvierFactory  
-};

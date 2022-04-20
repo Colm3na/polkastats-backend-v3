@@ -15,7 +15,7 @@ module.exports = {
   externals: [nodeExternals()],
   module: {
     rules: [
-      { test: /\.ts$/, exclude: /node_modules/, loader: 'ts-loader' },
+      { test: /\.ts$/, exclude: /node_modules/, loader: 'ts-loader', options: { onlyCompileBundledFiles: true } },
       { test: /\.js$/, exclude: /node_modules/, loader: 'source-map-loader' },
     ],
   },

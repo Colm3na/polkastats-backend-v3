@@ -1,3 +1,4 @@
+import { ApiPromise } from '@polkadot/api';
 import { Sequelize } from 'sequelize/types';
 import { ICrawlerModule } from './config/config.js';
 import { Logger } from './utils/logger.js';
@@ -5,15 +6,11 @@ import { Logger } from './utils/logger.js';
 const log = new Logger();
 
 export class BlockExplorer {
-  private api;
-  private sequelize;
-  private crawlers: ICrawlerModule[];
-
-  constructor({ api, sequelize, crawlers }: { api: any, sequelize: Sequelize, crawlers: ICrawlerModule[] }) {
-    this.api = api;
-    this.sequelize = sequelize;
-    this.crawlers = crawlers;
-  }
+  constructor(
+    private api: ApiPromise,
+    private sequelize: Sequelize,
+    private crawlers: ICrawlerModule[],
+  ) {}
 
   async run() {
     this.crawlers.filter((crawler) => crawler.enabled)

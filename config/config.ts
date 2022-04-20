@@ -8,6 +8,8 @@ import { start as chainStart } from '../crawlers/chain';
 import { start as collectionListenerStart } from '../crawlers/collectionListener';
 import { start as tokenListenerStart} from '../crawlers/tokenListener';
 import { start as oldBlockListenerStart } from '../crawlers/oldBlockListener';
+import { TypeProvider } from '../lib/providerAPI/type/provider';
+import { ApiPromise } from '@polkadot/api';
 
 function getConnect() {
   const user =  process.env.POSTGRES_USER || 'polkastats';
@@ -20,7 +22,7 @@ function getConnect() {
 
 export const substrateNetwork = process.env.SUBSTRATE_NETWORK || 'polkadot';
 export const wsProviderUrl = process.env.WS_PROVIDER_URL || 'wss://testnet2.uniquenetwork.io';
-export const typeProvider = process.env.TYPE_PROVIDER || 'testnet2';
+export const typeProvider: TypeProvider = process.env.TYPE_PROVIDER ? TypeProvider[process.env.TYPE_PROVIDER.toUpperCase()] : TypeProvider.TESTNET2;
 export const dbConnect = getConnect();
 
 export const prometheusPort = process.env.PROMETHEUS_PORT || 9003;
@@ -33,8 +35,8 @@ export interface ICrawlerModuleConfig {
   pollingTime: number;
 }
 
-interface ICrawlerModuleConstructorArgs {
-  api: any;
+export interface ICrawlerModuleConstructorArgs {
+  api: ApiPromise;
   sequelize: Sequelize;
   config: ICrawlerModuleConfig;
 }

@@ -1,6 +1,6 @@
-const { ImplementorAPI } = require("./implementorAPI.js");
+import { ImplementorAPI } from './implementorAPI';
 
-class ImplementTestnetAPI extends ImplementorAPI {
+export class ImplementTestnetAPI extends ImplementorAPI {
   async impGetCollection(id) {
     const collection = await this._api.query.nft.collectionById(id);
     return this.toObject(collection);
@@ -8,7 +8,7 @@ class ImplementTestnetAPI extends ImplementorAPI {
 
   async impGetCollectionCount() {
     const collectionCount = await this._api.query.nft.createdCollectionCount();
-    return collectionCount.toNumber();
+    return Number(collectionCount);
   }
 
   async impGetToken(collectionId, tokenId) {
@@ -21,8 +21,6 @@ class ImplementTestnetAPI extends ImplementorAPI {
       .query
       .nft
       .itemListIndex(collectionId);
-    return count;
+    return Number(count);
   }
 }
-
-module.exports = { ImplementTestnetAPI };
