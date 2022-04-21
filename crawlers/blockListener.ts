@@ -1,15 +1,17 @@
-import { shortHash } from '../utils/utils';
 import { Logger, pino } from 'pino';
 import { EventFacade } from './eventFacade';
 import { BridgeAPI } from '../lib/providerAPI/bridgeApi';
-
 import extrinsic from '../lib/extrinsics';
 import eventsData from '../lib/eventsData.js';
 import eventsDB from '../lib/eventsDB.js';
 import blockDB from '../lib/blockDB.js';
 import blockData from '../lib/blockData.js';
 import collectionStatsDB from '../lib/collectionsStatsDB';
-import { ICrawlerModuleConstructorArgs } from 'config/config';
+import { ICrawlerModuleConstructorArgs } from './../config/config';
+import { OpalAPI } from 'lib/providerAPI/bridgeProviderAPI/concreate/opalAPI';
+import { TestnetAPI } from 'lib/providerAPI/bridgeProviderAPI/concreate/testnetAPI';
+import { ApiPromise } from '@polkadot/api';
+import { Sequelize } from 'sequelize/types';
 
 const logger = pino();
 const loggerOptions = {
@@ -18,118 +20,95 @@ const loggerOptions = {
 
 export class BlockListener {
   private logger: Logger;
+  private bridgeApi: OpalAPI | TestnetAPI;
 
-  constructor() {
+  constructor(
+    private api: ApiPromise,
+    private sequelize: Sequelize,
+  ) {
     this.logger = pino({ name: this.constructor.name });
+    this.bridgeApi = new BridgeAPI(api).bridgeAPI;
   }
 
+  async startBlockListening() {
+    this.logger.info('Block listening was started');
+    await this.bridgeApi.api.rpc.chain.subscribeNewHeads(async (header) => {
+      const blockNumber = header.number.toNumber();
+      this.logger.debug(`New block received #${blockNumber} has hash ${header.hash}`);
+      await this.blockProcessing(blockNumber);
+    });
+  }
+
+  async blockProcessing(blockNumber: number) {
+    const blockData = await this.getBlockData(blockNumber);
+    const events = await eventsData.get({
+      bridgeAPI: this.bridgeApi,
+      blockHash: blockData.blockHash,
+    });
+    const timestampMs = Number(await this.bridgeApi.api.query.timestamp.now.at(blockData.blockHash));
+    const sessionLength = (this.bridgeApi.api.consts?.babe?.epochDuration || 0).toString();
+
+    const transaction = this.sequelize.transaction();
+    await blockDB.save({
+      blockNumber,
+      block: Object.assign(blockData, events, { timestampMs, sessionLength }),
+      sequelize: this.sequelize,
+    });
+
+    await extrinsic.save(
+      this.sequelize,
+      blockNumber,
+      blockData.extrinsics,
+      events.blockEvents,
+      timestampMs,
+      loggerOptions
+    );
+
+    const eventFacade = new EventFacade(this.bridgeApi, this.sequelize);
+
+    await eventsData.events(events.blockEvents, async (record, index) => {
+      const res = await eventsDB.get({
+        blockNumber,
+        index,
+        sequelize: this.sequelize,
+      });
+
+      const preEvent = Object.assign(
+        {
+          block_number: blockNumber,
+          event_index: index,
+          timestamp: Math.floor(timestampMs / 1000),
+        },
+        eventsData.parseRecord({ ...record, blockNumber })
+      );
+      if (!res) {
+        await eventsDB.add({ event: preEvent, sequelize: this.sequelize });
+        await collectionStatsDB.increaseActionsCount(this.sequelize, preEvent);
+        logger.info(
+          `Added event #${blockNumber}-${index} ${preEvent.section} ➡ ${preEvent.method}`
+        );
+
+        if (preEvent.section !== 'balances') {
+          eventFacade.save({
+            type: preEvent.method,
+            data: preEvent._event.data.toJSON(),
+            timestamp: preEvent.timestamp,
+          });
+        }
+      }
+    });
+  }
+
+  async getBlockData(blockNumber: number) {
+    return blockData.get({
+      blockNumber,
+      bridgeAPI: this.bridgeApi,
+    });
+  }
 }
 
 export async function start({ api, sequelize, config }: ICrawlerModuleConstructorArgs) {
   logger.info(loggerOptions, `Starting block listener...`);
-  const bridgeAPI = new BridgeAPI(api).bridgeAPI;
-
-  await bridgeAPI.api.rpc.chain.subscribeNewHeads(async (header) => {
-    logger.info(`last block #${header.number} has hash ${header.hash}`);
-
-    const blockNumber = header.number.toNumber();
-
-    const blockInfo = await blockData.get({
-      blockNumber,
-      bridgeAPI,
-    });
-
-    let res = await blockDB.get({ blockNumber, sequelize });
-
-    // Handle chain reorganizations
-
-    if (res.length > 0) {
-      // Chain reorganization detected! We need to update block_author, block_hash and state_root
-      const block = res[0];
-      const check = blockData.check({
-        sourceBlock: block,
-        blockNumber,
-        blockInfo
-      });
-
-      if (!check) {
-        logger.info(
-          loggerOptions,
-          `Detected chain reorganization at block #${blockNumber}, updating author, author name, hash and state root`
-        );
-        await blockDB.modify({ blockNumber, blockInfo, sequelize });
-      }
-    } else {
-      // Get block events
-      const events = await eventsData.get({
-        bridgeAPI,
-        blockHash: blockInfo.blockHash,
-      });
-
-      const timestampMs = Number(await bridgeAPI.api.query.timestamp.now.at(
-        blockInfo.blockHash
-      ));
-      const sessionLength = (
-        bridgeAPI.api.consts?.babe?.epochDuration || 0
-      ).toString();
-
-      // Store new block
-      logger.info(
-        loggerOptions,
-        `Adding block #${blockNumber} (${shortHash(
-          blockInfo.blockHash.toString()
-        )})`
-      );
-
-      await blockDB.add({
-        blockNumber,
-        block: Object.assign(blockInfo, events, { timestampMs, sessionLength }),
-        sequelize,
-      });
-
-      // Store block extrinsics
-      await extrinsic.save(      
-        sequelize,
-        blockNumber,
-        blockInfo.extrinsics,
-        events.blockEvents,
-        timestampMs,
-        loggerOptions
-      );
-
-      const eventFacade = new EventFacade(bridgeAPI, sequelize);
-      // Loop through the Vec<EventRecord>
-      await eventsData.events(events.blockEvents, async (record, index) => {
-        const res = await eventsDB.get({
-          blockNumber,
-          index,
-          sequelize,
-        });
-
-        const preEvent = Object.assign(
-          {
-            block_number: blockNumber,
-            event_index: index,
-            timestamp: Math.floor(timestampMs / 1000),
-          },
-          eventsData.parseRecord({ ...record, blockNumber })
-        );
-        if (!res) {
-          await eventsDB.add({ event: preEvent, sequelize });
-          await collectionStatsDB.increaseActionsCount(sequelize, preEvent);
-          logger.info(
-            `Added event #${blockNumber}-${index} ${preEvent.section} ➡ ${preEvent.method}`
-          );
-
-          if (preEvent.section !== 'balances') {
-            eventFacade.save({
-              type: preEvent.method,
-              data: preEvent._event.data.toJSON(),
-              timestamp: preEvent.timestamp,
-            });
-          }
-        }
-      });
-    }
-  });
+  const blockListener = new BlockListener(api, sequelize);
+  await blockListener.startBlockListening();
 }

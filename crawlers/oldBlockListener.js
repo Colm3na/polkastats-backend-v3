@@ -71,7 +71,7 @@ async function getBlock({
       bridgeAPI.api.consts?.babe?.epochDuration || 0
     ).toString();
 
-    await blockDB.add({
+    await blockDB.save({
       blockNumber,
       block: Object.assign(blockInfo, events, { timestampMs, sessionLength }),
       sequelize,
