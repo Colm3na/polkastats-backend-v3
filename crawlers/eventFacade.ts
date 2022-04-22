@@ -1,8 +1,11 @@
+import { OpalAPI } from '../lib/providerAPI/bridgeProviderAPI/concreate/opalAPI';
+import { TestnetAPI } from '../lib/providerAPI/bridgeProviderAPI/concreate/testnetAPI';
 import { EventFactory } from '../lib/eventFactory';
+import { Sequelize } from 'sequelize/types';
 
 export class EventFacade {
-  bridgeAPI;
-  sequelize;
+  bridgeAPI: OpalAPI | TestnetAPI;
+  sequelize: Sequelize;
 
   constructor(bridgeAPI, sequelize) {    
     this.bridgeAPI = bridgeAPI
@@ -11,13 +14,13 @@ export class EventFacade {
 
   async save({ type, data, timestamp }) {
     try {
-      const event = new EventFactory({
-        bridgeAPI: this.bridgeAPI,
-        sequelize: this.sequelize,
+      const event = new EventFactory(
+        this.bridgeAPI,
+        this.sequelize,
         data,
         type,
         timestamp,
-      });
+      );
       await event.save();
     } catch (error) {
       console.error(error);

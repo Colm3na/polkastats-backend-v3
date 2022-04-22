@@ -1,7 +1,7 @@
 const { BridgeAPI } = require('../lib/providerAPI/bridgeApi');
 const blockData = require('../lib/blockData.js');
 const eventsData = require('../lib/eventsData.js');
-const eventTypes = require('../lib/eventFactory/type.js');
+const eventTypes = require('../lib/eventFactory/type');
 const tokenDB = require('../lib/tokenDB.js');
 
 let isTokensTimestampRestoreRunning = false;
