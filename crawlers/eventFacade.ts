@@ -1,4 +1,5 @@
-const { EventFactory } = require('../lib/eventFactory.js');
+import { EventFactory } from '../lib/eventFactory';
+
 export class EventFacade {
   bridgeAPI;
   sequelize;

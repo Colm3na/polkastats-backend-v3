@@ -102,7 +102,7 @@ async function getBlock({
       );
 
       if (!res) {
-        await eventsDB.add({ event: preEvent, sequelize });
+        await eventsDB.save({ event: preEvent, sequelize });
 
         logger.info(
           `Added event #${blockNumber}-${index} ${preEvent.section} ➡ ${preEvent.method}`

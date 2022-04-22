@@ -13,7 +13,6 @@ import { TestnetAPI } from 'lib/providerAPI/bridgeProviderAPI/concreate/testnetA
 import { ApiPromise } from '@polkadot/api';
 import { Sequelize } from 'sequelize/types';
 
-const logger = pino();
 const loggerOptions = {
   crawler: `blockListener`,
 };
@@ -21,6 +20,7 @@ const loggerOptions = {
 export class BlockListener {
   private logger: Logger;
   private bridgeApi: OpalAPI | TestnetAPI;
+  private eventFacade: EventFacade;
 
   constructor(
     private api: ApiPromise,
@@ -28,9 +28,10 @@ export class BlockListener {
   ) {
     this.logger = pino({ name: this.constructor.name });
     this.bridgeApi = new BridgeAPI(api).bridgeAPI;
+    this.eventFacade = new EventFacade(this.bridgeApi, this.sequelize);
   }
 
-  async startBlockListening() {
+  async startBlockListening(): Promise<void> {
     this.logger.info('Block listening was started');
     await this.bridgeApi.api.rpc.chain.subscribeNewHeads(async (header) => {
       const blockNumber = header.number.toNumber();
@@ -39,7 +40,7 @@ export class BlockListener {
     });
   }
 
-  async blockProcessing(blockNumber: number) {
+  async blockProcessing(blockNumber: number): Promise<void> {
     const blockData = await this.getBlockData(blockNumber);
     const events = await eventsData.get({
       bridgeAPI: this.bridgeApi,
@@ -48,7 +49,7 @@ export class BlockListener {
     const timestampMs = Number(await this.bridgeApi.api.query.timestamp.now.at(blockData.blockHash));
     const sessionLength = (this.bridgeApi.api.consts?.babe?.epochDuration || 0).toString();
 
-    const transaction = this.sequelize.transaction();
+    // const transaction = this.sequelize.transaction();
     await blockDB.save({
       blockNumber,
       block: Object.assign(blockData, events, { timestampMs, sessionLength }),
@@ -64,15 +65,11 @@ export class BlockListener {
       loggerOptions
     );
 
-    const eventFacade = new EventFacade(this.bridgeApi, this.sequelize);
+    await this.saveEvents(events, blockNumber, timestampMs);
+  }
 
-    await eventsData.events(events.blockEvents, async (record, index) => {
-      const res = await eventsDB.get({
-        blockNumber,
-        index,
-        sequelize: this.sequelize,
-      });
-
+  async saveEvents(events: any, blockNumber: number, timestampMs): Promise<void> {
+    events.blockEvents.forEach(async (record, index) => {
       const preEvent = Object.assign(
         {
           block_number: blockNumber,
@@ -81,20 +78,19 @@ export class BlockListener {
         },
         eventsData.parseRecord({ ...record, blockNumber })
       );
-      if (!res) {
-        await eventsDB.add({ event: preEvent, sequelize: this.sequelize });
-        await collectionStatsDB.increaseActionsCount(this.sequelize, preEvent);
-        logger.info(
-          `Added event #${blockNumber}-${index} ${preEvent.section} ➡ ${preEvent.method}`
-        );
+      
+      await eventsDB.save({ event: preEvent, sequelize: this.sequelize });
+      await collectionStatsDB.increaseActionsCount(this.sequelize, preEvent);
+      this.logger.info(
+        `Added event #${blockNumber}-${index} ${preEvent.section} ➡ ${preEvent.method}`
+      );
 
-        if (preEvent.section !== 'balances') {
-          eventFacade.save({
-            type: preEvent.method,
-            data: preEvent._event.data.toJSON(),
-            timestamp: preEvent.timestamp,
-          });
-        }
+      if (preEvent.section !== 'balances') {
+        this.eventFacade.save({
+          type: preEvent.method,
+          data: preEvent._event.data.toJSON(),
+          timestamp: preEvent.timestamp,
+        });
       }
     });
   }
@@ -108,7 +104,6 @@ export class BlockListener {
 }
 
 export async function start({ api, sequelize, config }: ICrawlerModuleConstructorArgs) {
-  logger.info(loggerOptions, `Starting block listener...`);
   const blockListener = new BlockListener(api, sequelize);
   await blockListener.startBlockListening();
 }
