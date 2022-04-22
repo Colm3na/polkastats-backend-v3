@@ -78,7 +78,7 @@ export class BlockListener {
         },
         eventsData.parseRecord({ ...record, blockNumber })
       );
-      
+
       await eventsDB.save({ event: preEvent, sequelize: this.sequelize });
       await collectionStatsDB.increaseActionsCount(this.sequelize, preEvent);
       this.logger.info(
