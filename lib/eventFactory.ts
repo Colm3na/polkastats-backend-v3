@@ -1,6 +1,8 @@
 import { Sequelize } from 'sequelize/types';
 import collection from './eventFactory/collection';
-import token from './eventFactory/token';
+import { CreateToken } from './eventFactory/token/createToken';
+import { DestroyToken } from './eventFactory/token/destroyToken';
+import { TransferToken } from './eventFactory/token/transferToken';
 import { EventTypes } from './eventFactory/type';
 import { OpalAPI } from './providerAPI/bridgeProviderAPI/concreate/opalAPI';
 import { TestnetAPI } from './providerAPI/bridgeProviderAPI/concreate/testnetAPI';
@@ -23,14 +25,11 @@ export class EventFactory {
       case EventTypes.TYPE_CREATE_COLLECTION:
         return new collection.create(bridgeAPI, sequelize, { ...data, date_of_creation: timestamp });
       case EventTypes.TYPE_CREATE_TOKEN:
-        // data[0] - collection id
-        // data[1] - token id
-        bridgeAPI.getToken(data[0], data[1]).then((token) => console.log('token from API: ', token));
-        return new token.create(bridgeAPI, sequelize, { ...data, date_of_creation: timestamp });
+        return new CreateToken(bridgeAPI, sequelize, data[0], data[1], timestamp);
       case EventTypes.TYPE_ITEM_DESTROYED:
-        return new token.destroyed(bridgeAPI, sequelize, data);
+        return new DestroyToken(bridgeAPI, sequelize, data[0], data[1], timestamp);
       case EventTypes.TYPE_TRANSFER:
-        return new token.transfer(bridgeAPI, sequelize, data);
+        return new TransferToken(bridgeAPI, sequelize, data[0], data[1], timestamp);
       case EventTypes.TYPE_COLLECTION_DESTROYED:
         return new collection.destroyed(bridgeAPI, sequelize, data);
       case EventTypes.TYPE_COLLECTION_SPONSOR_REMOVED:
