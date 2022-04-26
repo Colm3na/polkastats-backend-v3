@@ -1,4 +1,4 @@
-import { Sequelize } from 'sequelize/types';
+import { Sequelize, Transaction } from 'sequelize/types';
 import { bufferToJSON, normalizeSubstrateAddress } from '../../utils/utils';
 import  protobuf from '../../utils/protobuf';
 import { OpalAPI } from '../../lib/providerAPI/bridgeProviderAPI/concreate/opalAPI';
@@ -16,7 +16,7 @@ export class EventToken {
     public timestamp: number,
   ) {}
 
-  public async save(): Promise<void> {}
+  public async save(transaction: Transaction): Promise<void> {}
 
   public async getToken(): Promise<any> {
     const token = await this.bridgeAPI.getToken(this.collectionId, this.tokenId);

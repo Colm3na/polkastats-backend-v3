@@ -1,4 +1,4 @@
-import { Sequelize } from 'sequelize/types';
+import { Sequelize, Transaction } from 'sequelize/types';
 import collection from './eventFactory/collection';
 import { CreateToken } from './eventFactory/token/createToken';
 import { DestroyToken } from './eventFactory/token/destroyToken';
@@ -67,9 +67,9 @@ export class EventFactory {
     }
   }
 
-  async save() {
+  async save(transaction: Transaction) {
     if (this.event) {
-      await this.event.save();
+      await this.event.save(transaction);
     }
   }
 }
