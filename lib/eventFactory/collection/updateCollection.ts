@@ -6,8 +6,13 @@ export class UpdateCollection extends EventCollection {
   public async save(transaction: Transaction): Promise<void> {
     const isDestroyed = await this.isDestroyed();
 
-    if (!isDestroyed) {
-      const collection = await this.getCollection();
+    if (isDestroyed) {
+      return;
+    }
+
+    const collection = await this.getCollection();
+
+    if (collection) {
       await collectionDB.save({
         collection,
         sequelize: this.sequelize,
