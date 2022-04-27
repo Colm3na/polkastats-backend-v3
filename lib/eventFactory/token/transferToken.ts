@@ -4,9 +4,17 @@ import { EventToken } from '../eventToken';
 
 export class TransferToken extends EventToken {
   async save(transaction: Transaction) {
-    if (this.collectionId && this.tokenId) {
+    const canSaveToken = await this.canSave();
+    const excludeFields = ['date_of_creation'];
+
+    if (canSaveToken) {
       const token = await this.getToken();
-      await tokenDB.save(token, this.sequelize, transaction);
+      await tokenDB.save({
+        token,
+        transaction,
+        excludeFields,
+        sequelize: this.sequelize,
+      });
     }
   }
 }

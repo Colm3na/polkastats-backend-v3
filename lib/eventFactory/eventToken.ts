@@ -5,6 +5,8 @@ import { OpalAPI } from '../../lib/providerAPI/bridgeProviderAPI/concreate/opalA
 import { TestnetAPI } from '../../lib/providerAPI/bridgeProviderAPI/concreate/testnetAPI';
 import { Root } from 'protobufjs';
 import collectionDB from '../../lib/collectionDB';
+import eventsDB from '../../lib/eventsDB';
+import { EventTypes } from './type';
 
 
 export class EventToken {
@@ -14,7 +16,11 @@ export class EventToken {
     public collectionId: number,
     public tokenId: number,
     public timestamp: number,
-  ) {}
+  ) {
+    if (!this.collectionId || !this.tokenId) {
+      throw new Error(`Can't create/modify token without collectionId(${this.collectionId}) or tokenId(${this.tokenId})`);
+    }
+  }
 
   public async save(transaction: Transaction): Promise<void> {}
 
@@ -78,5 +84,22 @@ export class EventToken {
 
     const collection = await this.bridgeAPI.getCollection(this.collectionId);
     return protobuf.getProtoBufRoot(bufferToJSON(collection.ConstOnChainSchema));
+  }
+
+  protected async canSave(): Promise<boolean> {
+    const destroyTokenEvent = await eventsDB.getTokenEvent(
+      this.sequelize,
+      this.collectionId,
+      this.tokenId,
+      EventTypes.TYPE_ITEM_DESTROYED,
+    );
+
+    const destroyCollectionEvent = await eventsDB.getCollectionEvent(
+      this.sequelize,
+      this.collectionId,
+      EventTypes.TYPE_COLLECTION_DESTROYED,
+    );
+
+    return !destroyTokenEvent && !destroyCollectionEvent;
   }
 }
