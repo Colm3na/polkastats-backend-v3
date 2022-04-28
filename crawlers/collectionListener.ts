@@ -50,6 +50,7 @@ async function runCollectionsListener(bridgeAPI: OpalAPI | TestnetAPI, sequelize
 
   await saveCollections(collections, sequelize);
   await destroyCollections(destroyedCollections, sequelize);
+  logger.info(`Total count: ${collectionsCount}. Exist: ${collections.length}. Burned: ${destroyedCollections.length}`);
 }
 
 export async function start({ api, sequelize, config }: ICrawlerModuleConstructorArgs) {
