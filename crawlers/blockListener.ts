@@ -18,13 +18,13 @@ const loggerOptions = {
 };
 
 export class BlockListener {
-  private logger: Logger;
-  private bridgeApi: OpalAPI | TestnetAPI;
+  protected logger: Logger;
+  protected bridgeApi: OpalAPI | TestnetAPI;
   private eventFacade: EventFacade;
 
   constructor(
-    private api: ApiPromise,
-    private sequelize: Sequelize,
+    protected api: ApiPromise,
+    protected sequelize: Sequelize,
   ) {
     this.logger = pino({ name: this.constructor.name });
     this.bridgeApi = new BridgeAPI(api).bridgeAPI;
