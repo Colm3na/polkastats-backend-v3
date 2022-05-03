@@ -6,7 +6,6 @@ import eventsData from '../lib/eventsData.js';
 import eventsDB from '../lib/eventsDB.js';
 import blockDB from '../lib/blockDB.js';
 import blockData from '../lib/blockData.js';
-import collectionStatsDB from '../lib/collectionsStatsDB';
 import { ICrawlerModuleConstructorArgs } from './../config/config';
 import { OpalAPI } from 'lib/providerAPI/bridgeProviderAPI/concreate/opalAPI';
 import { TestnetAPI } from 'lib/providerAPI/bridgeProviderAPI/concreate/testnetAPI';
@@ -95,7 +94,6 @@ export class BlockListener {
       );
 
       await eventsDB.save({ event: preEvent, sequelize: this.sequelize, transaction });
-      await collectionStatsDB.increaseActionsCount(this.sequelize, preEvent);
       this.logger.info(
         `Added event #${blockNumber}-${index} ${preEvent.section} ➡ ${preEvent.method}`
       );
