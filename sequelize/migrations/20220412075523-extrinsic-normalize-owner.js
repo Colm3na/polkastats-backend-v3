@@ -2,75 +2,77 @@
 
 const { normalizeSubstrateAddress } = require('../../utils/utils');
 
-async function getExtrinsicWithSigner(queryInterface, Sequelize, transaction) {
+async function normalizeAddress(
+  queryInterface,
+  Sequelize,
+  transaction,
+  srcField,
+  dstField,
+) {
+  const selectQuery = `select distinct(${srcField}) from extrinsic where ${srcField} is not null and ${srcField} != '' and ${dstField} is null limit 1000`;
   const extrinsics = await queryInterface.sequelize.query(
-    `
-      select e.signer from extrinsic e
-      where e.signer is not null and e.signer != '' and e.signer not like '5%' and length(e.signer) > 42
-      group by e.signer
-      limit 500;
-    `,
+    selectQuery,
     {
       type: Sequelize.QueryTypes.SELECT,
       logging: false,
+      plain: false,
       transaction,
     },
   );
 
-  return extrinsics?.length > 0 ? extrinsics : null;
-}
+  if (extrinsics.length === 0) {
+    return;
+  }
 
-async function getExtrinsicWithToOwner(queryInterface, Sequelize, transaction) {
-  const extrinsics = await queryInterface.sequelize.query(
-    `
-    select e.to_owner from extrinsic e 
-    where e.to_owner is not null and e.to_owner != '' and e.to_owner not like '5%' and length(e.to_owner) > 42
-    group by e.to_owner
-    limit 500;
-    `,
-    {
-      type: Sequelize.QueryTypes.SELECT,
-      logging: false,
-      transaction,
-    },
-  );
-
-  return extrinsics?.length > 0 ? extrinsics : null;
-}
-
-function updateExtrinsicOwnerField(queryInterface, Sequelize, transaction, fieldName, address) {
-  return queryInterface.sequelize.query(
-    `update extrinsic set ${fieldName} = :normalizedAddress where ${fieldName} = :address`,
-    {
-      type: Sequelize.QueryTypes.UPDATE,
-      logging: false,
-      replacements: {
-        address,
-        normalizedAddress: normalizeSubstrateAddress(address),
+  for (const extrinsic of extrinsics) {
+    await queryInterface.sequelize.query(
+      `update extrinsic set ${dstField} = :normalizedAddress where ${srcField} = :address`,
+      {
+        type: Sequelize.QueryTypes.UPDATE,
+        logging: false,
+        replacements: {
+          address: extrinsic[srcField],
+          normalizedAddress: normalizeSubstrateAddress(extrinsic[srcField]),
+        },
+        transaction,
       },
-      transaction,
-    },
-  );
+    );
+  }
+
+  await normalizeAddress(queryInterface, Sequelize, transaction, srcField, dstField);
 }
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     const transaction = await queryInterface.sequelize.transaction();
-    let extrinsicsWithSigner;
-    let extrinsicsWithToOwner;
 
     try {
-      while(extrinsicsWithSigner = await getExtrinsicWithSigner(queryInterface, Sequelize, transaction)) {
-        for (const extrinsic of extrinsicsWithSigner) {
-          await updateExtrinsicOwnerField(queryInterface, Sequelize, transaction, 'signer', extrinsic.signer);
-        }
-      }
+      await queryInterface.addColumn(
+        'extrinsic',
+        'signer_normalized',
+        {
+          type: Sequelize.DataTypes.TEXT,
+          allowNull: true,
+        },
+        {
+          transaction,
+        },
+      );
 
-      while(extrinsicsWithToOwner = await getExtrinsicWithToOwner(queryInterface, Sequelize, transaction)) {
-        for (const extrinsic of extrinsicsWithToOwner) {
-          await updateExtrinsicOwnerField(queryInterface, Sequelize, transaction, 'to_owner', extrinsic.to_owner);
-        }
-      }
+      await queryInterface.addColumn(
+        'extrinsic',
+        'to_owner_normalized',
+        {
+          type: Sequelize.DataTypes.TEXT,
+          allowNull: true,
+        },
+        {
+          transaction,
+        },
+      );
+
+      await normalizeAddress(queryInterface, Sequelize, transaction, 'signer', 'signer_normalized');
+      await normalizeAddress(queryInterface, Sequelize, transaction, 'to_owner', 'to_owner_normalized');
 
       await transaction.commit();
     } catch (err) {
@@ -80,5 +82,8 @@ module.exports = {
     }
   },
 
-  down: async (queryInterface, Sequelize) => {}
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.removeColumn('extrinsic', 'signer_normalized');
+    await queryInterface.removeColumn('extrinsic', 'to_owner_normalized');
+  }
 };
