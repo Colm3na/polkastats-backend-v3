@@ -68,7 +68,6 @@ module.exports = {
         transaction,
       });
 
-
       await transaction.commit();
     } catch (err) {
       console.error(err);
