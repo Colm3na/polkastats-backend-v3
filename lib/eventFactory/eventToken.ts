@@ -1,5 +1,5 @@
 import { Sequelize, Transaction } from 'sequelize/types';
-import { bufferToJSON, normalizeSubstrateAddress } from '../../utils/utils';
+import { bufferToJSON } from '../../utils/utils';
 import  protobuf from '../../utils/protobuf';
 import { OpalAPI } from '../../lib/providerAPI/bridgeProviderAPI/concreate/opalAPI';
 import { TestnetAPI } from '../../lib/providerAPI/bridgeProviderAPI/concreate/testnetAPI';
@@ -30,7 +30,7 @@ export class EventToken {
     return {
       collectionId: this.collectionId,
       tokenId: this.tokenId,
-      owner: normalizeSubstrateAddress(token.Owner),
+      owner: token.Owner,
       dateOfCreation: this.timestamp,
       data: this.getConstData(token.ConstData, tokenSchema),
     };
