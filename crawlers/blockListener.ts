@@ -45,7 +45,7 @@ export class BlockListener {
       bridgeAPI: this.bridgeApi,
       blockHash: blockData.blockHash,
     });
-    const timestampMs = Number(await this.bridgeApi.api.query.timestamp.now.at(blockData.blockHash));
+    const timestampMs = blockData.timestamp;
     const sessionLength = (this.bridgeApi.api.consts?.babe?.epochDuration || 0).toString();
 
     const transaction = await this.sequelize.transaction();
