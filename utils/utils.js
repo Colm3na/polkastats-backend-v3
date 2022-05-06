@@ -40,19 +40,6 @@ function getExtrinsicSuccess(index, blockEvents) {
   return extrinsicSuccess;
 }
 
-function getDisplayName(identity) {
-  if (
-    identity.displayParent &&
-    identity.displayParent !== `` &&
-    identity.display &&
-    identity.display !== ``
-  ) {
-    return `${identity.displayParent} / ${identity.display}`;
-  } else {
-    return identity.display || ``;
-  }
-}
-
 function getBuffer(aValue) {  
   return Buffer.from(aValue, "hex").toString("utf-8");
 }
@@ -146,7 +133,6 @@ module.exports = {
   bufferToString,
   parseHexToString,
   avoidUseBuffer,
-  getDisplayName,
   getExtrinsicSuccess,
   bufferToJSON,
   getAmount,
