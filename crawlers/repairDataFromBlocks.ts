@@ -3,8 +3,13 @@ import { ICrawlerModuleConstructorArgs } from '../config/config';
 import { BlockListener } from './blockListener';
 
 class Rescanner extends BlockListener {
+  readonly COUNT_OF_BLOCKS = 20;
+
   private async getBlocks(): Promise<any[]> {
-    return blockDB.getBlocksForRescan({ sequelize: this.sequelize });
+    return blockDB.getBlocksForRescan({
+      sequelize: this.sequelize,
+      limit: this.COUNT_OF_BLOCKS,
+    });
   }
 
   public async rescan(): Promise<void> {
@@ -14,10 +19,7 @@ class Rescanner extends BlockListener {
       return;
     }
 
-    for (const block of blocks) {
-      await this.blockProcessing(block.block_number);
-    }
-
+    await Promise.all(blocks.map((block) => this.blockProcessing(block.block_number)));
     await this.rescan();
   }
 }
