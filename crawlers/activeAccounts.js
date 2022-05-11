@@ -97,8 +97,8 @@ const makeQuery = (state, block, timestamp) => {
   const JSONbalances = JSON.stringify(balances);
   const nonce = balances.accountNonce.toString();
   const query = `
-    INSERT INTO account (account_id, balances, available_balance, free_balance, locked_balance, nonce, timestamp, block_height, is_staking)
-    VALUES('${normalizeSubstrateAddress(id)}', '${JSONbalances}', '${availableBalance}', '${freeBalance}', '${lockedBalance}', '${nonce}',
+    INSERT INTO account (account_id, account_id_normalized, balances, available_balance, free_balance, locked_balance, nonce, timestamp, block_height, is_staking)
+    VALUES('${id}','${normalizeSubstrateAddress(id)}', '${JSONbalances}', '${availableBalance}', '${freeBalance}', '${lockedBalance}', '${nonce}',
     '${timestamp}', '${block}', ${isStaking || false}) \
       ON CONFLICT   (account_id)\
       DO UPDATE\

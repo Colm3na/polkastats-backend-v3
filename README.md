@@ -120,11 +120,7 @@ In order to check it and see its power you could start a new subscription or jus
 query {
   block  {
     block_hash
-    block_author
     block_number
-    block_author_name
-    current_era
-    current_index
     new_accounts
     session_length
     session_per_era
