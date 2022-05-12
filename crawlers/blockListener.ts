@@ -45,14 +45,14 @@ export class BlockListener {
       bridgeAPI: this.bridgeApi,
       blockHash: blockData.blockHash,
     });
-    const timestampMs = blockData.timestamp;
+    const timestamp = blockData.timestamp ? Math.floor(blockData.timestamp / 1000) : 0;
     const sessionLength = (this.bridgeApi.api.consts?.babe?.epochDuration || 0).toString();
 
     const transaction = await this.sequelize.transaction();
     try {
       await blockDB.save({
         blockNumber,
-        block: Object.assign(blockData, events, { timestampMs, sessionLength }),
+        block: Object.assign(blockData, events, { timestamp, sessionLength }),
         sequelize: this.sequelize,
         transaction,
       });
@@ -62,12 +62,12 @@ export class BlockListener {
         blockNumber,
         blockData.extrinsics,
         events.blockEvents,
-        timestampMs,
+        timestamp * 1000,
         loggerOptions,
         transaction,
       );
 
-      await this.saveEvents(events, blockNumber, timestampMs, transaction);
+      await this.saveEvents(events, blockNumber, timestamp, transaction);
 
       await transaction.commit();
     } catch (e) {
@@ -80,7 +80,7 @@ export class BlockListener {
   async saveEvents(
     events: any,
     blockNumber: number,
-    timestampMs: number,
+    timestamp: number,
     transaction: Transaction,
   ): Promise<void> {
     for (const [index, event] of events.blockEvents.entries()) {
@@ -88,7 +88,7 @@ export class BlockListener {
         {
           block_number: blockNumber,
           event_index: index,
-          timestamp: Math.floor(timestampMs / 1000),
+          timestamp,
         },
         eventsData.parseRecord({ ...event, blockNumber })
       );
