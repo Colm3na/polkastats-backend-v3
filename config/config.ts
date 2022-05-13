@@ -30,9 +30,12 @@ export const prometheusPort = process.env.PROMETHEUS_PORT || 9003;
 export const firstBlock = process.env.FIRST_BLOCK || 0;
 
 const DEFAULT_POLLING_TIME_MS = 60 * 60 * 1000;
+const ACTIVE_ACCOUNTS_DEFAULT_POLLING_TIME_MS = 1 * 60 * 1000;
+const DEFAULT_COUNT_OF_PARALLEL_TASKS = 50;
 
 export interface ICrawlerModuleConfig {
   pollingTime: number;
+  countOfParallelTasks?: number;
 }
 
 export interface ICrawlerModuleConstructorArgs {
@@ -71,7 +74,10 @@ export const crawlers: ICrawlerModule[] = [
     config: {
       pollingTime:
         parseInt(process.env.CRAWLER_ACTIVE_ACCOUNTS_POLLING_TIME_MS) ||
-        DEFAULT_POLLING_TIME_MS,
+        ACTIVE_ACCOUNTS_DEFAULT_POLLING_TIME_MS,
+      countOfParallelTasks: 
+        parseInt(process.env.CRAWLER_ACTIVE_ACCOUNTS_TASKS_IN_PARALLEL) ||
+        DEFAULT_COUNT_OF_PARALLEL_TASKS,
     },
   },
   {
