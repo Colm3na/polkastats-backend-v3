@@ -10,7 +10,7 @@
     "watch": "NODE_ENV=development webpack watch",
     "node-dev": "NODE_ENV=development node-dev ./dist/bundle.js",
     "start:dev": "NODE_ENV=development npm run build:dev && npm-run-all --parallel watch node-dev",
-    "start": "NODE_ENV=production npm run build && node --enable-source-maps -r ./dist/bundle.js",
+    "start": "NODE_ENV=production npm run build && node --enable-source-maps -r ./dist/bundle.js --max-old-space-size=128",
     "debug": "node inspect -r dotenv/config index.js",
     "docker": "docker-compose --env-file .env -f docker/polkastats-backend/docker-compose.yml up -d",
     "docker:polkadot": "docker-compose -f docker/polkastats-backend/docker-compose.yml up",

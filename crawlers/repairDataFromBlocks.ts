@@ -1,9 +1,17 @@
 import blockDB from '../lib/blockDB';
 import { ICrawlerModuleConstructorArgs } from '../config/config';
 import { BlockListener } from './blockListener';
+import { ApiPromise } from '@polkadot/api';
+import { Sequelize } from 'sequelize/types';
 
 class Rescanner extends BlockListener {
-  readonly COUNT_OF_BLOCKS = 20;
+  constructor(
+    protected api: ApiPromise,
+    protected sequelize: Sequelize,
+    readonly COUNT_OF_BLOCKS: number,
+  ) {
+    super(api, sequelize);
+  }
 
   private async getBlocks(): Promise<any[]> {
     return blockDB.getBlocksForRescan({
@@ -25,6 +33,6 @@ class Rescanner extends BlockListener {
 }
 
 export async function start({ api, sequelize, config }: ICrawlerModuleConstructorArgs) {
-  const rescanner = new Rescanner(api, sequelize);
+  const rescanner = new Rescanner(api, sequelize, config.countOfParallelTasks);
   await rescanner.rescan();
 }
