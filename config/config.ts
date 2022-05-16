@@ -62,6 +62,9 @@ export const crawlers: ICrawlerModule[] = [
       pollingTime:
         parseInt(process.env.CRAWLER_REPAIR_DATA_FROM_BLOCKS_POLLING_TIME_MS) ||
         DEFAULT_POLLING_TIME_MS,
+      countOfParallelTasks: 
+        parseInt(process.env.CRAWLER_REPAIR_DATA_FROM_BLOCKS_TASKS_IN_PARALLEL) ||
+        DEFAULT_COUNT_OF_PARALLEL_TASKS,
     },
   },
   {
