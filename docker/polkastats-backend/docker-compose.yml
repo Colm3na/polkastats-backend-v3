@@ -10,6 +10,7 @@ services:
       - --config.file=/etc/prometheus/prometheus.yml
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
   postgres:
     image: postgres:14
     restart: always
@@ -20,21 +21,20 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U polkastats']
+      test: [ 'CMD-SHELL', 'pg_isready -U polkastats' ]
       interval: 5s
       timeout: 5s
       retries: 5
-   
 
   graphql-engine:
     image: hasura/graphql-engine:v2.2.0
     ports:
-      - '8080:80'      
+      - '8080:80'
     depends_on:
       - 'postgres'
     restart: always
     environment:
-      HASURA_GRAPHQL_DATABASE_URL: '${GRAPHQL_DATABASE_URL}'      
+      HASURA_GRAPHQL_DATABASE_URL: '${GRAPHQL_DATABASE_URL}'
       HASURA_GRAPHQL_ENABLE_CONSOLE: '${GRAPHQL_ENABLE_CONSOLE}' # set to "false" to disable console
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
       HASURA_GRAPHQL_DISABLE_CORS: '${GRAPHQL_DISABLE_CORS}'
@@ -62,13 +62,14 @@ services:
       - NODE_ENV=production
       - WS_PROVIDER_URL=wss://ws-opal.unique.network
       - TYPE_PROVIDER=opal
-      - POSTGRES_HOST=${POSTGRES_HOST}      
+      - POSTGRES_HOST=${POSTGRES_HOST}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DATABASE=${POSTGRES_DATABASE}
       - PROMETHEUS_PORT=9003
       - HOST_CRAWLER=0.0.0.0
 volumes:
-  db-data: {}  
+  db-data: {}
+
 #
 # Persisten volumes
