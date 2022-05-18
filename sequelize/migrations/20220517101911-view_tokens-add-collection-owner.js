@@ -13,13 +13,14 @@ module.exports = {
             t.data,
             t.owner,
             t.owner_normalized,
+            t.owner != c.owner AS is_sold,
             COALESCE(t.data::json ->> 'ipfsJson'::text, replace(COALESCE(c.offchain_schema, ''::text), '{id}'::text, t.token_id::character varying(255)::text), ''::text) AS image_path,
             c.token_prefix,
             c.name AS collection_name,
             c.description AS collection_description,
             c.variable_on_chain_schema::json ->> 'collectionCover'::text AS collection_cover,
             c.owner AS collection_owner,
-			      c.owner_normalized AS collection_owner_normalized,
+            c.owner_normalized AS collection_owner_normalized,
             t.date_of_creation
           FROM tokens t
             LEFT JOIN collections c ON c.collection_id = t.collection_id;
