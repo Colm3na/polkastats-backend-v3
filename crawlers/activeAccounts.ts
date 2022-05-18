@@ -1,7 +1,7 @@
 import { ICrawlerModuleConstructorArgs } from '../config/config';
 import pino, { Logger } from 'pino';
 import { ApiPromise } from '@polkadot/api';
-import { QueryTypes, Sequelize } from 'sequelize';
+import { QueryTypes, Sequelize, Transaction } from 'sequelize';
 import { getAmount, normalizeSubstrateAddress } from '../utils/utils';
 
 export interface IAccount {
@@ -52,19 +52,26 @@ class AccountsCrawler {
     const currentBlockNumber = await this.getCurrentBlockNumber();
     const accountsIds = await this.getAccountsIds();
     const countOfAccounts = accountsIds.length;
+    const transaction = await this.sequelize.transaction();
 
-    while(accountsIds.length > 0) {
-      await Promise.all(
-        accountsIds
-          .splice(0, this.PARALLEL_TASKS)
-          .map((accountId) => this.accountProcessing(accountId, currentBlockNumber)),
-      );
+    try {
+      while (accountsIds.length > 0) {
+        await Promise.all(
+          accountsIds
+            .splice(0, this.PARALLEL_TASKS)
+            .map((accountId) => this.accountProcessing(accountId, currentBlockNumber, transaction)),
+        );
+      }
+      transaction.commit();
+    } catch (e) {
+      transaction.rollback();
+      this.logger.error(e);
     }
 
     this.logger.info(`Processed ${countOfAccounts} active accounts`);
   }
 
-  private async accountProcessing(accountId: string, currentBlockNumber: number): Promise<void> {
+  private async accountProcessing(accountId: string, currentBlockNumber: number, transaction: Transaction): Promise<void> {
     this.logger.debug(`Processing account: ${accountId}`);
     const accountBalances = await this.getAccountBalances(accountId);
     return this.save(
@@ -73,10 +80,11 @@ class AccountsCrawler {
         ...accountBalances,
       },
       currentBlockNumber,
+      transaction,
     );
   }
 
-  private async save(account: IAccount, currentBlockNumber: number): Promise<void> {
+  private async save(account: IAccount, currentBlockNumber: number, transaction: Transaction): Promise<void> {
     const timestamp = new Date().getTime() / 1000;
     const query = `
       INSERT INTO account (account_id, account_id_normalized, balances, available_balance, free_balance, locked_balance, nonce, timestamp, block_height)
@@ -97,6 +105,7 @@ class AccountsCrawler {
       {
         type: QueryTypes.INSERT,
         logging: false,
+        transaction,
         replacements: {
           account_id: account.id,
           account_id_normalized: normalizeSubstrateAddress(account.id),

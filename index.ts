@@ -15,10 +15,10 @@ async function getSequlize(sConnect) {
     {
       logging: false,
       pool: {
-        max: 30,
+        max: 60,
         min: 0,
         acquire: 120000,
-        idle: 10000
+        idle: 100000
       },
     },
   );
