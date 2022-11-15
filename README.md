@@ -2,6 +2,8 @@
 
 New improved backend for https://polkastats.io!
 
+This repository is ARCHIVED, for latest version go to https://github.com/polkastats/polkastats
+
 <!--ts-->
 
 ### Table of Contents
